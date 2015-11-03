@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Ultimate Tic Tac Toe</string>
+    <string name="anytext1">r1c1</string>
+    <string name="anytext2">r2c2</string>
+    <string name="anytext3">r3c3</string>
+    <string name="anytext4">r4c4</string>
+    <string name="anytext5">r4c5</string>
+    <string name="anytext6">r4c6</string>
+    <string name="anytext7">r4c7</string>
+    <string name="anytext8">r4c8</string>
+    <string name="anytext9">r4c9</string>
+    <string name="action_settings">Settings</string>
+</resources>
