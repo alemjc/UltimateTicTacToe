@@ -25,8 +25,11 @@ public class GameTable extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     private static final String CONTINUE_GAME = "continue";
     private static final String NEW_GAME = "new";
+    private static final int TILEPLAYERSKEY = 1;
     private GridLayout nineByNineTable;
-    private TableBoundary bigTable[][];
+    private BigTableIndex bigTable[][];
+    private enum PLAYER{PLAYER1,PLAYER2} // tile carries the player that played on the tile.
+    private PLAYER currentPlayer;
 
 
     /*
@@ -45,7 +48,8 @@ public class GameTable extends Fragment {
                         View.OnClickListener(){
                             @Override
                             public void onClick(View v) {
-                                //TODO: specify action after a table tile has been clicked.
+
+                                updateTable(v);
                             }
                         };
 
@@ -79,7 +83,8 @@ public class GameTable extends Fragment {
             gameName = getArguments().getString(ARG_PARAM2);
         }
 
-        bigTable = new TableBoundary[3][3];
+        currentPlayer = PLAYER.PLAYER1;
+        bigTable = new BigTableIndex[3][3];
         for(int i = 0; i < bigTable.length; i++){
             int startX = i;
 
@@ -93,7 +98,7 @@ public class GameTable extends Fragment {
                     startY = (bigTable[i][j-1]).getEndY()+1;
                 }
 
-                bigTable[i][j] = new TableBoundary(startX,startY,TableBoundary.NOTPLAYED);
+                bigTable[i][j] = new BigTableIndex(startX,startY, TableIndex.STATE.NONE);
             }
 
         }
@@ -109,6 +114,7 @@ public class GameTable extends Fragment {
         for(int i = 0; i < count; i++){
             nineByNineTable.getChildAt(i).setOnClickListener(tileListener);
         }
+
 
         return fragmentView;
     }
@@ -149,7 +155,21 @@ public class GameTable extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+         void onFragmentInteraction(Uri uri);
+    }
+
+    public void updateTable(View tile){
+        //TODO: Check if this is a valid move done by the player. if this is not a valid move make a Toast and return.
+
+        //Makes the move for the player.
+        tile.setTag(TILEPLAYERSKEY, ""+currentPlayer);
+
+        //TODO: Check if player won small table.
+            //TODO: if player won small table check if play won big table.
+        //TODO: If play didn't win small table check if this table is tied.
+            //TODO if table is tied check if big table is also tied.
+
+
     }
 
 }

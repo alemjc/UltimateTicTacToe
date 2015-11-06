@@ -3,26 +3,22 @@ package com.games.ultimatetictactoe.app;
 /**
  * Created by alemjc on 11/3/15.
  */
-public class TableBoundary {
+public class BigTableIndex implements TableIndex{
 
     private int x;
     private int y;
     private int endX;
     private int endY;
-    private int state;
-    protected static final int TIED = -1;
-    protected static final int PLAYER1 = 1;
-    protected static final int PLAYER2 = 2;
-    protected static final int NOTPLAYED = 0;
+    private STATE state;
 
-    public TableBoundary(int x, int y, int state){
+    public BigTableIndex(int x, int y, STATE state){
         this.x = x;
         this.y = y;
         endX = x+2;
         endY = y+2;
         this.state = state;
     }
-    public int getState(){
+    public STATE getState(){
         return state;
     }
 
@@ -41,7 +37,7 @@ public class TableBoundary {
         return endY;
     }
 
-    public void setState(int state){
+    public void setState(STATE state){
         this.state = state;
     }
 }
