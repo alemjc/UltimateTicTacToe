@@ -27,7 +27,7 @@ public class GameTable extends Fragment {
     private static final String NEW_GAME = "new";
     private static final int TILEPLAYERSKEY = 1;
     private GridLayout nineByNineTable;
-    private BigTableIndex bigTable[][];
+    private TableIndex bigTable[][];
     private enum PLAYER{PLAYER1,PLAYER2} // tile carries the player that played on the tile.
     private PLAYER currentPlayer;
 
@@ -84,21 +84,14 @@ public class GameTable extends Fragment {
         }
 
         currentPlayer = PLAYER.PLAYER1;
-        bigTable = new BigTableIndex[3][3];
+        bigTable = new TableIndex[3][3];
+        int count = 0;
         for(int i = 0; i < bigTable.length; i++){
-            int startX = i;
 
-            if(i > 0){
-                startX = (bigTable[i-1][0]).getEndX()+1;
-            }
             for(int j = 0; j < bigTable[i].length; j++){
 
-                int startY = j;
-                if(j > 0){
-                    startY = (bigTable[i][j-1]).getEndY()+1;
-                }
-
-                bigTable[i][j] = new BigTableIndex(startX,startY, TableIndex.STATE.NONE);
+                bigTable[i][j] = new TableIndex(count, Index.STATE.NONE);
+                count++;
             }
 
         }
