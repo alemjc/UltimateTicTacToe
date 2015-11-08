@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 
 /**
@@ -26,10 +28,12 @@ public class GameTable extends Fragment {
     private static final String CONTINUE_GAME = "continue";
     private static final String NEW_GAME = "new";
     private static final int TILEPLAYERSKEY = 1;
-    private GridLayout nineByNineTable;
-    private BigTableIndex bigTable[][];
+    private RelativeLayout gameTableLayout;
+    private TableIndex bigTable[][];
     private enum PLAYER{PLAYER1,PLAYER2} // tile carries the player that played on the tile.
     private PLAYER currentPlayer;
+    private String lastMove;
+
 
 
     /*
@@ -83,22 +87,16 @@ public class GameTable extends Fragment {
             gameName = getArguments().getString(ARG_PARAM2);
         }
 
+        lastMove = null;
         currentPlayer = PLAYER.PLAYER1;
-        bigTable = new BigTableIndex[3][3];
+        bigTable = new TableIndex[3][3];
+        int count = 0;
         for(int i = 0; i < bigTable.length; i++){
-            int startX = i;
 
-            if(i > 0){
-                startX = (bigTable[i-1][0]).getEndX()+1;
-            }
             for(int j = 0; j < bigTable[i].length; j++){
 
-                int startY = j;
-                if(j > 0){
-                    startY = (bigTable[i][j-1]).getEndY()+1;
-                }
-
-                bigTable[i][j] = new BigTableIndex(startX,startY, TableIndex.STATE.NONE);
+                bigTable[i][j] = new TableIndex(Index.STATE.NONE);
+                count++;
             }
 
         }
@@ -109,11 +107,20 @@ public class GameTable extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_game_table, container, false);
-        nineByNineTable = (GridLayout) fragmentView.findViewById(R.id.tableGrid);
-        int count = nineByNineTable.getChildCount();
+        gameTableLayout = (RelativeLayout) fragmentView.findViewById(R.id.gameTable);
+        int count = gameTableLayout.getChildCount();
+
         for(int i = 0; i < count; i++){
-            nineByNineTable.getChildAt(i).setOnClickListener(tileListener);
+            GridLayout gL = (GridLayout)gameTableLayout.getChildAt(i);
+            if(gL != null){
+                int countY = gL.getChildCount();
+                for(int j = 0; j < countY; j++){
+                    View v = gL.getChildAt(j);
+                    v.setOnClickListener(tileListener);
+                }
+            }
         }
+
 
 
         return fragmentView;
@@ -160,14 +167,73 @@ public class GameTable extends Fragment {
 
     public void updateTable(View tile){
         //TODO: Check if this is a valid move done by the player. if this is not a valid move make a Toast and return.
+        if(tile.getTag(TILEPLAYERSKEY) != null){ // some one already played this tile so can't play on a tile twice
+            Toast.makeText((Activity)mListener,"Invalid move",Toast.LENGTH_LONG);
+            return;
+        }
+        GridLayout parent = (GridLayout)tile.getParent();
+        if(!parent.getTag().equals("t"+lastMove)){ // if the current table is not the table that was assigned base on last move.
+            Toast.makeText((Activity)mListener,"Invalid move",Toast.LENGTH_LONG);
+            return;
+        }
 
         //Makes the move for the player.
-        tile.setTag(TILEPLAYERSKEY, ""+currentPlayer);
+        tile.setTag(TILEPLAYERSKEY, currentPlayer);
+        lastMove = (String)tile.getTag(); // setting last move to be current move.
 
-        //TODO: Check if player won small table.
+        TableIndex tableIndex [][] = new TableIndex[3][3];
+        int index = 0;
+        String tableCoordinate= ((String)parent.getTag()).substring(1);
+
+        for(int i = 0; i < tableIndex.length; i++){
+
+            for(int j = 0; j < tableIndex[i].length; j++){
+                View tv = parent.getChildAt(index);
+                switch ((PLAYER)tv.getTag(TILEPLAYERSKEY)){
+                    case PLAYER1:
+                        tableIndex[i][j] = new TableIndex(Index.STATE.PLAYER1);
+                        break;
+                    case PLAYER2:
+                        tableIndex[i][j] = new TableIndex(Index.STATE.PLAYER2);
+                        break;
+
+                    default:
+                        tableIndex[i][j] = new TableIndex(Index.STATE.NONE);
+                }
+            }
+
+        }
+
+
+        if(true)//TODO: Check if player won small table. Pass tableIndex to checker method.
+        {
+            int i = Integer.parseInt(tableCoordinate.charAt(0)+"");
+            int j = Integer.parseInt(tableCoordinate.charAt(1)+"");
+            switch (currentPlayer){
+                case PLAYER1:
+                    bigTable[i][j].setState(Index.STATE.PLAYER1);
+                    break;
+                case PLAYER2:
+                    bigTable[i][j].setState(Index.STATE.PLAYER2);
+                    break;
+            }
+
             //TODO: if player won small table check if play won big table.
+        }
         //TODO: If play didn't win small table check if this table is tied.
             //TODO if table is tied check if big table is also tied.
+
+
+        switch(currentPlayer){
+            case PLAYER1:
+                currentPlayer = PLAYER.PLAYER2;
+
+                break;
+            case PLAYER2:
+                currentPlayer = PLAYER.PLAYER1;
+        }
+
+
 
 
     }
