@@ -29,6 +29,7 @@ public class GameTable extends Fragment {
     private static final String CONTINUE_GAME = "continue";
     private static final String NEW_GAME = "new";
     private static final int TILEPLAYERSKEY = 1;
+    private boolean onCreateRead;
     private RelativeLayout gameTableLayout;
     private TableIndex bigTable[][];
     private enum PLAYER{PLAYER1,PLAYER2} // tile carries the player that played on the tile.
@@ -87,7 +88,8 @@ public class GameTable extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String gameChoice;
+        String gameChoice = null;
+        onCreateRead = false;
         if (getArguments() != null) {
             gameChoice = getArguments().getString(ARG_PARAM1);
             gameName = getArguments().getString(ARG_PARAM2);
@@ -105,6 +107,16 @@ public class GameTable extends Fragment {
                 //count++;
             }
 
+        }
+
+        if(gameChoice!= null){
+            if(gameChoice.equals("continue")){
+                new DBReadAsyncTask().execute(gameName);
+                onCreateRead = true;
+            }
+            else{
+                new DBWriteAsyncTask().execute(gameName);
+            }
         }
     }
 
@@ -130,6 +142,23 @@ public class GameTable extends Fragment {
 
 
         return fragmentView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(!onCreateRead) {
+            new DBReadAsyncTask().execute(gameName);
+        }
+        else{
+            onCreateRead = false;
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        new DBWriteAsyncTask().execute(gameName);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -278,7 +307,8 @@ public class GameTable extends Fragment {
                 for(int j = 0; j < row.length; j++){
                     View v = gL.getChildAt(j);
                     int state = Integer.parseInt(row[j]);
-                    v.setTag(TILEPLAYERSKEY,state);
+                    if(state != -1)
+                        v.setTag(TILEPLAYERSKEY,state);
                     //TODO: change picture of the view based on the state.
                 }
 
@@ -311,8 +341,11 @@ public class GameTable extends Fragment {
                     if(currentTableState == 1){
                         bigTable[i][j].setState(Index.STATE.PLAYER2);
                     }
-                    else{
+                    else if(currentTableState == 0){
                         bigTable[i][j].setState(Index.STATE.PLAYER1);
+                    }
+                    else{
+                        bigTable[i][j].setState(Index.STATE.NONE);
                     }
 
                     rows[i][j] = dbManager.getUnParsedRow(i+""+j,params[0]);
@@ -338,18 +371,6 @@ public class GameTable extends Fragment {
             }
         }
 
-        private String convertToRow(TableIndex innerTable[][]){
-            String row = "";
-
-            for(int i = 0; i < innerTable.length; i++){
-                for(int j = 0; j < innerTable[i].length; j++){
-                    row+=innerTable[i][j]+",";
-                }
-            }
-
-            row = row.substring(0,row.length()-1);
-            return row;
-        }
 
         @Override
         protected void onPreExecute() {
@@ -363,7 +384,11 @@ public class GameTable extends Fragment {
                 String row = "";
                 for(int j = 0; j < cc; j++){
                     View v = gl.getChildAt(j);
-                    row+=v.getTag(TILEPLAYERSKEY)+",";
+                    Integer p = (Integer)v.getTag(TILEPLAYERSKEY);
+                    if(p != null)
+                        row+=p+",";
+                    else
+                        row+="-1"+",";
                 }
                 String coordinate = (String)gl.getTag();
                 int x = Integer.parseInt(coordinate.substring(0,1));
@@ -406,6 +431,10 @@ public class GameTable extends Fragment {
                             break;
                         case PLAYER2:
                             dbManager.insert(coordinates,1,rows[i][j],params[0]);
+                            break;
+
+                        case NONE:
+                            dbManager.insert(coordinates,-1,rows[i][j],params[0]);
                             break;
                     }
 
