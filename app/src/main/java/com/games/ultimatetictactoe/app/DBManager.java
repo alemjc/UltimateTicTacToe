@@ -43,7 +43,7 @@ public class DBManager{
         }
     }
 
-    private String convertToRow(TableIndex innerTable[][]){
+    /*private String convertToRow(TableIndex innerTable[][]){
         String row = "";
 
         for(int i = 0; i < innerTable.length; i++){
@@ -54,11 +54,10 @@ public class DBManager{
 
         row = row.substring(0,row.length()-1);
         return row;
-    }
+    }*/
 
-    public long insert(String tableCoordinates,int tableState, TableIndex innerTable[][],String gameName){
+    public long insert(String tableCoordinates,int tableState, String row,String gameName){
 
-        String row = convertToRow(innerTable);
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(GAME_NAME_COLUMN,gameName);
@@ -70,8 +69,8 @@ public class DBManager{
 
     }
 
-    public void updateTable(String tableCoordinates,int tableState,TableIndex innerTable[][], String gameName){
-        String row = convertToRow(innerTable);
+    public void updateTable(String tableCoordinates,int tableState,String row, String gameName){
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(TABLE_STATE_COLUMN,tableState);
         contentValues.put(TABLE_ROW_COLUMN,row);
