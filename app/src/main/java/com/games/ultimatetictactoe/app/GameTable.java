@@ -201,7 +201,7 @@ public class GameTable extends Fragment {
     }
 
     public void updateTable(View tile){
-        //TODO: Check if this is a valid move done by the player. if this is not a valid move make a Toast and return.
+       
         if(tile.getTag(TILEPLAYERSKEY) != null){ // some one already played this tile so can't play on a tile twice
             Toast.makeText((Activity)mListener,"Invalid move",Toast.LENGTH_LONG);
             return;
@@ -295,7 +295,7 @@ public class GameTable extends Fragment {
         @Override
         protected void onPostExecute(String[][] strings) {
             super.onPostExecute(strings);
-            //TODO: parse the string[][] and put the information on the view.
+
 
             int bigTableChildCount = gameTableLayout.getChildCount();
             for(int i = 0; i < bigTableChildCount; i++){
