@@ -1,30 +1,53 @@
 package com.games.ultimatetictactoe.app;
 
+import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.UriMatcher;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
+import android.net.Uri;
 
 /**
  * Created by alemjc on 11/8/15.
  * This is the DB table manager that will be used to save game data.
  */
-public class DBManager{
+public class DBManager extends ContentProvider {
 
-    private static final String DATABASENAME = "ultimatetictactoe";
+    public static final String DATABASENAME = "ultimatetictactoe";
     private static final String TABLENAME="tablerepresentation";
     private static final int VERSION = 1;
     private static final String id="_id";
-    private static final String TABLE_COORDINATES_COLUMN = "tablecoordinate";
-    private static final String TABLE_STATE_COLUMN = "statecolumn";
-    private static final String TABLE_ROW_COLUMN = "tablerow";
-    private static final String GAME_NAME_COLUMN = "gamename";
+    public static final String TABLE_COORDINATES_COLUMN = "tablecoordinate";
+    public static final String TABLE_STATE_COLUMN = "statecolumn";
+    public static final String TABLE_ROW_COLUMN = "tablerow";
+    public static final String GAME_NAME_COLUMN = "gamename";
+    public static final Uri CONTENTURI = Uri.parse("content://com.games.ultmatetictactoe.app.DBManager/"+DATABASENAME);
+    private static final int INSERTTABLE = 1;
+    private static final int UPDATETABLETATEROW = 6;
+    private static final int UPDATETABLETATE = 7;
+    private static final int UPDATETABLEROW = 8;
+    private static final int UPDATETABLE = 2;
+    private static final int GETSAVEDGAMES = 3;
+    private static final int GETTABLESTATE = 4;
+    private static final int GETUNPARSEDROWS = 5;
 
     private SQLiteDatabase db;
     private SQLHelper sqlHelper;
     private static DBManager dbManager;
+
+    private static final String AUTHORITY = "com.games.ultimatetictactoe.app.DBManager";
+    private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    static{
+        uriMatcher.addURI(AUTHORITY,DATABASENAME,INSERTTABLE);
+        uriMatcher.addURI(AUTHORITY,DATABASENAME+"#"+"/"+TABLE_STATE_COLUMN,UPDATETABLETATE);
+        uriMatcher.addURI(AUTHORITY,DATABASENAME+"#"+"/"+TABLE_ROW_COLUMN,UPDATETABLEROW);
+
+
+
+    }
 
 
     private DBManager(Context c){
@@ -43,7 +66,7 @@ public class DBManager{
         }
     }
 
-    private String convertToRow(TableIndex innerTable[][]){
+    /*private String convertToRow(TableIndex innerTable[][]){
         String row = "";
 
         for(int i = 0; i < innerTable.length; i++){
@@ -54,11 +77,10 @@ public class DBManager{
 
         row = row.substring(0,row.length()-1);
         return row;
-    }
+    }*/
 
-    public long insert(String tableCoordinates,int tableState, TableIndex innerTable[][],String gameName){
+    public long insert(String tableCoordinates,int tableState, String row,String gameName){
 
-        String row = convertToRow(innerTable);
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(GAME_NAME_COLUMN,gameName);
@@ -66,19 +88,23 @@ public class DBManager{
         contentValues.put(TABLE_COORDINATES_COLUMN,tableCoordinates);
         contentValues.put(TABLE_ROW_COLUMN,row);
 
-        return db.insert(TABLENAME,null,contentValues);
+        Uri uri = Uri.parse(CONTENTURI.toString());
+
+        //return db.insert(TABLENAME,null,contentValues);
+        insert(uri,contentValues);
 
     }
 
-    public void updateTable(String tableCoordinates,int tableState,TableIndex innerTable[][], String gameName){
-        String row = convertToRow(innerTable);
+    public void updateTable(String tableCoordinates,int tableState,String row, String gameName){
+
         ContentValues contentValues = new ContentValues();
         contentValues.put(TABLE_STATE_COLUMN,tableState);
         contentValues.put(TABLE_ROW_COLUMN,row);
 
-        db.update(TABLENAME,contentValues,TABLE_COORDINATES_COLUMN+" = ?"+
-                                                    " AND "+GAME_NAME_COLUMN+" = ?",
-                                                        new String[]{tableCoordinates,gameName});
+        Uri uri = Uri.parse(CONTENTURI.toString());
+        String selection = TABLE_COORDINATES_COLUMN+" = ?"+" AND "+GAME_NAME_COLUMN+" = ?";
+
+        update(uri,contentValues,selection, new String[]{tableCoordinates,gameName});
 
     }
 
@@ -122,8 +148,43 @@ public class DBManager{
 
     }
 
+    @Override
+    public String getType(Uri uri) {
+        return null;
+    }
+
+    @Override
+    public Uri insert(Uri uri, ContentValues contentValues) {
+
+        switch(uriMatcher.match(uri)){
+            case INSERTTABLE:
+                db.insert(TABLENAME,null,contentValues);
+                break;
+
+        }
 
 
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        return 0;
+    }
+
+    @Override
+    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+
+    }
+
+    @Override
+    public boolean onCreate() {
+        return false;
+    }
+
+    @Override
+    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        return null;
+    }
 
 
     private class SQLHelper extends SQLiteOpenHelper {
