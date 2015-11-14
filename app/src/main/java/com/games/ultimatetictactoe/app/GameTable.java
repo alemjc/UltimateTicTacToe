@@ -201,7 +201,7 @@ public class GameTable extends Fragment {
     }
 
     public void updateTable(View tile){
-       
+
         if(tile.getTag(TILEPLAYERSKEY) != null){ // some one already played this tile so can't play on a tile twice
             Toast.makeText((Activity)mListener,"Invalid move",Toast.LENGTH_LONG);
             return;
