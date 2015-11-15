@@ -1,6 +1,7 @@
 package com.games.ultimatetictactoe.app;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -334,10 +335,10 @@ public class GameTable extends Fragment {
         @Override
         protected String[][] doInBackground(String... params) {
             String [][]rows = new String[3][3];
-            DBManager dbManager = DBManager.getInstance(getActivity());
+
             for(int i = 0; i < bigTable.length;i++){
                 for(int j = 0; j < bigTable[i].length; j++){
-                    int currentTableState = dbManager.getTableState(i+""+j,params[0]);
+                    int currentTableState = DBManager.CPHandler.getTableState(GameTable.this.getActivity(),i+""+j,params[0]);
                     if(currentTableState == 1){
                         bigTable[i][j].setState(Index.STATE.PLAYER2);
                     }
@@ -348,7 +349,7 @@ public class GameTable extends Fragment {
                         bigTable[i][j].setState(Index.STATE.NONE);
                     }
 
-                    rows[i][j] = dbManager.getUnParsedRow(i+""+j,params[0]);
+                    rows[i][j] = DBManager.CPHandler.getUnParsedRow(GameTable.this.getActivity(),i+""+j,params[0]);
 
                 }
             }
@@ -419,22 +420,26 @@ public class GameTable extends Fragment {
             super.onCancelled();
         }
 
+
         @Override
         protected Object doInBackground(String... params) {
-            DBManager dbManager = DBManager.getInstance(getActivity());
+            //DBManager dbManager = GameTable.this.getActivity().getContentResolver();
             for(int i = 0; i < bigTable.length; i++){
                 for(int j = 0; j < bigTable[i].length;j++){
                     String coordinates = ""+i+""+j;
                     switch(bigTable[i][j].getState()){
                         case PLAYER1:
-                            dbManager.insert(coordinates,0,rows[i][j],params[0]);
+                            //dbManager.insert(coordinates,0,rows[i][j],params[0]);
+                            DBManager.CPHandler.insert(GameTable.this.getActivity(), coordinates, 0, rows[i][j], params[0]);
                             break;
                         case PLAYER2:
-                            dbManager.insert(coordinates,1,rows[i][j],params[0]);
+                            //dbManager.insert(coordinates,1,rows[i][j],params[0]);
+                            DBManager.CPHandler.insert(GameTable.this.getActivity(),coordinates, 1, rows[i][j], params[0]);
                             break;
 
                         case NONE:
-                            dbManager.insert(coordinates,-1,rows[i][j],params[0]);
+                            //dbManager.insert(coordinates,-1,rows[i][j],params[0]);
+                            DBManager.CPHandler.insert(GameTable.this.getActivity(), coordinates, -1, rows[i][j], params[0]);
                             break;
                     }
 

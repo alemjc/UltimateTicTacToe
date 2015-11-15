@@ -17,7 +17,7 @@ import android.net.Uri;
 public class DBManager extends ContentProvider {
 
     public static final String DATABASENAME = "ultimatetictactoe";
-    private static final String TABLENAME="tablerepresentation";
+    public static final String TABLENAME="tablerepresentation";
     private static final int VERSION = 1;
     private static final String id="_id";
     public static final String TABLE_COORDINATES_COLUMN = "tablecoordinate";
@@ -25,10 +25,10 @@ public class DBManager extends ContentProvider {
     public static final String TABLE_ROW_COLUMN = "tablerow";
     public static final String GAME_NAME_COLUMN = "gamename";
     public static final Uri CONTENTURI = Uri.parse("content://com.games.ultmatetictactoe.app.DBManager/"+DATABASENAME);
-    private static final int INSERTTABLE = 1;
+    private static final int TICTACTOETABLE = 1;
     private static final int UPDATETABLETATEROW = 6;
-    private static final int UPDATETABLETATE = 7;
-    private static final int UPDATETABLEROW = 8;
+    private static final int TICTACTOETABLETATE = 7;
+    private static final int TICTACTOETABLEROW = 8;
     private static final int UPDATETABLE = 2;
     private static final int GETSAVEDGAMES = 3;
     private static final int GETTABLESTATE = 4;
@@ -41,22 +41,26 @@ public class DBManager extends ContentProvider {
     private static final String AUTHORITY = "com.games.ultimatetictactoe.app.DBManager";
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static{
-        uriMatcher.addURI(AUTHORITY,DATABASENAME,INSERTTABLE);
-        uriMatcher.addURI(AUTHORITY,DATABASENAME+"#"+"/"+TABLE_STATE_COLUMN,UPDATETABLETATE);
-        uriMatcher.addURI(AUTHORITY,DATABASENAME+"#"+"/"+TABLE_ROW_COLUMN,UPDATETABLEROW);
-
-
-
+        uriMatcher.addURI(AUTHORITY,DATABASENAME+"/"+TABLENAME,TICTACTOETABLE);
+        //uriMatcher.addURI(AUTHORITY,DATABASENAME+TABLENAME+"/"+TABLE_STATE_COLUMN,TICTACTOETABLETATE);
+        //uriMatcher.addURI(AUTHORITY,DATABASENAME+TABLENAME+"/"+TABLE_ROW_COLUMN,TICTACTOETABLEROW);
+    }
+    public DBManager(){
+        super();
+        sqlHelper = new SQLHelper(getContext());
+        db = sqlHelper.getWritableDatabase();
     }
 
 
-    private DBManager(Context c){
+
+    /*private DBManager(Context c){
+        super();
         sqlHelper = new SQLHelper(c);
         db = sqlHelper.getWritableDatabase();
 
-    }
+    }*/
 
-    public static DBManager getInstance(Context c){
+    /*public static DBManager getInstance(Context c){
         if(dbManager != null){
             return dbManager;
         }
@@ -64,7 +68,7 @@ public class DBManager extends ContentProvider {
             dbManager = new DBManager(c);
             return dbManager;
         }
-    }
+    }*/
 
     /*private String convertToRow(TableIndex innerTable[][]){
         String row = "";
@@ -79,23 +83,9 @@ public class DBManager extends ContentProvider {
         return row;
     }*/
 
-    public long insert(String tableCoordinates,int tableState, String row,String gameName){
 
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GAME_NAME_COLUMN,gameName);
-        contentValues.put(TABLE_STATE_COLUMN,tableState);
-        contentValues.put(TABLE_COORDINATES_COLUMN,tableCoordinates);
-        contentValues.put(TABLE_ROW_COLUMN,row);
-
-        Uri uri = Uri.parse(CONTENTURI.toString());
-
-        //return db.insert(TABLENAME,null,contentValues);
-        insert(uri,contentValues);
-
-    }
-
-    public void updateTable(String tableCoordinates,int tableState,String row, String gameName){
+    public int updateTable(String tableCoordinates,int tableState,String row, String gameName){
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(TABLE_STATE_COLUMN,tableState);
@@ -104,7 +94,7 @@ public class DBManager extends ContentProvider {
         Uri uri = Uri.parse(CONTENTURI.toString());
         String selection = TABLE_COORDINATES_COLUMN+" = ?"+" AND "+GAME_NAME_COLUMN+" = ?";
 
-        update(uri,contentValues,selection, new String[]{tableCoordinates,gameName});
+        return update(uri,contentValues,selection, new String[]{tableCoordinates,gameName});
 
     }
 
@@ -126,27 +116,7 @@ public class DBManager extends ContentProvider {
         return gameNames;
     }
 
-    public int getTableState(String tableCoordinates, String gameName){
-        Cursor c = db.rawQuery("SELECT "+TABLE_STATE_COLUMN+ " FROM "+TABLENAME+" WHERE "+TABLE_COORDINATES_COLUMN+" = ?"
-                                                                                    +" AND "+GAME_NAME_COLUMN+"= ?",
-                                    new String[]{tableCoordinates,gameName});
-        c.moveToFirst();
-        int state = c.getInt(0);
-        c.close();
-        return state;
-    }
 
-    public String getUnParsedRow(String tableCoordinates, String gameName){
-        Cursor c = db.rawQuery("SELECT "+TABLE_ROW_COLUMN+  " FROM "+TABLENAME+" WHERE "+TABLE_COORDINATES_COLUMN+" = ?"
-                                                                                          +" AND "+GAME_NAME_COLUMN+"= ?",
-                                    new String[]{tableCoordinates,gameName});
-        c.moveToFirst();
-        String row = c.getString(0);
-        c.close();
-
-        return row;
-
-    }
 
     @Override
     public String getType(Uri uri) {
@@ -157,9 +127,12 @@ public class DBManager extends ContentProvider {
     public Uri insert(Uri uri, ContentValues contentValues) {
 
         switch(uriMatcher.match(uri)){
-            case INSERTTABLE:
+            case TICTACTOETABLE:
                 db.insert(TABLENAME,null,contentValues);
-                break;
+                return Uri.parse(CONTENTURI+"/"+TABLENAME);
+
+            default:
+                return null;
 
         }
 
@@ -173,7 +146,13 @@ public class DBManager extends ContentProvider {
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        switch(uriMatcher.match(uri)){
+            case TICTACTOETABLE:
+                return db.update(TABLENAME,values,selection,selectionArgs);
 
+            default:
+                return -1;
+        }
     }
 
     @Override
@@ -183,7 +162,16 @@ public class DBManager extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        return null;
+
+        switch(uriMatcher.match(uri)){
+            case TICTACTOETABLE:
+               return db.query(TABLENAME,projection,selection,selectionArgs,null,null,null,null);
+            default:
+                return null;
+        }
+
+
+
     }
 
 
@@ -263,5 +251,55 @@ public class DBManager extends ContentProvider {
 
         }
 
+    }
+
+
+    public static class CPHandler {
+
+        private CPHandler(){};
+
+        public static Uri insert(Context c, String tableCoordinates,int tableState, String row,String gameName){
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GAME_NAME_COLUMN,gameName);
+            contentValues.put(TABLE_STATE_COLUMN,tableState);
+            contentValues.put(TABLE_COORDINATES_COLUMN,tableCoordinates);
+            contentValues.put(TABLE_ROW_COLUMN,row);
+
+            Uri uri = Uri.parse(CONTENTURI.toString()+"/"+DBManager.TABLENAME);
+
+            //return db.insert(TABLENAME,null,contentValues);
+            return c.getContentResolver().insert(uri,contentValues);
+
+        }
+
+        public static int getTableState(Context c,String tableCoordinates, String gameName){
+       /* Cursor c = db.rawQuery("SELECT "+TABLE_STATE_COLUMN+ " FROM "+TABLENAME+" WHERE "+TABLE_COORDINATES_COLUMN+" = ?"
+                        +" AND "+GAME_NAME_COLUMN+"= ?",
+                new String[]{tableCoordinates,gameName});*/
+            Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.TABLENAME);
+
+            Cursor cursor = c.getContentResolver().query(uri,new String[]{DBManager.TABLE_STATE_COLUMN},DBManager.TABLE_COORDINATES_COLUMN+" =?"+
+                                                " AND "+GAME_NAME_COLUMN+"= ?",new String[]{tableCoordinates,gameName}, null);
+            cursor.moveToFirst();
+            int state = cursor.getInt(0);
+            cursor.close();
+            return state;
+        }
+
+        public static String getUnParsedRow(Context c,String tableCoordinates, String gameName){
+            //Cursor c = db.rawQuery("SELECT "+TABLE_ROW_COLUMN+  " FROM "+TABLENAME+" WHERE "+TABLE_COORDINATES_COLUMN+" = ?"
+            //               +" AND "+GAME_NAME_COLUMN+"= ?",
+            //      new String[]{tableCoordinates,gameName});
+            Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.TABLENAME);
+            Cursor cursor = c.getContentResolver().query(uri,new String[]{TABLE_ROW_COLUMN},DBManager.TABLE_COORDINATES_COLUMN+" =?"+
+                    " AND "+GAME_NAME_COLUMN+"= ?",new String[]{tableCoordinates,gameName}, null);
+
+            cursor.moveToFirst();
+            String row = c.getString(0);
+            cursor.close();
+
+            return row;
+
+        }
     }
 }

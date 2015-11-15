@@ -16,6 +16,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+                android:authorities="com.games.ultimatetictactoe.app.DBManager"
+                android:name=".DBManager"
+                android:exported="false"
+                android:grantUriPermissions="true"
+
+                />
+
     </application>
 
 </manifest>
