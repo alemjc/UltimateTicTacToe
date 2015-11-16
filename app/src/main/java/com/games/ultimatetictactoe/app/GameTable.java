@@ -2,6 +2,7 @@ package com.games.ultimatetictactoe.app;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.os.Handler;
+import android.os.HandlerThread;
 
 
 /**
@@ -36,16 +39,18 @@ public class GameTable extends Fragment {
     private enum PLAYER{PLAYER1,PLAYER2} // tile carries the player that played on the tile.
     private PLAYER currentPlayer;
     private String lastMove;
-
+    private Handler observerHandler;
+    private HandlerThread observerHandlerThread;
+    private ContentObserver dbObserver;
 
 
     /*
-        gameChoice parameter will tell GameTable whether to continue an already started game or start a new game.
-        possible values for gameChoice are: continue, new.
+            gameChoice parameter will tell GameTable whether to continue an already started game or start a new game.
+            possible values for gameChoice are: continue, new.
 
-        gameName this will have the name of name iff gameChoice is filled out.
+            gameName this will have the name of name iff gameChoice is filled out.
 
-     */
+         */
     //private String gameChoice;
     private String gameName;
 
@@ -119,6 +124,8 @@ public class GameTable extends Fragment {
                 new DBWriteAsyncTask().execute(gameName);
             }
         }
+
+
     }
 
     @Override
@@ -154,12 +161,38 @@ public class GameTable extends Fragment {
         else{
             onCreateRead = false;
         }
+        startObserverThread();
+        dbObserver = new DBObserver(observerHandler);
+        getActivity().getContentResolver().registerContentObserver(Uri.parse(DBManager.CONTENTURI+"/"+DBManager.TABLENAME),
+                                                                                    false,dbObserver);
     }
 
     @Override
     public void onPause() {
         super.onPause();
         new DBWriteAsyncTask().execute(gameName);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        getActivity().getContentResolver().unregisterContentObserver(dbObserver);
+        stopObserverThread();
+    }
+
+
+    private void startObserverThread(){
+        observerHandlerThread = new HandlerThread("observerThread");
+        observerHandlerThread.start();
+        observerHandler = new Handler(observerHandlerThread.getLooper());
+    }
+
+    private void stopObserverThread(){
+        if(observerHandler != null && observerHandlerThread != null){
+            observerHandlerThread.quitSafely();
+            observerHandler = null;
+            observerHandlerThread = null;
+        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -430,16 +463,16 @@ public class GameTable extends Fragment {
                     switch(bigTable[i][j].getState()){
                         case PLAYER1:
                             //dbManager.insert(coordinates,0,rows[i][j],params[0]);
-                            DBManager.CPHandler.insert(GameTable.this.getActivity(), coordinates, 0, rows[i][j], params[0]);
+                            DBManager.CPHandler.insert(GameTable.this.getActivity(),dbObserver, coordinates, 0, rows[i][j], params[0]);
                             break;
                         case PLAYER2:
                             //dbManager.insert(coordinates,1,rows[i][j],params[0]);
-                            DBManager.CPHandler.insert(GameTable.this.getActivity(),coordinates, 1, rows[i][j], params[0]);
+                            DBManager.CPHandler.insert(GameTable.this.getActivity(),dbObserver,coordinates, 1, rows[i][j], params[0]);
                             break;
 
                         case NONE:
                             //dbManager.insert(coordinates,-1,rows[i][j],params[0]);
-                            DBManager.CPHandler.insert(GameTable.this.getActivity(), coordinates, -1, rows[i][j], params[0]);
+                            DBManager.CPHandler.insert(GameTable.this.getActivity(),dbObserver,coordinates, -1, rows[i][j], params[0]);
                             break;
                     }
 

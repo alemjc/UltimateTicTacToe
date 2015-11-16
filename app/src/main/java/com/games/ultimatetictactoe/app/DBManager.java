@@ -1,9 +1,7 @@
 package com.games.ultimatetictactoe.app;
 
-import android.content.ContentProvider;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.UriMatcher;
+import android.content.*;
+import android.database.ContentObserver;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -85,36 +83,9 @@ public class DBManager extends ContentProvider {
 
 
 
-    public int updateTable(String tableCoordinates,int tableState,String row, String gameName){
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TABLE_STATE_COLUMN,tableState);
-        contentValues.put(TABLE_ROW_COLUMN,row);
 
-        Uri uri = Uri.parse(CONTENTURI.toString());
-        String selection = TABLE_COORDINATES_COLUMN+" = ?"+" AND "+GAME_NAME_COLUMN+" = ?";
 
-        return update(uri,contentValues,selection, new String[]{tableCoordinates,gameName});
-
-    }
-
-    public String[] getSavedGames(){
-
-        Cursor c = db.rawQuery("SELECT "+GAME_NAME_COLUMN+" FROM "+TABLENAME+";",null);
-        c.moveToFirst();
-        String [] gameNames = new String[c.getCount()];
-
-        int count = 0;
-        while(!c.isAfterLast()){
-            gameNames[count] = c.getString(0);
-            count++;
-            c.moveToNext();
-        }
-
-        c.close();
-
-        return gameNames;
-    }
 
 
 
@@ -258,7 +229,7 @@ public class DBManager extends ContentProvider {
 
         private CPHandler(){};
 
-        public static Uri insert(Context c, String tableCoordinates,int tableState, String row,String gameName){
+        public static Uri insert(Context c,ContentObserver observer, String tableCoordinates,int tableState, String row,String gameName){
             ContentValues contentValues = new ContentValues();
             contentValues.put(GAME_NAME_COLUMN,gameName);
             contentValues.put(TABLE_STATE_COLUMN,tableState);
@@ -268,8 +239,50 @@ public class DBManager extends ContentProvider {
             Uri uri = Uri.parse(CONTENTURI.toString()+"/"+DBManager.TABLENAME);
 
             //return db.insert(TABLENAME,null,contentValues);
-            return c.getContentResolver().insert(uri,contentValues);
+            Uri returnedUri = c.getContentResolver().insert(uri,contentValues);
 
+            c.getContentResolver().notifyChange(returnedUri,observer);
+            return returnedUri;
+
+        }
+
+        public static int updateTable(Context c,ContentObserver observer,String tableCoordinates,int tableState,String row, String gameName){
+
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(TABLE_STATE_COLUMN,tableState);
+            contentValues.put(TABLE_ROW_COLUMN,row);
+
+            Uri uri = Uri.parse(CONTENTURI.toString()+"/"+TABLENAME);
+            String selection = TABLE_COORDINATES_COLUMN+" = ?"+" AND "+GAME_NAME_COLUMN+" = ?";
+            ContentResolver contentResolver = c.getContentResolver();
+            int numUpdated = contentResolver.update(uri, contentValues, selection, new String[]{tableCoordinates, gameName});
+            if(numUpdated > 0){
+                contentResolver.notifyChange(uri,observer);
+            }
+
+            return numUpdated;
+
+        }
+
+        public static String[] getSavedGames(Context c){
+            ContentResolver contentResolver = c.getContentResolver();
+
+            //Cursor c = db.rawQuery("SELECT "+GAME_NAME_COLUMN+" FROM "+TABLENAME+";",null);
+            Uri contentUri = Uri.parse(CONTENTURI.toString()+"/"+TABLENAME);
+            Cursor cursor = contentResolver.query(contentUri,new String[]{GAME_NAME_COLUMN}, null,null,null);
+            cursor.moveToFirst();
+            String [] gameNames = new String[cursor.getCount()];
+
+            int count = 0;
+            while(!cursor.isAfterLast()){
+                gameNames[count] = c.getString(0);
+                count++;
+                cursor.moveToNext();
+            }
+
+            cursor.close();
+
+            return gameNames;
         }
 
         public static int getTableState(Context c,String tableCoordinates, String gameName){
