@@ -16,6 +16,9 @@ public class DBManager extends ContentProvider {
 
     public static final String DATABASENAME = "ultimatetictactoe";
     public static final String TABLENAME="tablerepresentation";
+    public static final String GAMETABLENAME="gametable";
+    public static final String GAMETABLE_OPPONENTS_COLUMN = "opponent";
+    public static final String GAMETABLE_GAME_COLUMN = "gameName";
     private static final int VERSION = 1;
     private static final String id="_id";
     public static final String TABLE_COORDINATES_COLUMN = "tablecoordinate";
@@ -24,13 +27,7 @@ public class DBManager extends ContentProvider {
     public static final String GAME_NAME_COLUMN = "gamename";
     public static final Uri CONTENTURI = Uri.parse("content://com.games.ultmatetictactoe.app.DBManager/"+DATABASENAME);
     private static final int TICTACTOETABLE = 1;
-    private static final int UPDATETABLETATEROW = 6;
-    private static final int TICTACTOETABLETATE = 7;
-    private static final int TICTACTOETABLEROW = 8;
-    private static final int UPDATETABLE = 2;
-    private static final int GETSAVEDGAMES = 3;
-    private static final int GETTABLESTATE = 4;
-    private static final int GETUNPARSEDROWS = 5;
+    private static final int TICTACTOEGAMENAME = 2;
 
     private SQLiteDatabase db;
     private SQLHelper sqlHelper;
@@ -40,7 +37,7 @@ public class DBManager extends ContentProvider {
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static{
         uriMatcher.addURI(AUTHORITY,DATABASENAME+"/"+TABLENAME,TICTACTOETABLE);
-        //uriMatcher.addURI(AUTHORITY,DATABASENAME+TABLENAME+"/"+TABLE_STATE_COLUMN,TICTACTOETABLETATE);
+        uriMatcher.addURI(AUTHORITY,DATABASENAME+"/"+GAMETABLENAME,TICTACTOEGAMENAME);
         //uriMatcher.addURI(AUTHORITY,DATABASENAME+TABLENAME+"/"+TABLE_ROW_COLUMN,TICTACTOETABLEROW);
     }
     public DBManager(){
@@ -97,15 +94,23 @@ public class DBManager extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
 
+        Uri returnedUri = null;
         switch(uriMatcher.match(uri)){
             case TICTACTOETABLE:
                 db.insert(TABLENAME,null,contentValues);
-                return Uri.parse(CONTENTURI+"/"+TABLENAME);
+                returnedUri = Uri.parse(CONTENTURI+"/"+TABLENAME);
+
+                break;
+            case TICTACTOEGAMENAME:
+                db.insert(GAMETABLENAME,null,contentValues);
+                returnedUri = Uri.parse(CONTENTURI+"/"+TABLENAME);
 
             default:
-                return null;
+
 
         }
+
+        return returnedUri;
 
 
     }
@@ -133,15 +138,20 @@ public class DBManager extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-
+        Cursor returnC = null;
         switch(uriMatcher.match(uri)){
             case TICTACTOETABLE:
-               return db.query(TABLENAME,projection,selection,selectionArgs,null,null,null,null);
+               returnC = db.query(TABLENAME,projection,selection,selectionArgs,null,null,null,null);
+            break;
+            case TICTACTOEGAMENAME:
+                returnC = db.query(GAMETABLENAME,projection,selection,selectionArgs,null,null,null,null);
+                break;
             default:
-                return null;
+
         }
 
 
+        return returnC;
 
     }
 
@@ -201,6 +211,7 @@ public class DBManager extends ContentProvider {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
             db.execSQL("DROP TABLE IF EXISTS "+ TABLENAME);
+            db.execSQL("DOP TABLE IF EXISTS "+ GAMETABLENAME);
             onCreate(db);
 
         }
@@ -208,11 +219,17 @@ public class DBManager extends ContentProvider {
         @Override
         public void onCreate(SQLiteDatabase db) {
 
-            db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLENAME+ "( "+id+ "INTEGER INCREMENTS PRIMARY KEY, "+
+            db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLENAME+ "( "+id+ " INTEGER INCREMENTS PRIMARY KEY, "+
                                                                     GAME_NAME_COLUMN+ " VARCHAR(100) "+
                                                                     TABLE_COORDINATES_COLUMN+" VARCHAR(2), "+
                                                                     TABLE_STATE_COLUMN+" INTEGER, "+
                                                                     TABLE_ROW_COLUMN+ "VARCHAR(17)); ");
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS "+GAMETABLENAME+"( "+id+" INTEGER INCREMENTS PRIMARY KEY, "+
+                                                                        GAMETABLE_GAME_COLUMN+ " VARCHAR(100), "+
+                                                                        GAMETABLE_OPPONENTS_COLUMN+" VARCHAR(400), "+
+                                                                        "FOREIGN KEY ("+GAME_NAME_COLUMN+")"+" REFERENCES "+
+                                                                        TABLENAME+"("+GAME_NAME_COLUMN+")"+ " ON DELETE CASCADE);");
 
         }
 
@@ -229,20 +246,27 @@ public class DBManager extends ContentProvider {
 
         private CPHandler(){};
 
-        public static Uri insert(Context c,ContentObserver observer, String tableCoordinates,int tableState, String row,String gameName){
+        public static Uri[] insert(Context c,ContentObserver observer, String tableCoordinates,int tableState, String row,String gameName,String opponentsMailID ){
             ContentValues contentValues = new ContentValues();
             contentValues.put(GAME_NAME_COLUMN,gameName);
             contentValues.put(TABLE_STATE_COLUMN,tableState);
             contentValues.put(TABLE_COORDINATES_COLUMN,tableCoordinates);
             contentValues.put(TABLE_ROW_COLUMN,row);
 
-            Uri uri = Uri.parse(CONTENTURI.toString()+"/"+DBManager.TABLENAME);
+            Uri uri = Uri.parse(CONTENTURI.toString()+"/"+TABLENAME);
 
             //return db.insert(TABLENAME,null,contentValues);
-            Uri returnedUri = c.getContentResolver().insert(uri,contentValues);
+            Uri returnedUris[] = new Uri[2];
+            returnedUris[0] = c.getContentResolver().insert(uri,contentValues);
 
-            c.getContentResolver().notifyChange(returnedUri,observer);
-            return returnedUri;
+            contentValues.clear();
+            contentValues.put(GAMETABLE_GAME_COLUMN,gameName);
+            contentValues.put(GAMETABLE_OPPONENTS_COLUMN,opponentsMailID);
+            uri = Uri.parse(CONTENTURI.toString()+"/"+GAMETABLENAME);
+            returnedUris[1] = c.getContentResolver().insert(uri,contentValues);
+
+            //c.getContentResolver().notifyChange(returnedUri,observer);
+            return returnedUris;
 
         }
 
@@ -257,7 +281,7 @@ public class DBManager extends ContentProvider {
             ContentResolver contentResolver = c.getContentResolver();
             int numUpdated = contentResolver.update(uri, contentValues, selection, new String[]{tableCoordinates, gameName});
             if(numUpdated > 0){
-                contentResolver.notifyChange(uri,observer);
+                //contentResolver.notifyChange(uri,observer);
             }
 
             return numUpdated;
@@ -284,6 +308,22 @@ public class DBManager extends ContentProvider {
 
             return gameNames;
         }
+
+        public static String getOpponentsMailID(Context c, String gameName){
+
+            Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+GAMETABLENAME);
+
+            Cursor cursor = c.getContentResolver().query(uri,new String[]{DBManager.GAMETABLE_OPPONENTS_COLUMN}
+                            ,DBManager.GAMETABLE_GAME_COLUMN+" =?",new String[]{gameName},null);
+
+            cursor.moveToFirst();
+            String mailID = cursor.getString(0);
+
+
+            return mailID;
+        }
+
+
 
         public static int getTableState(Context c,String tableCoordinates, String gameName){
        /* Cursor c = db.rawQuery("SELECT "+TABLE_STATE_COLUMN+ " FROM "+TABLENAME+" WHERE "+TABLE_COORDINATES_COLUMN+" = ?"

@@ -2,6 +2,8 @@ package com.games.ultimatetictactoe.app;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -51,7 +53,7 @@ public class GameTable extends Fragment {
             gameName this will have the name of name iff gameChoice is filled out.
 
          */
-    //private String gameChoice;
+    private String opponent;
     private String gameName;
 
     private OnFragmentInteractionListener mListener;
@@ -94,10 +96,10 @@ public class GameTable extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String gameChoice = null;
+
         onCreateRead = false;
         if (getArguments() != null) {
-            gameChoice = getArguments().getString(ARG_PARAM1);
+            opponent = getArguments().getString(ARG_PARAM1);
             gameName = getArguments().getString(ARG_PARAM2);
         }
 
@@ -115,15 +117,9 @@ public class GameTable extends Fragment {
 
         }
 
-        if(gameChoice!= null){
-            if(gameChoice.equals("continue")){
-                new DBReadAsyncTask().execute(gameName);
-                onCreateRead = true;
-            }
-            else{
-                new DBWriteAsyncTask().execute(gameName);
-            }
-        }
+
+        new DBReadAsyncTask().execute(new String[]{gameName,opponent});
+        onCreateRead = true;
 
 
     }
@@ -245,6 +241,17 @@ public class GameTable extends Fragment {
             Toast.makeText((Activity)mListener,"Invalid move",Toast.LENGTH_LONG);
             return;
         }
+        String tableCoordinate= ((String)parent.getTag()).substring(1);
+
+        Activity myActivity = GameTable.this.getActivity();
+        //String asyncBundleSubjectKey = myActivity.getString(R.string.asyncBundlesubject);
+        SharedPreferences preferences = myActivity.getPreferences(Context.MODE_PRIVATE);
+        Bundle sendBundle = new Bundle();
+        sendBundle.putString("to",preferences.getString(myActivity.getString(R.string.opponentsmailid),null));
+        sendBundle.putString(myActivity.getString(R.string.asyncBundlesubject),myActivity.getString(R.string.asyncsendsubjecttype));
+        String message = "game name: "+gameName+"\n";
+
+
 
         //Makes the move for the player.
         switch(currentPlayer){
@@ -257,36 +264,43 @@ public class GameTable extends Fragment {
                 break;
         }
 
+        new DBWriteAsyncTask().execute(new String[]{tableCoordinate,gameName});
         lastMove = (String)tile.getTag(); // setting last move to be current move.
 
         TableIndex tableIndex [][] = new TableIndex[3][3];
         int index = 0;
-        String tableCoordinate= ((String)parent.getTag()).substring(1);
 
+        String row = "";
         for(int i = 0; i < tableIndex.length; i++){
 
             for(int j = 0; j < tableIndex[i].length; j++){
                 View tv = parent.getChildAt(index);
-                switch ((PLAYER)tv.getTag(TILEPLAYERSKEY)){
-                    case PLAYER1:
+                int player = (Integer)tv.getTag(TILEPLAYERSKEY);
+                row+=player;
+                switch (player){
+                    case 0:
                         tableIndex[i][j] = new TableIndex(Index.STATE.PLAYER1);
                         break;
-                    case PLAYER2:
+                    case 1:
                         tableIndex[i][j] = new TableIndex(Index.STATE.PLAYER2);
                         break;
 
-                    default:
+                    case -1:
                         tableIndex[i][j] = new TableIndex(Index.STATE.NONE);
                 }
             }
 
         }
+        int i = Integer.parseInt(tableCoordinate.charAt(0)+"");
+        int j = Integer.parseInt(tableCoordinate.charAt(1)+"");
+        message+="("+tableCoordinate+")"+"("+bigTable[i][j]+")"+row+"\n";
+
+
 
 
         if(true)//TODO: Check if player won small table. Pass tableIndex to checker method.
         {
-            int i = Integer.parseInt(tableCoordinate.charAt(0)+"");
-            int j = Integer.parseInt(tableCoordinate.charAt(1)+"");
+
             switch (currentPlayer){
                 case PLAYER1:
                     bigTable[i][j].setState(Index.STATE.PLAYER1);
@@ -297,9 +311,20 @@ public class GameTable extends Fragment {
             }
 
             //TODO: if player won small table check if play won big table.
+            //if player won big table
+            message+=this.getString(R.string.gamestatus)+" "+this.getString(R.string.gamestatuswon);
+            //If player didn't win big table
+            message+=this.getString(R.string.gamestatus)+" "+this.getString(R.string.gamestatuscontinue);
+
         }
         //TODO: If play didn't win small table check if this table is tied.
             //TODO if table is tied check if big table is also tied.
+
+
+        Bundle messageBundle = new Bundle();
+        messageBundle.putString("message",message);
+        sendBundle.putBundle(myActivity.getString(R.string.asyncmessagebundle),messageBundle);
+        myActivity.getContentResolver().requestSync(MainTicTacToeActivity.createSyncAccount(myActivity),MainTicTacToeActivity.AUTHORITY,sendBundle);
 
 
         switch(currentPlayer){
@@ -457,28 +482,51 @@ public class GameTable extends Fragment {
         @Override
         protected Object doInBackground(String... params) {
             //DBManager dbManager = GameTable.this.getActivity().getContentResolver();
-            for(int i = 0; i < bigTable.length; i++){
-                for(int j = 0; j < bigTable[i].length;j++){
-                    String coordinates = ""+i+""+j;
-                    switch(bigTable[i][j].getState()){
-                        case PLAYER1:
-                            //dbManager.insert(coordinates,0,rows[i][j],params[0]);
-                            DBManager.CPHandler.insert(GameTable.this.getActivity(),dbObserver, coordinates, 0, rows[i][j], params[0]);
-                            break;
-                        case PLAYER2:
-                            //dbManager.insert(coordinates,1,rows[i][j],params[0]);
-                            DBManager.CPHandler.insert(GameTable.this.getActivity(),dbObserver,coordinates, 1, rows[i][j], params[0]);
-                            break;
 
-                        case NONE:
-                            //dbManager.insert(coordinates,-1,rows[i][j],params[0]);
-                            DBManager.CPHandler.insert(GameTable.this.getActivity(),dbObserver,coordinates, -1, rows[i][j], params[0]);
-                            break;
-                    }
+            if(params.length == 2){
+                String coordinates = params[1];
+                int i = Integer.parseInt(coordinates.charAt(0)+"");
+                int j = Integer.parseInt(coordinates.charAt(1)+"");
+                switch(bigTable[i][j].getState()){
+                    case PLAYER1:
+                        DBManager.CPHandler.updateTable(GameTable.this.getActivity(),dbObserver,coordinates,0,rows[i][j],params[0]);
+                        break;
+                    case PLAYER2:
+                        DBManager.CPHandler.updateTable(GameTable.this.getActivity(),dbObserver,coordinates,1,rows[i][j],params[0]);
+                        break;
+                    case NONE:
+                        DBManager.CPHandler.updateTable(GameTable.this.getActivity(),dbObserver,coordinates,-1,rows[i][j],params[0]);
+                        break;
 
                 }
+
+
             }
 
+           else{
+                for(int i = 0; i < bigTable.length; i++){
+                    for(int j = 0; j < bigTable[i].length;j++){
+                        String coordinates = ""+i+""+j;
+                        switch(bigTable[i][j].getState()){
+                            case PLAYER1:
+                                //dbManager.insert(coordinates,0,rows[i][j],params[0]);
+                                DBManager.CPHandler.insert(GameTable.this.getActivity(),dbObserver, coordinates, 0, rows[i][j], params[0],params[1]);
+                                break;
+                            case PLAYER2:
+                                //dbManager.insert(coordinates,1,rows[i][j],params[0]);
+                                DBManager.CPHandler.insert(GameTable.this.getActivity(),dbObserver,coordinates, 1, rows[i][j], params[0],params[1]);
+                                break;
+
+                            case NONE:
+                                //dbManager.insert(coordinates,-1,rows[i][j],params[0]);
+                                DBManager.CPHandler.insert(GameTable.this.getActivity(),dbObserver,coordinates, -1, rows[i][j], params[0],params[1]);
+                                break;
+                        }
+
+                    }
+                }
+
+            }
             return null;
         }
     }

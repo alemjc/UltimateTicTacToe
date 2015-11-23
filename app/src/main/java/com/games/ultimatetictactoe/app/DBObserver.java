@@ -25,5 +25,7 @@ public class DBObserver extends ContentObserver {
     @Override
     public void onChange(boolean selfChange, Uri uri) {
         super.onChange(selfChange, uri);
+
     }
+
 }
