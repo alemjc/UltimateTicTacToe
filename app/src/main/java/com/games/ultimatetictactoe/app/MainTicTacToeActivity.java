@@ -2,25 +2,38 @@ package com.games.ultimatetictactoe.app;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 
+import java.net.URI;
 
-public class MainTicTacToeActivity extends FragmentActivity {
+
+public class MainTicTacToeActivity extends FragmentActivity implements GameIntroFragment.OnGameIntroInteractionListener, ItemFragment.OnGameListFragmentInteractionListener {
     public static final String AUTHORITY = "com.games.ultimatetictactoe.app.DBManager";
     public static final String ACCOUNTTYPE = "authentication.com";
     public static final String ACCOUNT = "dummyAccount";
     private static final int GOOGLEAPPSERVICESREQUEST=0x001;
+    private static final String LISTTOTABLE = "listtotable";
+    private static final String INTROTOLIST = "introToList";
+    private static final String INTROFRAGMENT = "intro";
 
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +46,14 @@ public class MainTicTacToeActivity extends FragmentActivity {
 
 
         Account account = createSyncAccount(this);
+        FragmentManager fragmentManager = getFragmentManager();
+        GameIntroFragment gameIntroFragment = new GameIntroFragment();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.space,gameIntroFragment,INTROFRAGMENT);
+        fragmentTransaction.commit();
+
+
+
 
     }
 
@@ -91,5 +112,55 @@ public class MainTicTacToeActivity extends FragmentActivity {
         }
 
         return super.onOptionsItemSelected(item);
+
     }
+
+    @Override
+    public void onGameListFragmentInteraction(String content) {
+        String gameOpponent[] = content.split(" ");
+        GameTable gameTable = GameTable.newInstance(gameOpponent[0],gameOpponent[1]);
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment fragment = fragmentManager.findFragmentByTag(INTROTOLIST);
+        if(fragment != null){
+            fragmentTransaction.remove(fragment);
+            fragmentTransaction.commit();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(gameTable,LISTTOTABLE);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+
+    }
+
+    @Override
+    public void onIntroInteraction(String usersChoice) {
+        if(usersChoice.equals(NEWGAME)){
+            ItemFragment itemFragment = ItemFragment.newInstance(ItemFragment.NEWGAME);
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.add(itemFragment,INTROTOLIST);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+
+        }
+        else if(usersChoice.equals(CONTINUE)){
+            ItemFragment itemFragment = ItemFragment.newInstance(ItemFragment.CONTINUE);
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.add(itemFragment,INTROTOLIST);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+
+
+        }
+        else if(usersChoice.equals(INVITATIONS)){
+            AcceptDeclineFragment acceptDeclineFragment = AcceptDeclineFragment.newInstance();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.add(acceptDeclineFragment,null);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+    }
+
+
+
 }

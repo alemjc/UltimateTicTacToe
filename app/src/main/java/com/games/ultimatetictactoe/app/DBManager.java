@@ -18,7 +18,9 @@ public class DBManager extends ContentProvider {
     public static final String TABLENAME="tablerepresentation";
     public static final String GAMETABLENAME="gametable";
     public static final String GAMETABLE_OPPONENTS_COLUMN = "opponent";
+    public static final String GAMETABLE_STATE = "gameState";
     public static final String GAMETABLE_GAME_COLUMN = "gameName";
+    public static final String GAMETABLE_CURRENTTURN_COLUMN = "currentTurn";
     private static final int VERSION = 1;
     private static final String id="_id";
     public static final String TABLE_COORDINATES_COLUMN = "tablecoordinate";
@@ -28,6 +30,8 @@ public class DBManager extends ContentProvider {
     public static final Uri CONTENTURI = Uri.parse("content://com.games.ultmatetictactoe.app.DBManager/"+DATABASENAME);
     private static final int TICTACTOETABLE = 1;
     private static final int TICTACTOEGAMENAME = 2;
+
+
 
     private SQLiteDatabase db;
     private SQLHelper sqlHelper;
@@ -117,18 +121,33 @@ public class DBManager extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+
+        int affectedRows = 0;
+        switch(uriMatcher.match(uri)){
+            case TICTACTOETABLE:
+                //TODO: Not implemented yet.
+                break;
+            case TICTACTOEGAMENAME:
+                affectedRows = db.delete(GAMETABLENAME,selection,selectionArgs);
+                break;
+        }
+
+        return affectedRows;
+
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        int affectedRows = 0;
         switch(uriMatcher.match(uri)){
             case TICTACTOETABLE:
-                return db.update(TABLENAME,values,selection,selectionArgs);
-
-            default:
-                return -1;
+                affectedRows = db.update(TABLENAME,values,selection,selectionArgs);
+                break;
+            case TICTACTOEGAMENAME:
+                affectedRows = db.update(GAMETABLENAME,values,selection,selectionArgs);
         }
+
+        return affectedRows;
     }
 
     @Override
@@ -228,6 +247,8 @@ public class DBManager extends ContentProvider {
             db.execSQL("CREATE TABLE IF NOT EXISTS "+GAMETABLENAME+"( "+id+" INTEGER INCREMENTS PRIMARY KEY, "+
                                                                         GAMETABLE_GAME_COLUMN+ " VARCHAR(100), "+
                                                                         GAMETABLE_OPPONENTS_COLUMN+" VARCHAR(400), "+
+                                                                        GAMETABLE_STATE+" INTEGER, "+
+                                                                        GAMETABLE_CURRENTTURN_COLUMN+" INTEGER "+
                                                                         "FOREIGN KEY ("+GAME_NAME_COLUMN+")"+" REFERENCES "+
                                                                         TABLENAME+"("+GAME_NAME_COLUMN+")"+ " ON DELETE CASCADE);");
 
@@ -246,7 +267,7 @@ public class DBManager extends ContentProvider {
 
         private CPHandler(){};
 
-        public static Uri[] insert(Context c,ContentObserver observer, String tableCoordinates,int tableState, String row,String gameName,String opponentsMailID ){
+        public static Uri insert(Context c,ContentObserver observer, String tableCoordinates,int tableState, String row,String gameName){
             ContentValues contentValues = new ContentValues();
             contentValues.put(GAME_NAME_COLUMN,gameName);
             contentValues.put(TABLE_STATE_COLUMN,tableState);
@@ -256,19 +277,107 @@ public class DBManager extends ContentProvider {
             Uri uri = Uri.parse(CONTENTURI.toString()+"/"+TABLENAME);
 
             //return db.insert(TABLENAME,null,contentValues);
-            Uri returnedUris[] = new Uri[2];
-            returnedUris[0] = c.getContentResolver().insert(uri,contentValues);
 
-            contentValues.clear();
-            contentValues.put(GAMETABLE_GAME_COLUMN,gameName);
-            contentValues.put(GAMETABLE_OPPONENTS_COLUMN,opponentsMailID);
-            uri = Uri.parse(CONTENTURI.toString()+"/"+GAMETABLENAME);
-            returnedUris[1] = c.getContentResolver().insert(uri,contentValues);
+            Uri returnedUri = c.getContentResolver().insert(uri,contentValues);
+
 
             //c.getContentResolver().notifyChange(returnedUri,observer);
-            return returnedUris;
+            return returnedUri;
 
         }
+
+
+        public static Uri insertGameName(Context c, String gameName,String opponentsMailID, int state, int currentTurn){
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GAMETABLE_GAME_COLUMN,gameName);
+            contentValues.put(GAMETABLE_OPPONENTS_COLUMN,opponentsMailID);
+            contentValues.put(GAMETABLE_STATE,state);
+            contentValues.put(GAMETABLE_CURRENTTURN_COLUMN,currentTurn);
+            Uri uri = Uri.parse(CONTENTURI.toString()+"/"+GAMETABLENAME);
+            Uri returnUri = c.getContentResolver().insert(uri,contentValues);
+            return returnUri;
+        }
+
+        public static int getCurrentTurn(Context c, String gameName, String opponentsID){
+            int returnInt = 0;
+            ContentResolver contentResolver = c.getContentResolver();
+            Uri uri = Uri.parse(CONTENTURI.toString()+"/"+GAMETABLENAME);
+            Cursor cursor = contentResolver.query(uri,new String[]{GAMETABLE_CURRENTTURN_COLUMN},GAMETABLE_GAME_COLUMN+"= ?"
+                                                +" AND "+GAMETABLE_OPPONENTS_COLUMN+" = ?", new String[]{gameName,opponentsID},
+                                                null,null);
+            cursor.moveToFirst();
+            returnInt = cursor.getInt(0);
+            cursor.close();
+
+            return returnInt;
+        }
+
+        public static String[][] getGameNamesWithOpponentsWithState(Context c, int state){
+
+            String returnGames [][] = null;
+
+            Uri uri = Uri.parse(CONTENTURI.toString()+"/"+GAMETABLENAME);
+            Cursor cursor = c.getContentResolver().query(uri,new String[]{GAMETABLE_GAME_COLUMN,GAMETABLE_OPPONENTS_COLUMN}
+                                                        ,GAMETABLE_STATE+" =? ",new String[]{state+""},null);
+            cursor.moveToFirst();
+            returnGames = new String[cursor.getCount()][2];
+            int index = 0;
+            while(!cursor.isAfterLast()){
+                returnGames[index][0] = cursor.getString(0);
+                returnGames[index][1] = cursor.getString(1);
+                index++;
+            }
+            cursor.close();
+
+            return returnGames;
+        }
+
+        public static int removeGame(Context c, String gameName){
+            Uri uri = Uri.parse(CONTENTURI+"/"+GAMETABLENAME);
+            int affectedRows = c.getContentResolver().delete(uri,GAMETABLE_GAME_COLUMN+" = ?", new String[]{gameName});
+
+            return affectedRows;
+        }
+
+        public static int updateCurrentPLayer(Context c, String gameName, String opponentID, int currentPlayer){
+            Uri uri = Uri.parse(CONTENTURI.toString()+"/"+GAMETABLENAME);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GAMETABLE_CURRENTTURN_COLUMN,currentPlayer);
+
+
+            int affectedRows = c.getContentResolver().update(uri, contentValues,GAMETABLE_GAME_COLUMN+" = ?"
+                                                                                +" AND "+GAMETABLE_OPPONENTS_COLUMN+" = ?",
+                                                                    new String[]{gameName,opponentID});
+            return affectedRows;
+        }
+
+        public static int updateGameState(Context c, String gameName, int state){
+            Uri uri = Uri.parse(CONTENTURI+"/"+GAMETABLENAME);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(GAMETABLE_STATE,state);
+            int affectedRows = c.getContentResolver().update(uri,contentValues,GAMETABLE_GAME_COLUMN+" = ?",new String[]{gameName});
+            return affectedRows;
+        }
+
+        public static String[] getGameNamesWithState(Context c, int state){
+            Uri uri = Uri.parse(CONTENTURI+"/"+GAMETABLENAME);
+
+            Cursor cursor = c.getContentResolver().query(uri,new String[]{GAMETABLE_GAME_COLUMN},GAMETABLE_STATE+" =?"
+                                                                                            ,new String[]{""+state},null);
+            cursor.moveToFirst();
+            String[] gameNames = new String[cursor.getCount()];
+            int count = 0;
+            while(!cursor.isAfterLast()){
+                gameNames[count] = cursor.getString(0);
+                count++;
+            }
+
+            cursor.close();
+
+            return gameNames;
+
+        }
+
 
         public static int updateTable(Context c,ContentObserver observer,String tableCoordinates,int tableState,String row, String gameName){
 
@@ -281,7 +390,7 @@ public class DBManager extends ContentProvider {
             ContentResolver contentResolver = c.getContentResolver();
             int numUpdated = contentResolver.update(uri, contentValues, selection, new String[]{tableCoordinates, gameName});
             if(numUpdated > 0){
-                //contentResolver.notifyChange(uri,observer);
+                contentResolver.notifyChange(uri,observer);
             }
 
             return numUpdated;
@@ -292,8 +401,8 @@ public class DBManager extends ContentProvider {
             ContentResolver contentResolver = c.getContentResolver();
 
             //Cursor c = db.rawQuery("SELECT "+GAME_NAME_COLUMN+" FROM "+TABLENAME+";",null);
-            Uri contentUri = Uri.parse(CONTENTURI.toString()+"/"+TABLENAME);
-            Cursor cursor = contentResolver.query(contentUri,new String[]{GAME_NAME_COLUMN}, null,null,null);
+            Uri contentUri = Uri.parse(CONTENTURI.toString()+"/"+GAMETABLENAME);
+            Cursor cursor = contentResolver.query(contentUri,new String[]{GAMETABLE_GAME_COLUMN}, null,null,null);
             cursor.moveToFirst();
             String [] gameNames = new String[cursor.getCount()];
 
@@ -309,6 +418,26 @@ public class DBManager extends ContentProvider {
             return gameNames;
         }
 
+        public static String[][] getSavedGamesWithOpponents(Context c){
+            ContentResolver contentResolver = c.getContentResolver();
+
+            Uri contentUri = Uri.parse(CONTENTURI.toString()+"/"+GAMETABLENAME);
+            Cursor cursor = contentResolver.query(contentUri,new String[]{GAMETABLE_OPPONENTS_COLUMN,GAMETABLE_GAME_COLUMN},
+                    null,null,null);
+
+            cursor.moveToFirst();
+            String returnValues[][] = new String[cursor.getCount()][2];
+            int index = 0;
+            while(!cursor.isAfterLast()){
+                returnValues[index][0] = cursor.getString(0);
+                returnValues[index][1] = cursor.getString(1);
+                index++;
+            }
+            cursor.close();
+
+            return returnValues;
+        }
+
         public static String getOpponentsMailID(Context c, String gameName){
 
             Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+GAMETABLENAME);
@@ -318,6 +447,8 @@ public class DBManager extends ContentProvider {
 
             cursor.moveToFirst();
             String mailID = cursor.getString(0);
+
+            cursor.close();
 
 
             return mailID;

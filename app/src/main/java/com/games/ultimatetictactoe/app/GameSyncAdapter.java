@@ -39,34 +39,64 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
         String subject = extras.getString(getContext().getString(R.string.asyncBundlesubject),"NONE");
         int messageid = sharedPreferences.getInt(MESSAGE_ID,0);
         Bundle msgbundle = extras.getBundle(getContext().getString(R.string.asyncmessagebundle));
+        String message = msgbundle.getString("message");
+        String messageSplit[] = message.split("\n");
+        String gameName = messageSplit[0];
+        String purpose = messageSplit[1];
 
-        if(subject.equals(getContext().getString(R.string.gamerequest))){
-            //TODO: what to do if a user makes a game request.
-        }
+        if (subject.equals(getContext().getString(R.string.asyncreceivesubjecttype))) {
 
 
-        else if (subject.equals(getContext().getString(R.string.asyncreceivesubjecttype))) {
-
-            String message = msgbundle.getString("message");
-            String messageSplit[] = message.split("\n");
-            String gameName = messageSplit[0];
-            String purpose = messageSplit[1];
             String from = extras.getString("from");
 
+            if(purpose.equals(getContext().getString(R.string.gamerequest))){
+                DBManager.CPHandler.insertGameName(getContext(),gameName,from,
+                        getContext().getResources().getInteger(R.integer.gamestateawaitingacceptance),
+                        getContext().getResources().getInteger(R.integer.myTurn));
+                String initialRowStates = "-1,-1,-1,-1,-1,-1,-1,-1,-1";
+                for(int i = 0; i < 3; i++){
+                    for(int j = 0; j < 3; j++){
+                        DBManager.CPHandler.insert(getContext(),null,i+","+j,-1,initialRowStates,gameName);
+                    }
+                }
+            }
+            else if(purpose.equals(getContext().getString(R.string.acceptgamerequest))){
+                DBManager.CPHandler.updateGameState(getContext(),gameName,getContext().getResources().
+                                                                                getInteger(R.integer.gamestateongoing));
+                DBManager.CPHandler.updateCurrentPLayer(getContext(),gameName,from,
+                        getContext().getResources().getInteger(R.integer.myTurn));
+            }
+            else if(purpose.equals(getContext().getString(R.string.rejectgamerequest))){
+                DBManager.CPHandler.removeGame(getContext(),gameName);
+            }
 
-            String move[] = purpose.split("()");
-            if (move.length != 3) return;
-            String coordinates = move[0];
-            String state = move[1];
-            String row = move[2];
-            DBManager.CPHandler.updateTable(getContext(), null, coordinates, Integer.parseInt(state), row, gameName);
+            else {
 
+                String move[] = purpose.split("()");
+                if (move.length != 3) return;
+                String coordinates = move[0];
+                String state = move[1];
+                String row = move[2];
+                DBManager.CPHandler.updateTable(getContext(), null, coordinates, Integer.parseInt(state), row, gameName);
+            }
 
         }
         else if(subject.equals(getContext().getString(R.string.asyncsendsubjecttype))){
             String to = extras.getString("to");
             SharedPreferences.Editor editor = sharedPreferences.edit();
             GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(getContext());
+            if(purpose.equals(getContext().getString(R.string.gamerequest))){
+                DBManager.CPHandler.insertGameName(getContext(),gameName,to,
+                        getContext().getResources().getInteger(R.integer.gamestateawaitingrequest),getContext().getResources().getInteger(R.integer.opponentsTurn));
+                String initialRowStates = "-1,-1,-1,-1,-1,-1,-1,-1,-1";
+                for(int i = 0; i < 3; i++){
+                    for(int j = 0; j < 3; j++){
+                        DBManager.CPHandler.insert(getContext(),null,i+","+j,-1,initialRowStates,gameName);
+                    }
+                }
+            }
+
+
             try {
                 gcm.send(to + "@gcm.googleapis.com", messageid + "", msgbundle);
             }
