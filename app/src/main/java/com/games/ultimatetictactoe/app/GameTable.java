@@ -395,8 +395,19 @@ public class GameTable extends Fragment {
                 for(int j = 0; j < row.length; j++){
                     View v = gL.getChildAt(j);
                     int state = Integer.parseInt(row[j]);
-                    if(state != -1)
-                        v.setTag(TILEPLAYERSKEY,state);
+                    // change view background based on the state
+                    switch(state){
+                        case 0:
+                            //change background to O.
+                            break;
+                        case 1:
+                            //change background to 1.
+                            break;
+                        case -1:
+                            //background is empty.
+                            break;
+                    }
+                    v.setTag(TILEPLAYERSKEY,state);
                     //TODO: change picture of the view based on the state.
                 }
 
