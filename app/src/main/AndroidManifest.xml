@@ -26,11 +26,12 @@
         </activity>
 
         <provider
-            android:name=".DBManager"
-            android:authorities="com.games.ultimatetictactoe.app.DBManager"
-            android:exported="false"
-            android:grantUriPermissions="true"
-            android:syncable="true" />
+            android:authorities="com.games.ultimatetictactoe.app.DB"
+            android:name="com.games.ultimatetictactoe.app.DBManager"
+            android:exported="true"
+            >
+
+        </provider>
 
         <service android:name=".AuthenticatorService" >
             <intent-filter>

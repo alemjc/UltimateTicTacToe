@@ -16,7 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import com.games.ultimatetictactoe.app.dummy.GameContent;
+import com.games.ultimatetictactoe.app.content.GameContent;
 
 /**
  * A fragment representing a list of Items.
@@ -30,7 +30,6 @@ import com.games.ultimatetictactoe.app.dummy.GameContent;
 public class AcceptDeclineFragment extends Fragment implements AbsListView.OnItemClickListener {
 
 
-    private OnFragmentInteractionListener mListener;
 
     /**
      * The fragment's ListView/GridView.
@@ -88,28 +87,23 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
-            mListener = (OnFragmentInteractionListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final int pos = position;
-        if (null != mListener) {
+        final Context context = getContext();
+        if (null != context) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder((Activity)mListener);
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
             alertDialogBuilder.setMessage("Would you like to accept friend's invitation").
                     setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                 @Override
@@ -127,7 +121,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_ACCEPT_REQUEST);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME,gameName);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID,msgID);
-                                    ((Activity)mListener).startService(intent);
+                                    (context).startService(intent);
                                 }
                             }
                     ).setNegativeButton("Reject", new DialogInterface.OnClickListener() {
@@ -146,7 +140,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_REJECT_REQUEST);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME, gameName);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID, msgID);
-                                    ((Activity) mListener).startService(intent);
+                                    (context).startService(intent);
                                 }
                     }).create().show();
         }
@@ -191,9 +185,10 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
         @Override
         protected void onPostExecute(String[][] strings) {
             super.onPostExecute(strings);
-
-            for(int i = 0; i < strings.length; i++){
-                GameContent.addItem(new GameContent.GameItem(strings[i][0],"",strings[i][1]));
+            if(strings != null) {
+                for (int i = 0; i < strings.length; i++) {
+                    GameContent.addItem(new GameContent.GameItem(strings[i][0], "", strings[i][1]));
+                }
             }
 
             // TODO: Change Adapter to display your content

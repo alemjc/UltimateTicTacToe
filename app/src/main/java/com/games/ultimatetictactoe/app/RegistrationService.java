@@ -4,6 +4,9 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.telephony.TelephonyManager;
+import android.widget.Toast;
+import com.firebase.client.Firebase;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
 
@@ -11,18 +14,18 @@ import com.google.android.gms.iid.InstanceID;
  * Created by alemjc on 11/17/15.
  */
 public class RegistrationService extends IntentService {
-
+    private Context context;
     public RegistrationService(){
         this(null);
     }
     public RegistrationService(String name) {
         super(name);
+        context = getApplicationContext();
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         SharedPreferences preferences = this.getSharedPreferences(MainTicTacToeActivity.class.getName(), Context.MODE_PRIVATE);
-        Context context = getApplicationContext();
         String defaultSenderID = context.getString(R.string.gcm_defaultSenderId);
         InstanceID instanceID = InstanceID.getInstance(this);
         SharedPreferences.Editor editor = preferences.edit();
@@ -37,6 +40,12 @@ public class RegistrationService extends IntentService {
 
             }
 
+            else{
+                Toast.makeText(context,"Unable to register to server",Toast.LENGTH_LONG);
+            }
+
+
+
         }
         catch(java.io.IOException e){
             editor.putBoolean(tokenSentKey,false);
@@ -45,11 +54,25 @@ public class RegistrationService extends IntentService {
 
 
 
+
     }
 
 
     private boolean sendRegistrationTokenToServer(String token){
         //TODO: send registration token to our database server.
-        return false;
+
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String phoneNumber = telephonyManager.getLine1Number();
+
+        if(phoneNumber != null) {
+            Firebase firebaseRef = new Firebase(context.getString(R.string.fireBaseDB));
+            Firebase usersRef = firebaseRef.child("users");
+            usersRef.child(phoneNumber).setValue(token);
+            return true;
+        }
+        else {
+
+            return false;
+        }
     }
 }

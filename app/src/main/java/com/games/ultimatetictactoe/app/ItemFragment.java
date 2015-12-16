@@ -2,9 +2,13 @@ package com.games.ultimatetictactoe.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.provider.ContactsContract;
+import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +19,14 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 
-import com.games.ultimatetictactoe.app.dummy.GameContent;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.games.ultimatetictactoe.app.content.GameContent;
+
+import java.util.Calendar;
+import java.util.HashMap;
 
 /**
  * A fragment representing a list of Items.
@@ -31,8 +42,11 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
+    private Firebase fB;
+    private HashMap<String,String> otherUsers;
     public static String NEWGAME = "new game";
     public static String CONTINUE = "continue";
+
 
 
     // TODO: Rename and change types of parameters
@@ -51,6 +65,34 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
      * Views.
      */
     private ListAdapter mAdapter;
+
+
+    private ValueEventListener valueEventListener = new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            TelephonyManager telephonyManager = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+            String phoneNumber = telephonyManager.getLine1Number();
+
+            if(phoneNumber == null){
+                //TODO: show user an informative message.
+                return;
+            }
+
+            for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                if(!dataSnapshot1.getKey().equals(phoneNumber)){
+                    otherUsers.put(dataSnapshot1.getKey(),(String)dataSnapshot1.getValue());
+                }
+            }
+
+            new ContactsAsyncTask().execute((String[])(otherUsers.keySet().toArray()));
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+            //TODO: show user an informative message.
+        }
+    };
 
     // TODO: Rename and change types of parameters
     public static ItemFragment newInstance(String param1) {
@@ -71,15 +113,19 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        fB = new Firebase(getContext().getString(R.string.fireBaseDB));
+        otherUsers = new HashMap<>();
+
+
 
         if (getArguments() != null) {
 
             usersChoice = getArguments().getString(ARG_PARAM1);
             if(usersChoice.equals(NEWGAME)){
-
+                fB.addValueEventListener(valueEventListener);
             }
             else if(usersChoice.equals(CONTINUE)){
-                new localAsyncTask().execute(new Object());
+                new LocalAsyncTasks().execute(new Object());
             }
 
         }
@@ -95,8 +141,10 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
 
         // Set the adapter
         mListView = (AbsListView) view.findViewById(android.R.id.list);
+        View emptyView = view.findViewById(android.R.id.empty);
         //(mListView).setAdapter(mAdapter);
-        setEmptyText("List is empty");
+        mListView.setEmptyView(emptyView);
+
 
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
@@ -132,6 +180,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                 Bundle extra = new Bundle();
                 extra.putString("to",GameContent.ITEMS.get(position).id);
                 extra.putString(mActivity.getString(R.string.asyncBundlesubject),mActivity.getString(R.string.asyncsendsubjecttype));
+                extra.putString(getContext().getString(R.string.asyncusername),GameContent.ITEMS.get(position).userName);
                 Bundle msgBundle = new Bundle();
                 msgBundle.putString("message",GameContent.ITEMS.get(position).gameName+"\n"+mActivity.getString(R.string.gamerequest));
                 extra.putBundle(mActivity.getString(R.string.asyncmessagebundle),msgBundle);
@@ -170,24 +219,91 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         void onGameListFragmentInteraction(String content);
     }
 
-    private class localAsyncTask extends AsyncTask<Object,Object,String[][]>{
+    private class ContactsAsyncTask extends AsyncTask<String,Object, Cursor>{
+        private final String SELECTION = ContactsContract.Data.MIMETYPE+ "= ?"+" AND "+ContactsContract.Data.DATA1 +"in ?";
+        private final String[] PROJECTION = {ContactsContract.Data.DATA1,ContactsContract.Contacts.DISPLAY_NAME};
         @Override
-        protected String[][] doInBackground(Object... params) {
-            Context c = (Context)mListener;
-            return DBManager.CPHandler.getGameNamesWithOpponentsWithState(c,c.getResources().getInteger(R.integer.gamestateongoing));
-        }
+        protected void onPostExecute(Cursor cursor) {
+            super.onPostExecute(cursor);
 
-        @Override
-        protected void onPostExecute(String[][] strings) {
-            super.onPostExecute(strings);
+            if(cursor == null || cursor.getCount() <= 0){
+                cursor.close();
+                setEmptyText("List is empty");
+                return;
+            }
 
-            for(int i = 0; i < strings.length; i++){
-                GameContent.addItem(new GameContent.GameItem(strings[i][0],"",strings[i][1]));
+            cursor.moveToFirst();
+            while(!cursor.isAfterLast()){
+                String number = cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DATA1));
+                String msgID = otherUsers.get(number);
+                String displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                Calendar calendar = Calendar.getInstance();
+                GameContent.addItem(new GameContent.GameItem(msgID,displayName,calendar.getTimeInMillis()+""));
             }
 
             mAdapter = new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
             mListView.setAdapter(mAdapter);
+
+            cursor.close();
+
+
+        }
+
+        @Override
+        protected void onProgressUpdate(Object... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected Cursor doInBackground(String... params) {
+
+            if(params == null){
+                return null;
+            }
+            String numbers = "(";
+
+            for(String n: params){
+                numbers+="'"+n+"'"+",";
+
+            }
+
+            numbers = numbers.substring(0,numbers.length()-1);
+            numbers+=")";
+
+
+            return getContext().getContentResolver().query(ContactsContract.Data.CONTENT_URI,PROJECTION,SELECTION,
+                    new String[]{ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE,numbers},null);
+        }
+    }
+
+
+
+    private class LocalAsyncTasks extends AsyncTask<Object,Object,String[][]>{
+        @Override
+        protected String[][] doInBackground(Object... params) {
+            Context c = (Context)mListener;
+            Uri uri = Uri.parse(DBManager.CONTENTURI.toString());
+            return CPHandler.getGameNamesWithOpponentsWithState(c,c.getContentResolver().acquireContentProviderClient(uri)
+                    ,c.getResources().getInteger(R.integer.gamestateongoing));
+        }
+
+        @Override
+        protected void onPostExecute(String[][] strings) {
+            super.onPostExecute(strings);
+            if(strings != null && strings.length > 0) {
+                for (int i = 0; i < strings.length; i++) {
+                    GameContent.addItem(new GameContent.GameItem(strings[i][0], strings[i][1], strings[i][2]));
+                }
+                mAdapter = new ArrayAdapter<>(getActivity(),
+                        android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
+                mListView.setAdapter(mAdapter);
+            }
+            else{
+                setEmptyText("List is empty");
+            }
+
+
         }
     }
 

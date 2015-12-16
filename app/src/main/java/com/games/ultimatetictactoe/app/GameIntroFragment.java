@@ -1,6 +1,7 @@
 package com.games.ultimatetictactoe.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -110,12 +111,12 @@ public class GameIntroFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         try {
-            mListener = (OnGameIntroInteractionListener) activity;
+            mListener = (OnGameIntroInteractionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
+            throw new ClassCastException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
     }
@@ -150,7 +151,8 @@ public class GameIntroFragment extends Fragment {
         protected Boolean doInBackground(Object... params) {
             String gameNames[] = DBManager.CPHandler.getGameNamesWithState(getActivity(),
                     getResources().getInteger(R.integer.gamestateawaitingacceptance));
-            return (gameNames.length > 0)? true:false;
+
+            return (gameNames != null && gameNames.length > 0)? true:false;
         }
 
         @Override

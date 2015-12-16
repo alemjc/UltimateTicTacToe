@@ -21,6 +21,8 @@
     <string name="asyncmessagebundle">asyncmessagebundle</string>
     <string name="asyncsendsubjecttype">send</string>
     <string name="asyncreceivesubjecttype">receive</string>
+    <string name="asyncusername">username</string>
+    <string name="asyncphonenumber">phone</string>
     <string name="newgame">New Game</string>
     <string name="continuegame">Continue</string>
     <string name="rules">Rules</string>
@@ -28,6 +30,9 @@
 
     <string name="acceptbuttontext">Accept</string>
     <string name="declinebuttontext">Decline</string>
+
+
+    <string name="fireBaseDB">https://ultimatetictactoeapp.firebaseio.com/</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

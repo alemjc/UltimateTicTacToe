@@ -1,4 +1,4 @@
-package com.games.ultimatetictactoe.app.dummy;
+package com.games.ultimatetictactoe.app.content;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class GameContent {
 
         @Override
         public String toString() {
-            return userName+" "+gameName;
+            return userName;
         }
     }
 }
