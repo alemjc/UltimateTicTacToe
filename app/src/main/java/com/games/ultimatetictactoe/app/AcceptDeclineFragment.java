@@ -178,7 +178,8 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
         @Override
         protected String[][] doInBackground(Object... params) {
             Activity mActivity = getActivity();
-            return DBManager.CPHandler.getGameNamesWithOpponentsWithState(mActivity,mActivity.getResources()
+            return CPHandler.getGameNamesWithOpponentsWithState(mActivity,mActivity.getContentResolver().
+                    acquireContentProviderClient(DBManager.CONTENTURI),mActivity.getResources()
                                                                     .getInteger(R.integer.gamestateawaitingacceptance));
         }
 

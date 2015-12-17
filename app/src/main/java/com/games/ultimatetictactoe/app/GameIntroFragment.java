@@ -1,6 +1,7 @@
 package com.games.ultimatetictactoe.app;
 
 import android.app.Activity;
+import android.content.ContentProvider;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
@@ -149,7 +150,9 @@ public class GameIntroFragment extends Fragment {
     private class GameInvitationsCounter extends AsyncTask<Object,Object,Boolean> {
         @Override
         protected Boolean doInBackground(Object... params) {
-            String gameNames[] = DBManager.CPHandler.getGameNamesWithState(getActivity(),
+            Context c = getActivity();
+            String gameNames[] = CPHandler.getGameNamesWithState(c,c.getContentResolver().
+                    acquireContentProviderClient(DBManager.CONTENTURI),
                     getResources().getInteger(R.integer.gamestateawaitingacceptance));
 
             return (gameNames != null && gameNames.length > 0)? true:false;

@@ -31,8 +31,10 @@ public class AcceptOrRejectRequestService extends IntentService {
      */
     // TODO: Customize helper method
     private static void startActionAcceptRequest(Context context, String gameName,String msgID) {
-        DBManager.CPHandler.updateGameState(context,gameName,context.getResources().getInteger(R.integer.gamestateongoing));
-        DBManager.CPHandler.updateCurrentPLayer(context,gameName,msgID,context.getResources().getInteger(R.integer.opponentsTurn));
+        CPHandler.updateGameState(context,context.getContentResolver().
+                acquireContentProviderClient(DBManager.CONTENTURI),gameName,context.getResources().getInteger(R.integer.gamestateongoing));
+        CPHandler.updateCurrentPLayer(context,context.getContentResolver().
+                acquireContentProviderClient(DBManager.CONTENTURI),gameName,msgID,context.getResources().getInteger(R.integer.opponentsTurn));
         Bundle bundle = new Bundle();
         bundle.putString(context.getString(R.string.asyncBundlesubject),context.getString(R.string.asyncsendsubjecttype));
         bundle.putString("to",msgID);
@@ -51,7 +53,8 @@ public class AcceptOrRejectRequestService extends IntentService {
      */
     // TODO: Customize helper method
     public static void startActionRejectRequest(Context context, String gameName, String msgID) {
-        DBManager.CPHandler.removeGame(context,gameName);
+        CPHandler.removeGame(context,context.getContentResolver().
+                acquireContentProviderClient(DBManager.CONTENTURI),gameName);
         Bundle bundle = new Bundle();
         bundle.putString(context.getString(R.string.asyncBundlesubject),context.getString(R.string.asyncsendsubjecttype));
         bundle.putString("to",msgID);
