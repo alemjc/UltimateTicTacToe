@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer name="gamestateongoing">0</integer>
+    <integer name="gamestatedone">1</integer>
+    <integer name="gamestateawaitingacceptance">2</integer>
+    <integer name="gamestateawaitingrequest">3</integer>
+    <integer name="myTurn">0</integer>
+    <integer name="opponentsTurn">1</integer>
+
+</resources>
