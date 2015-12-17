@@ -244,7 +244,7 @@ public class GameTable extends Fragment {
         }
         String tableCoordinate= ((String)parent.getTag()).substring(1);
 
-        Activity myActivity = GameTable.this.getActivity();
+        final Activity myActivity = GameTable.this.getActivity();
         //String asyncBundleSubjectKey = myActivity.getString(R.string.asyncBundlesubject);
 
         Bundle sendBundle = new Bundle();
@@ -342,13 +342,16 @@ public class GameTable extends Fragment {
         myActivity.getContentResolver().requestSync(MainTicTacToeActivity.createSyncAccount(myActivity),MainTicTacToeActivity.AUTHORITY,sendBundle);
         ExecutorService executorService = Executors.newFixedThreadPool(1);
 
+
         switch(currentPlayer){
             case 0:
                 currentPlayer = getActivity().getResources().getInteger(R.integer.opponentsTurn);
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
-                        DBManager.CPHandler.updateCurrentPLayer(getActivity(),gameName,opponent,0);
+
+                        CPHandler.updateCurrentPLayer(myActivity,myActivity.getContentResolver().
+                                acquireContentProviderClient(DBManager.CONTENTURI),gameName,opponent,0);
                     }
                 });
 
@@ -358,7 +361,8 @@ public class GameTable extends Fragment {
                 executorService.submit(new Runnable() {
                     @Override
                     public void run() {
-                        DBManager.CPHandler.updateCurrentPLayer(getActivity(),gameName,opponent,1);
+                        CPHandler.updateCurrentPLayer(myActivity,myActivity.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
+                                ,gameName,opponent,1);
                     }
                 });
         }
@@ -433,10 +437,12 @@ public class GameTable extends Fragment {
         @Override
         protected String[][] doInBackground(String... params) {
             String [][]rows = new String[3][3];
-
+            Context c = getContext();
             for(int i = 0; i < bigTable.length;i++){
                 for(int j = 0; j < bigTable[i].length; j++){
-                    int currentTableState = DBManager.CPHandler.getTableState(GameTable.this.getActivity(),i+""+j,params[0]);
+
+                    int currentTableState = CPHandler.getTableState(c,c.getContentResolver().
+                            acquireContentProviderClient(DBManager.CONTENTURI),i+""+j,params[0]);
                     if(currentTableState == 1){
                         bigTable[i][j].setState(Index.STATE.PLAYER2);
                     }
@@ -447,12 +453,15 @@ public class GameTable extends Fragment {
                         bigTable[i][j].setState(Index.STATE.NONE);
                     }
 
-                    rows[i][j] = DBManager.CPHandler.getUnParsedRow(GameTable.this.getActivity(),i+""+j,params[0]);
+                    rows[i][j] = CPHandler.getUnParsedRow(c,c.getContentResolver().
+                            acquireContentProviderClient(DBManager.CONTENTURI)
+                            ,i+""+j,params[0]);
 
                 }
             }
 
-            currentPlayer = DBManager.CPHandler.getCurrentTurn(getActivity(),gameName,opponent);
+            currentPlayer = CPHandler.getCurrentTurn(c,c.getContentResolver().
+                    acquireContentProviderClient(DBManager.CONTENTURI),gameName,opponent);
             return rows;
         }
     }
@@ -524,20 +533,23 @@ public class GameTable extends Fragment {
         @Override
         protected Object doInBackground(String... params) {
             //DBManager dbManager = GameTable.this.getActivity().getContentResolver();
-
+            Context c = getActivity();
             if(params.length == 2){
                 String coordinates = params[1];
                 int i = Integer.parseInt(coordinates.charAt(0)+"");
                 int j = Integer.parseInt(coordinates.charAt(1)+"");
                 switch(bigTable[i][j].getState()){
                     case PLAYER1:
-                        DBManager.CPHandler.updateTable(GameTable.this.getActivity(),dbObserver,coordinates,0,rows[i][j],params[0]);
+                        CPHandler.updateTable(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
+                                ,dbObserver,coordinates,0,rows[i][j],params[0]);
                         break;
                     case PLAYER2:
-                        DBManager.CPHandler.updateTable(GameTable.this.getActivity(),dbObserver,coordinates,1,rows[i][j],params[0]);
+                        CPHandler.updateTable(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
+                                ,dbObserver,coordinates,1,rows[i][j],params[0]);
                         break;
                     case NONE:
-                        DBManager.CPHandler.updateTable(GameTable.this.getActivity(),dbObserver,coordinates,-1,rows[i][j],params[0]);
+                        CPHandler.updateTable(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
+                                ,dbObserver,coordinates,-1,rows[i][j],params[0]);
                         break;
 
                 }

@@ -283,8 +283,8 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         @Override
         protected String[][] doInBackground(Object... params) {
             Context c = (Context)mListener;
-            Uri uri = Uri.parse(DBManager.CONTENTURI.toString());
-            return CPHandler.getGameNamesWithOpponentsWithState(c,c.getContentResolver().acquireContentProviderClient(uri)
+
+            return CPHandler.getGameNamesWithOpponentsWithState(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
                     ,c.getResources().getInteger(R.integer.gamestateongoing));
         }
 
