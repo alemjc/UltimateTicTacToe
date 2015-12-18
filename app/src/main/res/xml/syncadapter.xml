@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sync-adapter
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:contentAuthority="com.games.ultimatetictactoe.app.DB"
+        android:accountType="authentication.com"
+        android:supportsUploading="true"
+        android:isAlwaysSyncable="true"
+        android:userVisible="false"
+        android:allowParallelSyncs="false"
+        >
+
+</sync-adapter>

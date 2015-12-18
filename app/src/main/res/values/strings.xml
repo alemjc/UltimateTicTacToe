@@ -2,6 +2,37 @@
     <string name="app_name">Ultimate Tic Tac Toe</string>
 
     <string name="action_settings">Settings</string>
+    <string name="mail_id">mailId</string>
+    <string name="opponentsmailid">opponentMailId</string>
+    <string name="gcmtempserviceapikey">AIzaSyAQYtxi1tuPmZgOjMGb0HxG3yITFYmcX38</string>
+    <string name="defaultsenderid">424759901695</string>
+    <string name="tokenAcquireAndSent">tokenSent</string>
+    <string name="gamerequest">Start Game Request</string>
+    <string name="rejectgamerequest">Rejected Game Request</string>
+    <string name="acceptgamerequest">Accept Game Request</string>
+    <string name="gamestarted">gamestarted</string>
+    <string name="gamestatus">gamestatus</string>
+    <string name="gamestatuscontinue">continue</string>
+    <string name="gamestatuswon">won</string>
+    <string name="gamestatustied">tied</string>
+    <string name="gamestatuspendingacceptance">pendingacceptance</string>
+    <string name="mygcmtoken">mytoken</string>
+    <string name="asyncBundlesubject">asyncBundleSubject</string>
+    <string name="asyncmessagebundle">asyncmessagebundle</string>
+    <string name="asyncsendsubjecttype">send</string>
+    <string name="asyncreceivesubjecttype">receive</string>
+    <string name="asyncusername">username</string>
+    <string name="asyncphonenumber">phone</string>
+    <string name="newgame">New Game</string>
+    <string name="continuegame">Continue</string>
+    <string name="rules">Rules</string>
+    <string name="invitations">Invitations</string>
+
+    <string name="acceptbuttontext">Accept</string>
+    <string name="declinebuttontext">Decline</string>
+
+
+    <string name="fireBaseDB">https://ultimatetictactoeapp.firebaseio.com/</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

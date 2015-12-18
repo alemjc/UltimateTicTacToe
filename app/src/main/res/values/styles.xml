@@ -5,4 +5,97 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="tile">
+        <item name="android:layout_marginStart">1dp</item>
+        <item name="android:layout_marginEnd">1dp</item>
+        <item name="android:layout_marginTop">1dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+        <item name="android:layout_marginLeft">1dp</item>
+        <item name="android:layout_marginRight">1dp</item>
+    </style>
+
+    <style name="leftTopCornerTable">
+        <item name="android:layout_marginStart">1dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:layout_marginTop">1dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginLeft">1dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+    </style>
+
+    <style name="rightTopCornerTable">
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginEnd">1dp</item>
+        <item name="android:layout_marginTop">1dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">1dp</item>
+    </style>
+
+    <style name="bottomLeftCornerTable">
+        <item name="android:layout_marginStart">1dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+        <item name="android:layout_marginLeft">1dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+    </style>
+
+    <style name="bottomRightCornerTable">
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginEnd">1dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">1dp</item>
+    </style>
+
+    <style name="middleTable">
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+    </style>
+
+    <style name="middleTopTable">
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:layout_marginTop">1dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+    </style>
+
+    <style name="middleBottomTable">
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">1dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+    </style>
+
+    <style name="middleLeftTable">
+        <item name="android:layout_marginStart">1dp</item>
+        <item name="android:layout_marginEnd">5dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginLeft">1dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+    </style>
+
+    <style name="middleRightTable">
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginEnd">1dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">1dp</item>
+    </style>
+
+
+
+
 </resources>
