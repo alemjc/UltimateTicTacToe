@@ -1,0 +1,46 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             tools:context="com.games.ultimatetictactoe.app.GameIntroFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <RelativeLayout android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    >
+        <Button
+                android:id="@+id/newGame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/newgame"
+                />
+        <Button
+                android:id="@+id/continueAGame"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/continuegame"
+                android:layout_below="@id/newGame"
+                android:layout_marginStart="5dp"
+                />
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/gameInvitations"
+                android:text="@string/invitations"
+                android:layout_below="@id/continueAGame"
+                />
+        <Button
+                android:id="@+id/gameRules"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rules"
+                android:layout_below="@id/gameInvitations"
+                android:layout_marginStart="15dp"
+                />
+
+
+    </RelativeLayout>
+
+
+</FrameLayout>
