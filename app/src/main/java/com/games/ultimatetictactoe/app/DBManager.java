@@ -1,14 +1,13 @@
 package com.games.ultimatetictactoe.app;
 
-import android.content.ContentProvider;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.UriMatcher;
+import android.content.*;
+import android.database.ContentObserver;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 import android.net.Uri;
+import android.util.Log;
 
 /**
  * Created by alemjc on 11/8/15.
@@ -17,136 +16,44 @@ import android.net.Uri;
 public class DBManager extends ContentProvider {
 
     public static final String DATABASENAME = "ultimatetictactoe";
-    private static final String TABLENAME="tablerepresentation";
+
+    // GAME Name information
+    public static final String GAMETABLENAME="gametable";
+    public static final String GAMETABLE_OPPONENTSID_COLUMN = "opponent";
+    public static final String GAMETABLE_OPPONENTSUSERNAME_COLUMN = "opponentUsername";
+    public static final String GAMETABLE_STATE = "gameState";
+    public static final String GAMETABLE_GAME_COLUMN = "gameName";
+    public static final String GAMETABLE_CURRENTTURN_COLUMN = "currentTurn";
     private static final int VERSION = 1;
     private static final String id="_id";
+
+    //Game table columns
+    public static final String TABLENAME="tablerepresentation";
     public static final String TABLE_COORDINATES_COLUMN = "tablecoordinate";
     public static final String TABLE_STATE_COLUMN = "statecolumn";
     public static final String TABLE_ROW_COLUMN = "tablerow";
     public static final String GAME_NAME_COLUMN = "gamename";
-    public static final Uri CONTENTURI = Uri.parse("content://com.games.ultmatetictactoe.app.DBManager/"+DATABASENAME);
-    private static final int INSERTTABLE = 1;
-    private static final int UPDATETABLETATEROW = 6;
-    private static final int UPDATETABLETATE = 7;
-    private static final int UPDATETABLEROW = 8;
-    private static final int UPDATETABLE = 2;
-    private static final int GETSAVEDGAMES = 3;
-    private static final int GETTABLESTATE = 4;
-    private static final int GETUNPARSEDROWS = 5;
+    private static final String AUTHORITY = "com.games.ultimatetictactoe.app.DB";
+    public static final Uri CONTENTURI = Uri.parse("content://"+AUTHORITY);
+    public static final int TICTACTOETABLE = 1;
+    public static final int TICTACTOEGAMENAME = 2;
+
+
 
     private SQLiteDatabase db;
     private SQLHelper sqlHelper;
-    private static DBManager dbManager;
 
-    private static final String AUTHORITY = "com.games.ultimatetictactoe.app.DBManager";
+
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static{
-        uriMatcher.addURI(AUTHORITY,DATABASENAME,INSERTTABLE);
-        uriMatcher.addURI(AUTHORITY,DATABASENAME+"#"+"/"+TABLE_STATE_COLUMN,UPDATETABLETATE);
-        uriMatcher.addURI(AUTHORITY,DATABASENAME+"#"+"/"+TABLE_ROW_COLUMN,UPDATETABLEROW);
-
-
+        uriMatcher.addURI(AUTHORITY,DATABASENAME+"/"+TABLENAME,TICTACTOETABLE);
+        uriMatcher.addURI(AUTHORITY,DATABASENAME+"/"+GAMETABLENAME,TICTACTOEGAMENAME);
+    }
+    public DBManager(){
+        super();
 
     }
 
-
-    private DBManager(Context c){
-        sqlHelper = new SQLHelper(c);
-        db = sqlHelper.getWritableDatabase();
-
-    }
-
-    public static DBManager getInstance(Context c){
-        if(dbManager != null){
-            return dbManager;
-        }
-        else{
-            dbManager = new DBManager(c);
-            return dbManager;
-        }
-    }
-
-    /*private String convertToRow(TableIndex innerTable[][]){
-        String row = "";
-
-        for(int i = 0; i < innerTable.length; i++){
-            for(int j = 0; j < innerTable[i].length; j++){
-                row+=innerTable[i][j]+",";
-            }
-        }
-
-        row = row.substring(0,row.length()-1);
-        return row;
-    }*/
-
-    public long insert(String tableCoordinates,int tableState, String row,String gameName){
-
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(GAME_NAME_COLUMN,gameName);
-        contentValues.put(TABLE_STATE_COLUMN,tableState);
-        contentValues.put(TABLE_COORDINATES_COLUMN,tableCoordinates);
-        contentValues.put(TABLE_ROW_COLUMN,row);
-
-        Uri uri = Uri.parse(CONTENTURI.toString());
-
-        //return db.insert(TABLENAME,null,contentValues);
-        insert(uri,contentValues);
-
-    }
-
-    public void updateTable(String tableCoordinates,int tableState,String row, String gameName){
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TABLE_STATE_COLUMN,tableState);
-        contentValues.put(TABLE_ROW_COLUMN,row);
-
-        Uri uri = Uri.parse(CONTENTURI.toString());
-        String selection = TABLE_COORDINATES_COLUMN+" = ?"+" AND "+GAME_NAME_COLUMN+" = ?";
-
-        update(uri,contentValues,selection, new String[]{tableCoordinates,gameName});
-
-    }
-
-    public String[] getSavedGames(){
-
-        Cursor c = db.rawQuery("SELECT "+GAME_NAME_COLUMN+" FROM "+TABLENAME+";",null);
-        c.moveToFirst();
-        String [] gameNames = new String[c.getCount()];
-
-        int count = 0;
-        while(!c.isAfterLast()){
-            gameNames[count] = c.getString(0);
-            count++;
-            c.moveToNext();
-        }
-
-        c.close();
-
-        return gameNames;
-    }
-
-    public int getTableState(String tableCoordinates, String gameName){
-        Cursor c = db.rawQuery("SELECT "+TABLE_STATE_COLUMN+ " FROM "+TABLENAME+" WHERE "+TABLE_COORDINATES_COLUMN+" = ?"
-                                                                                    +" AND "+GAME_NAME_COLUMN+"= ?",
-                                    new String[]{tableCoordinates,gameName});
-        c.moveToFirst();
-        int state = c.getInt(0);
-        c.close();
-        return state;
-    }
-
-    public String getUnParsedRow(String tableCoordinates, String gameName){
-        Cursor c = db.rawQuery("SELECT "+TABLE_ROW_COLUMN+  " FROM "+TABLENAME+" WHERE "+TABLE_COORDINATES_COLUMN+" = ?"
-                                                                                          +" AND "+GAME_NAME_COLUMN+"= ?",
-                                    new String[]{tableCoordinates,gameName});
-        c.moveToFirst();
-        String row = c.getString(0);
-        c.close();
-
-        return row;
-
-    }
 
     @Override
     public String getType(Uri uri) {
@@ -155,35 +62,98 @@ public class DBManager extends ContentProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-
+        db = sqlHelper.getWritableDatabase();
+        Uri returnedUri = null;
         switch(uriMatcher.match(uri)){
-            case INSERTTABLE:
+            case TICTACTOETABLE:
                 db.insert(TABLENAME,null,contentValues);
+                returnedUri = Uri.parse(CONTENTURI+"/"+TABLENAME);
+
                 break;
+            case TICTACTOEGAMENAME:
+                db.insert(GAMETABLENAME,null,contentValues);
+                returnedUri = Uri.parse(CONTENTURI+"/"+TABLENAME);
+
+            default:
+
 
         }
+
+
+        return returnedUri;
 
 
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        return 0;
+        db = sqlHelper.getWritableDatabase();
+        int affectedRows = 0;
+        switch(uriMatcher.match(uri)){
+            case TICTACTOETABLE:
+                //TODO: Not implemented yet.
+                break;
+            case TICTACTOEGAMENAME:
+                affectedRows = db.delete(GAMETABLENAME,selection,selectionArgs);
+                break;
+        }
+
+
+        return affectedRows;
+
     }
 
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        db = sqlHelper.getWritableDatabase();
+        int affectedRows = 0;
+        switch(uriMatcher.match(uri)){
+            case TICTACTOETABLE:
+                affectedRows = db.update(TABLENAME,values,selection,selectionArgs);
+                break;
+            case TICTACTOEGAMENAME:
+                affectedRows = db.update(GAMETABLENAME,values,selection,selectionArgs);
+        }
 
+
+        return affectedRows;
     }
 
     @Override
     public boolean onCreate() {
-        return false;
+        Log.d("dbManager","entered");
+        if(getContext() == null){
+            Log.d("dbManager","context is null");
+        }
+        sqlHelper = new SQLHelper(getContext());
+        if(sqlHelper == null){
+            Log.d("dbManager","sqlHelper is null");
+        }
+        return true;
     }
+
+
+
+
+
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        return null;
+        Cursor returnC = null;
+        db = sqlHelper.getWritableDatabase();
+        switch(uriMatcher.match(uri)){
+            case TICTACTOETABLE:
+               returnC = db.query(TABLENAME,projection,selection,selectionArgs,null,null,null,null);
+            break;
+            case TICTACTOEGAMENAME:
+                returnC = db.query(GAMETABLENAME,projection,selection,selectionArgs,null,null,null,null);
+                break;
+            default:
+
+        }
+
+        return returnC;
+
     }
 
 
@@ -196,7 +166,7 @@ public class DBManager extends ContentProvider {
         }
 
         public SQLHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-            super(context, name, factory, version);
+            this(context, name, factory, version,null);
         }
 
         public SQLHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
@@ -242,6 +212,7 @@ public class DBManager extends ContentProvider {
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
             db.execSQL("DROP TABLE IF EXISTS "+ TABLENAME);
+            db.execSQL("DOP TABLE IF EXISTS "+ GAMETABLENAME);
             onCreate(db);
 
         }
@@ -249,11 +220,20 @@ public class DBManager extends ContentProvider {
         @Override
         public void onCreate(SQLiteDatabase db) {
 
-            db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLENAME+ "( "+id+ "INTEGER INCREMENTS PRIMARY KEY, "+
-                                                                    GAME_NAME_COLUMN+ " VARCHAR(100) "+
+            db.execSQL("CREATE TABLE IF NOT EXISTS "+TABLENAME+ "( "+id+ " INTEGER INCREMENTS PRIMARY KEY, "+
+                                                                    GAME_NAME_COLUMN+ " VARCHAR(100), "+
                                                                     TABLE_COORDINATES_COLUMN+" VARCHAR(2), "+
                                                                     TABLE_STATE_COLUMN+" INTEGER, "+
-                                                                    TABLE_ROW_COLUMN+ "VARCHAR(17)); ");
+                                                                    TABLE_ROW_COLUMN+ " VARCHAR(17)); ");
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS "+GAMETABLENAME+"( "+id+" INTEGER INCREMENTS PRIMARY KEY, "+
+                                                                        GAMETABLE_GAME_COLUMN+ " VARCHAR(100), "+
+                                                                        GAMETABLE_OPPONENTSID_COLUMN +" VARCHAR(400), "+
+                                                                        GAMETABLE_OPPONENTSUSERNAME_COLUMN+" VARCHAR(400), "+
+                                                                        GAMETABLE_STATE+" INTEGER, "+
+                                                                        GAMETABLE_CURRENTTURN_COLUMN+" INTEGER, "+
+                                                                        "FOREIGN KEY ("+GAME_NAME_COLUMN+")"+" REFERENCES "+
+                                                                        TABLENAME+"("+GAME_NAME_COLUMN+")"+ " ON DELETE CASCADE);");
 
         }
 
@@ -264,4 +244,7 @@ public class DBManager extends ContentProvider {
         }
 
     }
+
+
+
 }
