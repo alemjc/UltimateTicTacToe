@@ -41,9 +41,9 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
         * if the sync adapter was triggered by some changes in the local database, then the sync adapter has to
         * send this changes to the opponent.*/
         String subject = extras.getString(context.getString(R.string.asyncBundlesubject),"NONE");
-        int messageid = sharedPreferences.getInt(MESSAGE_ID,0);
-        Bundle msgbundle = extras.getBundle(context.getString(R.string.asyncmessagebundle));
-        String message = msgbundle.getString("message");
+        int messageID = sharedPreferences.getInt(MESSAGE_ID,0);
+        Bundle msgBundle = extras.getBundle(context.getString(R.string.asyncmessagebundle));
+        String message = msgBundle.getString("message");
         String messageSplit[] = message.split("\n");
         String gameName = messageSplit[0];
         String purpose = messageSplit[1];
@@ -90,13 +90,16 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             }
 
             else {
-
-                String move[] = purpose.split("()");
+                if(messageSplit.length != 3) return;
+                purpose = messageSplit[1];
+                String gameState = purpose.split(" ")[1];
+                String move[] = messageSplit[2].split("()");
                 if (move.length != 3) return;
                 String coordinates = move[0];
-                String state = move[1];
+                String tableState = move[1];
                 String row = move[2];
-                CPHandler.updateTable(context,provider, null, coordinates, Integer.parseInt(state), row, gameName);
+                CPHandler.updateGameState(context,provider,gameName,Integer.parseInt(gameState));
+                CPHandler.updateTable(context,provider, null, coordinates, Integer.parseInt(tableState), row, gameName);
             }
 
         }
@@ -126,19 +129,19 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
                 }
                 
                 message+="\n"+phoneNumber;
-                msgbundle.putString("message",message);
+                msgBundle.putString("message",message);
             }
             
 
 
             try {
-                gcm.send(to + "@gcm.googleapis.com", messageid + "", msgbundle);
+                gcm.send(to + "@gcm.googleapis.com", messageID + "", msgBundle);
             }
             catch(IOException e){
                 Toast.makeText(context,"Could not send message",Toast.LENGTH_LONG);
             }
 
-            editor.putInt(MESSAGE_ID,messageid+1);
+            editor.putInt(MESSAGE_ID,messageID+1);
 
         }
     }

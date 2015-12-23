@@ -26,11 +26,9 @@
         </activity>
 
         <provider
+            android:name=".DBManager"
             android:authorities="com.games.ultimatetictactoe.app.DB"
-            android:name="com.games.ultimatetictactoe.app.DBManager"
-            android:exported="true"
-            >
-
+            android:exported="true" >
         </provider>
 
         <service android:name=".AuthenticatorService" >
@@ -72,7 +70,17 @@
             android:name=".AcceptOrRejectRequestService"
             android:exported="false" >
             <intent-filter>
-                <action android:name="com.games.ultimatetictactoe.app.AcceptOrRejectRequestService"/>
+                <action android:name="com.games.ultimatetictactoe.app.action.ACCEPT" />
+                <action android:name="com.games.ultimatetictactoe.app.action.DENY"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".UpdateTableService"
+            android:exported="false" >
+
+            <intent-filter>
+                <action android:name="com.games.ultimatetictactoe.app.action.UPDATETABLE"/>
+                <action android:name="com.games.ultimatetictactoe.app.acton.UPDATEPLAYER"/>
             </intent-filter>
         </service>
     </application>

@@ -1,9 +1,8 @@
 package com.games.ultimatetictactoe.app;
 
 import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.app.AlertDialog;
+import android.content.*;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,9 +17,6 @@ import android.widget.Toast;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 
 /**
  * A simple {@link Fragment} subclass.
@@ -33,15 +29,12 @@ import java.util.concurrent.Executors;
 public class GameTable extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private static final String CONTINUE_GAME = "continue";
-    private static final String NEW_GAME = "new";
+    private static final String ARG_GAMENAME = "param1";
+    private static final String ARG_OPPONENTID = "param2";
     private static final int TILEPLAYERSKEY = 1;
     private boolean onCreateRead;
     private RelativeLayout gameTableLayout;
-    private TableIndex bigTable[][];
-
+    private int bigTable[][];
     private int currentPlayer;
     private String lastMove;
     private Handler observerHandler;
@@ -49,14 +42,8 @@ public class GameTable extends Fragment {
     private ContentObserver dbObserver;
 
 
-    /*
-            gameChoice parameter will tell GameTable whether to continue an already started game or start a new game.
-            possible values for gameChoice are: continue, new.
 
-            gameName this will have the name of name iff gameChoice is filled out.
-
-         */
-    private String opponent;
+    private String opponentID;
     private String gameName;
 
     private OnFragmentInteractionListener mListener;
@@ -80,8 +67,8 @@ public class GameTable extends Fragment {
     public static GameTable newInstance(String param1, String param2) {
         GameTable fragment = new GameTable();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_GAMENAME, param1);
+        args.putString(ARG_OPPONENTID, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -96,26 +83,26 @@ public class GameTable extends Fragment {
 
         onCreateRead = false;
         if (getArguments() != null) {
-            opponent = getArguments().getString(ARG_PARAM1);
-            gameName = getArguments().getString(ARG_PARAM2);
+            opponentID = getArguments().getString(ARG_OPPONENTID);
+            gameName = getArguments().getString(ARG_GAMENAME);
         }
 
         lastMove = null;
 
-        bigTable = new TableIndex[3][3];
+        bigTable = new int[3][3];
         //int count = 0;
         for(int i = 0; i < bigTable.length; i++){
 
             for(int j = 0; j < bigTable[i].length; j++){
 
-                bigTable[i][j] = new TableIndex(Index.STATE.NONE);
+                bigTable[i][j] = getContext().getResources().getInteger(R.integer.none);
                 //count++;
             }
 
         }
 
 
-        new DBReadAsyncTask().execute(new String[]{gameName,opponent});
+        new DBReadAsyncTask().execute(new String[]{gameName,opponentID});
         onCreateRead = true;
 
 
@@ -228,42 +215,48 @@ public class GameTable extends Fragment {
     }
 
     public void updateTable(View tile){
-        if(currentPlayer != ((Activity)mListener).getResources().getInteger(R.integer.opponentsTurn)){
+
+        Intent updateTableIntent; // intent to update db table
+        Runnable runnable = null;
+        GridLayout parent; // parent view
+        String tableCoordinate; // this is the coordinates of this small table
+        Bundle messageBundle; // bundle that contains message to opponent
+        Bundle sendBundle; // bundle that contains message to send to opponent.
+
+        if(currentPlayer == ((Activity)mListener).getResources().getInteger(R.integer.opponentsTurn)){
             Toast.makeText((Activity)mListener,"It is opponent's Turn",Toast.LENGTH_LONG);
             return;
         }
 
         if(tile.getTag(TILEPLAYERSKEY) != null){ // some one already played this tile so can't play on a tile twice
-            Toast.makeText((Activity)mListener,"Invalid move",Toast.LENGTH_LONG);
             return;
         }
-        GridLayout parent = (GridLayout)tile.getParent();
+        parent = (GridLayout)tile.getParent();
         if(!parent.getTag().equals("t"+lastMove)){ // if the current table is not the table that was assigned base on last move.
-            Toast.makeText((Activity)mListener,"Invalid move",Toast.LENGTH_LONG);
             return;
         }
-        String tableCoordinate= ((String)parent.getTag()).substring(1);
+
+        tableCoordinate = ((String)parent.getTag()).substring(1);
 
         final Activity myActivity = GameTable.this.getActivity();
+        updateTableIntent = new Intent();
+        Handler uiHandler = new Handler(myActivity.getMainLooper());
         //String asyncBundleSubjectKey = myActivity.getString(R.string.asyncBundlesubject);
 
-        Bundle sendBundle = new Bundle();
-        sendBundle.putString("to",opponent);
+        sendBundle = new Bundle();
+        messageBundle = new Bundle();
+        sendBundle.putString("to",opponentID);
         sendBundle.putString(myActivity.getString(R.string.asyncBundlesubject),myActivity.getString(R.string.asyncsendsubjecttype));
         String message = gameName+"\n";
-
-
+        updateTableIntent.putExtra(UpdateTableService.EXTRA_GAMENAME,gameName);
 
         //Makes the move for the player.
-
         tile.setTag(TILEPLAYERSKEY, currentPlayer);
 
-
-
-        new DBWriteAsyncTask().execute(new String[]{tableCoordinate,gameName});
+        //new DBWriteAsyncTask().execute(new String[]{tableCoordinate,gameName});//TODO: get rid of the async task and replace it with a service to write to the databse.
         lastMove = (String)tile.getTag(); // setting last move to be current move.
 
-        TableIndex tableIndex [][] = new TableIndex[3][3];
+        int tableIndex [][] = new int[3][3];
         int index = 0;
 
         String row = "";
@@ -273,17 +266,8 @@ public class GameTable extends Fragment {
                 View tv = parent.getChildAt(index);
                 int player = (Integer)tv.getTag(TILEPLAYERSKEY);
                 row+=player;
-                switch (player){
-                    case 0:
-                        tableIndex[i][j] = new TableIndex(Index.STATE.PLAYER1);
-                        break;
-                    case 1:
-                        tableIndex[i][j] = new TableIndex(Index.STATE.PLAYER2);
-                        break;
-
-                    case -1:
-                        tableIndex[i][j] = new TableIndex(Index.STATE.NONE);
-                }
+                tableIndex[i][j] = player;
+                index++;
             }
 
         }
@@ -291,85 +275,152 @@ public class GameTable extends Fragment {
         int j = Integer.parseInt(tableCoordinate.charAt(1)+"");
 
 
+        if(checkIfWon(myActivity,tableIndex,i,j)) {
+            bigTable[i][j] = myActivity.getResources().getInteger(R.integer.myTurn);
+            if(checkIfWon(myActivity,bigTable,i,j)) {
+                //if player won big table
+                message += myActivity.getString(R.string.gamestatus) + " " + myActivity.getResources().getInteger(R.integer.gamestatewon)+"\n";
+                updateTableIntent.setAction(UpdateTableService.ACTION_UPDATEGAMESTATE);
+                updateTableIntent.putExtra(UpdateTableService.EXTRA_GAMESTATE,myActivity.getResources().getInteger(R.integer.gamestatewon));
+                myActivity.startService(updateTableIntent);
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        showAlertDialog("You Won!");
+                    }
+                };
 
-
-
-        if(true)//TODO: Check if player won small table. Pass tableIndex to checker method.
-        {
-
-            switch (currentPlayer){
-                case 0:
-                    bigTable[i][j].setState(Index.STATE.PLAYER1);
-                    break;
-                case 1:
-                    bigTable[i][j].setState(Index.STATE.PLAYER2);
-                    break;
             }
+            else if(checkIfTied(myActivity,bigTable)){
+                // if big table tied
+                message += myActivity.getString(R.string.gamestatus) + " " + myActivity.getResources().getInteger(R.integer.gamestatetied)+"\n";
+                updateTableIntent.setAction(UpdateTableService.ACTION_UPDATEGAMESTATE);
+                updateTableIntent.putExtra(UpdateTableService.EXTRA_GAMESTATE,myActivity.getResources().getInteger(R.integer.gamestatetied));
+                myActivity.startService(updateTableIntent);
+                runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        showAlertDialog("Game Tied");
+                    }
+                };
 
-            //TODO: if player won small table check if play won big table.
-            //if player won big table
-            message+=this.getString(R.string.gamestatus)+" "+this.getString(R.string.gamestatuswon);
-            //If player didn't win big table
-            message+=this.getString(R.string.gamestatus)+" "+this.getString(R.string.gamestatuscontinue);
-
-        }
-        //TODO: If play didn't win small table check if this table is tied.
-            //TODO if table is tied check if big table is also tied.
-
-
-
-        if(!message.contains(myActivity.getString(R.string.gamestatuswon)) &&
-                !message.contains(myActivity.getString(R.string.gamestatustied))){
-            switch(bigTable[i][j].getState()){
-                case PLAYER1:
-                    message+="("+tableCoordinate+")"+"("+0+")"+row+"\n";
-                    break;
-                case PLAYER2:
-                    message+="("+tableCoordinate+")"+"("+1+")"+row+"\n";
-                    break;
-                case NONE:
-                    message+="("+tableCoordinate+")"+"("+-1+")"+row+"\n";
+            }
+            else {
+                //If player didn't win big table
+                message += myActivity.getString(R.string.gamestatus) + " " + myActivity.getResources().getInteger(R.integer.gamestateongoing)+"\n";
 
             }
 
         }
+        else if(checkIfTied(myActivity, tableIndex)){
+            if(checkIfTied(myActivity,bigTable)){
+                message += myActivity.getString(R.string.gamestatus) + " " + myActivity.getResources().getInteger(R.integer.gamestatetied)+"\n";
+                updateTableIntent.setAction(UpdateTableService.ACTION_UPDATEGAMESTATE);
+                updateTableIntent.putExtra(UpdateTableService.EXTRA_GAMESTATE,myActivity.getResources().getInteger(R.integer.gamestatetied));
+                myActivity.startService(updateTableIntent);
+
+            }
+        }
 
 
-        Bundle messageBundle = new Bundle();
-        messageBundle.putString("message",message);
-        sendBundle.putBundle(myActivity.getString(R.string.asyncmessagebundle), messageBundle);
+        message+="("+tableCoordinate+")"+"("+bigTable[i][j]+")"+row+"\n";
+        updateTableIntent.setAction(UpdateTableService.ACTION_UPDATETABLE);
+        updateTableIntent.putExtra(UpdateTableService.EXTRA_TABLESTATE,bigTable[i][j]);
+        updateTableIntent.putExtra(UpdateTableService.EXTRA_COORDINATES,tableCoordinate);
+        updateTableIntent.putExtra(UpdateTableService.EXTRA_ROW,row);
+        updateTableIntent.putExtra(UpdateTableService.EXTRA_GAMENAME,gameName);
 
-        myActivity.getContentResolver().requestSync(MainTicTacToeActivity.createSyncAccount(myActivity),MainTicTacToeActivity.AUTHORITY,sendBundle);
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
+        myActivity.startService(updateTableIntent);
+
+        updateTableIntent.setAction(UpdateTableService.ACTION_UPDATEPLAYER);
+        updateTableIntent.putExtra(UpdateTableService.EXTRA_OPPONENTID,opponentID);
+
+        //ExecutorService executorService = Executors.newFixedThreadPool(1);
 
 
         switch(currentPlayer){
             case 0:
                 currentPlayer = getActivity().getResources().getInteger(R.integer.opponentsTurn);
-                executorService.submit(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        CPHandler.updateCurrentPLayer(myActivity,myActivity.getContentResolver().
-                                acquireContentProviderClient(DBManager.CONTENTURI),gameName,opponent,0);
-                    }
-                });
+                updateTableIntent.putExtra(UpdateTableService.EXTRA_CURRENTPLAYER,currentPlayer);
 
                 break;
             case 1:
                 currentPlayer = getActivity().getResources().getInteger(R.integer.myTurn);
-                executorService.submit(new Runnable() {
-                    @Override
-                    public void run() {
-                        CPHandler.updateCurrentPLayer(myActivity,myActivity.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
-                                ,gameName,opponent,1);
-                    }
-                });
+                updateTableIntent.putExtra(UpdateTableService.EXTRA_CURRENTPLAYER,currentPlayer);
+        }
+
+        myActivity.startService(updateTableIntent);
+
+
+
+
+        messageBundle.putString("message",message);
+        sendBundle.putBundle(myActivity.getString(R.string.asyncmessagebundle), messageBundle);
+
+        myActivity.getContentResolver().requestSync(MainTicTacToeActivity.createSyncAccount(myActivity),MainTicTacToeActivity.AUTHORITY,sendBundle);
+        if(runnable != null){
+            uiHandler.post(runnable);
         }
 
 
+    }
+
+    private void showAlertDialog(String message){
+
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+        alertBuilder.setMessage(message).
+                setNegativeButton("Quit", new AlertDialog.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mListener.onFragmentInteraction(null);
+                    }
+                });
+
+    }
 
 
+    private boolean checkIfWon(Context c,int table[][],int x, int y){
+        int player = c.getResources().getInteger(R.integer.myTurn);
+        int opponent = c.getResources().getInteger(R.integer.opponentsTurn);
+        if(GameChecker.checkRow(x,y,table,player,opponent) == GameChecker.STATE.PLAYER){
+            return true;
+        }
+        else if(((x == 0 && y != 1) || (x==1 && y != 0) || (x == 2 && y != 1) || (x==1 && y ==2))
+                && (GameChecker.checkDiagonal(x,y,table,player,opponent) == GameChecker.STATE.PLAYER)){
+            return true;
+        }
+        else if(GameChecker.checkColumn(x,y,table,player,opponent) == GameChecker.STATE.PLAYER){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    private boolean checkIfTied(Context c,int table[][]){
+        int player = c.getResources().getInteger(R.integer.myTurn);
+        int opponent = c.getResources().getInteger(R.integer.opponentsTurn);
+
+
+        for(int j = 0; j < table[0].length; j++){
+
+            if(GameChecker.checkRow(0,j,table,player,opponent) != GameChecker.STATE.TIE){
+                return false;
+            }
+            else if(GameChecker.checkDiagonal(0,j,table,player,opponent) != GameChecker.STATE.TIE){
+                return false;
+            }
+            else if(GameChecker.checkColumn(0,j,table,player,opponent) != GameChecker.STATE.TIE){
+                return false;
+            }
+
+        }
+
+        if(GameChecker.checkRow(1,0,table,player,opponent) != GameChecker.STATE.TIE){
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -443,16 +494,7 @@ public class GameTable extends Fragment {
 
                     int currentTableState = CPHandler.getTableState(c,c.getContentResolver().
                             acquireContentProviderClient(DBManager.CONTENTURI),i+""+j,params[0]);
-                    if(currentTableState == 1){
-                        bigTable[i][j].setState(Index.STATE.PLAYER2);
-                    }
-                    else if(currentTableState == 0){
-                        bigTable[i][j].setState(Index.STATE.PLAYER1);
-                    }
-                    else{
-                        bigTable[i][j].setState(Index.STATE.NONE);
-                    }
-
+                    bigTable[i][j] = currentTableState;
                     rows[i][j] = CPHandler.getUnParsedRow(c,c.getContentResolver().
                             acquireContentProviderClient(DBManager.CONTENTURI)
                             ,i+""+j,params[0]);
@@ -461,7 +503,7 @@ public class GameTable extends Fragment {
             }
 
             currentPlayer = CPHandler.getCurrentTurn(c,c.getContentResolver().
-                    acquireContentProviderClient(DBManager.CONTENTURI),gameName,opponent);
+                    acquireContentProviderClient(DBManager.CONTENTURI),gameName,opponentID);
             return rows;
         }
     }
@@ -538,21 +580,10 @@ public class GameTable extends Fragment {
                 String coordinates = params[1];
                 int i = Integer.parseInt(coordinates.charAt(0)+"");
                 int j = Integer.parseInt(coordinates.charAt(1)+"");
-                switch(bigTable[i][j].getState()){
-                    case PLAYER1:
-                        CPHandler.updateTable(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
-                                ,dbObserver,coordinates,0,rows[i][j],params[0]);
-                        break;
-                    case PLAYER2:
-                        CPHandler.updateTable(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
-                                ,dbObserver,coordinates,1,rows[i][j],params[0]);
-                        break;
-                    case NONE:
-                        CPHandler.updateTable(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
-                                ,dbObserver,coordinates,-1,rows[i][j],params[0]);
-                        break;
 
-                }
+                CPHandler.updateTable(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
+                        ,dbObserver,coordinates,bigTable[i][j],rows[i][j],params[0]);
+
 
 
             }

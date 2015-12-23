@@ -12,9 +12,6 @@
     <string name="acceptgamerequest">Accept Game Request</string>
     <string name="gamestarted">gamestarted</string>
     <string name="gamestatus">gamestatus</string>
-    <string name="gamestatuscontinue">continue</string>
-    <string name="gamestatuswon">won</string>
-    <string name="gamestatustied">tied</string>
     <string name="gamestatuspendingacceptance">pendingacceptance</string>
     <string name="mygcmtoken">mytoken</string>
     <string name="asyncBundlesubject">asyncBundleSubject</string>
@@ -27,7 +24,6 @@
     <string name="continuegame">Continue</string>
     <string name="rules">Rules</string>
     <string name="invitations">Invitations</string>
-
     <string name="acceptbuttontext">Accept</string>
     <string name="declinebuttontext">Decline</string>
 

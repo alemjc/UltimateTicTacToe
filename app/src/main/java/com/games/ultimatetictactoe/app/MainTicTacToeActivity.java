@@ -26,7 +26,8 @@ import com.google.android.gms.common.ConnectionResult;
 import java.net.URI;
 
 
-public class MainTicTacToeActivity extends FragmentActivity implements GameIntroFragment.OnGameIntroInteractionListener, ItemFragment.OnGameListFragmentInteractionListener {
+public class MainTicTacToeActivity extends FragmentActivity implements GameIntroFragment.OnGameIntroInteractionListener, ItemFragment.OnGameListFragmentInteractionListener,
+GameTable.OnFragmentInteractionListener{
     public static final String AUTHORITY = "com.games.ultimatetictactoe.app.DB";
     public static final String ACCOUNTTYPE = "authentication.com";
     public static final String ACCOUNT = "dummyAccount";
@@ -39,11 +40,11 @@ public class MainTicTacToeActivity extends FragmentActivity implements GameIntro
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tic_tac_toe);
         Firebase.setAndroidContext(this);
-        //GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
-        //int errorCode =  googleApiAvailability.isGooglePlayServicesAvailable(this);
-        //googleApiAvailability.getErrorDialog(this,errorCode,GOOGLEAPPSERVICESREQUEST);
-        //Intent registrationServiceIntent = new Intent(this,RegistrationService.class);
-        //startService(registrationServiceIntent);
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int errorCode =  googleApiAvailability.isGooglePlayServicesAvailable(this);
+        googleApiAvailability.getErrorDialog(this,errorCode,GOOGLEAPPSERVICESREQUEST);
+        Intent registrationServiceIntent = new Intent(this,RegistrationService.class);
+        startService(registrationServiceIntent);
 
         Account account = createSyncAccount(this);
         FragmentManager fragmentManager = getFragmentManager();
@@ -140,6 +141,12 @@ public class MainTicTacToeActivity extends FragmentActivity implements GameIntro
         fragmentTransaction.commit();
 
 
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.popBackStack();
     }
 
     @Override

@@ -6,17 +6,18 @@ import java.util.ArrayList;
  * Created by jonchen on 11/7/2015.
  */
 public class GameChecker {
+    public enum STATE {PLAYER,OPPONENT,NONE,TIE};
+    private GameChecker(){}
 
-    public Index.STATE checkBoard(TableIndex[][] tableIndex, String coordinates,Index.STATE player){
+    public static STATE checkBoard(int[][] tableIndex, String coordinates,int player,int opponent){
         //TODO decide on how to implement this method
         int x=Character.getNumericValue(coordinates.charAt(0));
         int y=Character.getNumericValue(coordinates.charAt(1));
-        boolean tie=false;
-        ArrayList<Boolean> tieArr = new ArrayList<Boolean>();
-        Index.STATE enemy = (player==Index.STATE.PLAYER1)?Index.STATE.PLAYER2:Index.STATE.PLAYER1;
+        //ArrayList<Boolean> tieArr = new ArrayList<Boolean>();
+
         //TODO fix this
         //Should this check be done here or else where
-        if(tableIndex.getState()!= Index.STATE.NONE){
+        /*if(tableIndex[x][y].getState()!= Index.STATE.NONE){
             if((x==y) || ((x==0 || x==2) && (y==0 || y==2))){
                 Index.STATE state = checkRow(x, y, tableIndex, player, enemy);
                 if(state==player){
@@ -30,11 +31,11 @@ public class GameChecker {
             }else{
 
             }
-        }
-        return Index.STATE.NONE;
+        }*/
+        return STATE.NONE;
     }
 
-    private Index.STATE checkRow(int x, int y, TableIndex[][] tableIndex, Index.STATE player, Index.STATE enemy){
+    public static STATE checkRow(int x, int y, int[][] tableIndex, int player, int enemy){
         int tmpY1,tmpY2;
         if(y!=1){
             tmpY1=y+1%3;
@@ -43,16 +44,16 @@ public class GameChecker {
             tmpY1=y+1;
             tmpY2=y-1;
         }
-        if(tableIndex[x][tmpY1].getState()==player && tableIndex[x][tmpY2].getState()==player){
-            return player;
-        }else if(tableIndex[x][tmpY1].getState()==enemy || tableIndex[x][tmpY2].getState()==enemy){
-            return Index.STATE.TIE;
+        if(tableIndex[x][tmpY1]==player && tableIndex[x][tmpY2]==player){
+            return STATE.PLAYER;
+        }else if(tableIndex[x][tmpY1]==enemy || tableIndex[x][tmpY2]==enemy){
+            return STATE.TIE;
         }else{
-            return Index.STATE.NONE;
+            return STATE.NONE;
         }
     }
 
-    private Index.STATE checkColumn(int x, int y, TableIndex[][] tableIndex, Index.STATE player, Index.STATE enemy){
+    public static STATE checkColumn(int x, int y, int[][] tableIndex, int player, int enemy){
         int tmpX1,tmpX2;
         if(x!=1){
             tmpX1=x+1%3;
@@ -61,16 +62,16 @@ public class GameChecker {
             tmpX1=x+1;
             tmpX2=x-1;
         }
-        if(tableIndex[tmpX1][y].getState()==player && tableIndex[tmpX2][y].getState()==player){
-            return player;
-        }else if(tableIndex[tmpX1][y].getState()==enemy || tableIndex[tmpX2][y].getState()==enemy){
-            return Index.STATE.TIE;
+        if(tableIndex[tmpX1][y]==player && tableIndex[tmpX2][y]==player){
+            return STATE.PLAYER;
+        }else if(tableIndex[tmpX1][y]==enemy || tableIndex[tmpX2][y]==enemy){
+            return STATE.TIE;
         }else{
-            return Index.STATE.NONE;
+            return STATE.NONE;
         }
     }
 
-    private Index.STATE checkDiagonal(int x, int y, TableIndex[][] tableIndex, Index.STATE player, Index.STATE enemy){
+    public static STATE checkDiagonal(int x, int y, int[][] tableIndex, int player, int enemy){
         int tmpX1,tmpX2, tmpY1, tmpY2;
         if(x!=y){
             tmpX1=x+1%3;
@@ -83,16 +84,16 @@ public class GameChecker {
             tmpX2=x-1;
             tmpY2=y-1;
         }
-        if(tableIndex[tmpX1][tmpY1].getState()==player && tableIndex[tmpX2][tmpY2].getState()==player){
-            return player;
-        }else if(tableIndex[tmpX1][tmpY1].getState()==enemy || tableIndex[tmpX2][tmpY2].getState()==enemy){
-            return Index.STATE.TIE;
+        if(tableIndex[tmpX1][tmpY1]==player && tableIndex[tmpX2][tmpY2]==player){
+            return STATE.PLAYER;
+        }else if(tableIndex[tmpX1][tmpY1]==enemy || tableIndex[tmpX2][tmpY2]==enemy){
+            return STATE.TIE;
         }else{
-            return Index.STATE.NONE;
+            return STATE.NONE;
         }
     }
 
-    private Index.STATE checkRow(int x,int y,TableIndex[][] tableIndex){
+    /*private static STATE checkRow(int x,int y,int[][] tableIndex){
         Index.STATE currState=tableIndex[x][y].getState();
         if(currState==Index.STATE.PLAYER1 || currState==Index.STATE.PLAYER2){
             return checkRow(x, y, tableIndex, currState, (currState== Index.STATE.PLAYER1)? Index.STATE.PLAYER2: Index.STATE.PLAYER1);
@@ -104,7 +105,7 @@ public class GameChecker {
         }
     }
 
-    private Index.STATE checkColumn(int x,int y,TableIndex[][] tableIndex){
+    private static Index.STATE checkColumn(int x,int y,TableIndex[][] tableIndex){
         Index.STATE currState=tableIndex[x][y].getState();
         if(currState==Index.STATE.PLAYER1 || currState==Index.STATE.PLAYER2){
             return checkColumn(x, y, tableIndex, currState, (currState == Index.STATE.PLAYER1) ? Index.STATE.PLAYER2 : Index.STATE.PLAYER1);
@@ -116,7 +117,7 @@ public class GameChecker {
         }
     }
 
-    private Index.STATE checkDiagonal(int x,int y,TableIndex[][] tableIndex){
+    private static Index.STATE checkDiagonal(int x,int y,TableIndex[][] tableIndex){
         Index.STATE currState=tableIndex[x][y].getState();
         if(currState==Index.STATE.PLAYER1 || currState==Index.STATE.PLAYER2){
             return checkDiagonal(x, y, tableIndex, currState, (currState == Index.STATE.PLAYER1) ? Index.STATE.PLAYER2 : Index.STATE.PLAYER1);
@@ -125,9 +126,9 @@ public class GameChecker {
             return checkDiagonal(x+1%3, y+1%3, tableIndex);
         }
         return Index.STATE.NONE;
-    }
+    }*/
 
-    private Index.STATE checkall(TableIndex[][] tableIndex){
+   /* private static STATE checkall(int[][] tableIndex){
         ArrayList<Boolean> tieArr = new ArrayList<Boolean>();
         for(int rownum=0;rownum<3;rownum++){
             if(checkRow(rownum,0,tableIndex) == Index.STATE.NONE){
@@ -145,5 +146,10 @@ public class GameChecker {
             return Index.STATE.NONE;
         }
         return Index.STATE.TIE;
-    }
+    }*/
+
+
+
+
+
 }
