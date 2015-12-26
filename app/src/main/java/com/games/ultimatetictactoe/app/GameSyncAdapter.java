@@ -57,7 +57,7 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             if(purpose.equals(context.getString(R.string.gamerequest))){
                 String projection[] = {ContactsContract.Contacts.DISPLAY_NAME};
                 String selection = ContactsContract.Data.MIMETYPE+"=?"+" AND "+ContactsContract.Data.DATA1+"=?";
-                String args[] = {messageSplit[2]};
+                String args[] = {ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE,messageSplit[2]};
                 Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI,projection
                             ,selection,args,null);
                 String userName = messageSplit[2];

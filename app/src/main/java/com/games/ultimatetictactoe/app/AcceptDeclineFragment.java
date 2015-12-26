@@ -70,7 +70,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
 
 
         mListView = (AbsListView) view.findViewById(android.R.id.list);
-        setEmptyText("List is empty");
+        mListView.setEmptyView(view.findViewById(android.R.id.empty));
         // Set OnItemClickListener so we can be notified on item clicks
         mListView.setOnItemClickListener(this);
 
@@ -117,7 +117,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                             android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
                                     mListView.setAdapter(mAdapter);
 
-                                    Intent intent = new Intent(AcceptOrRejectRequestService.class.getCanonicalName());
+                                    Intent intent = new Intent();
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_ACCEPT_REQUEST);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME,gameName);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID,msgID);
@@ -136,7 +136,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                             android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
                                     mListView.setAdapter(mAdapter);
 
-                                    Intent intent = new Intent(AcceptOrRejectRequestService.class.getCanonicalName());
+                                    Intent intent = new Intent();
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_REJECT_REQUEST);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME, gameName);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID, msgID);
@@ -186,16 +186,22 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
         @Override
         protected void onPostExecute(String[][] strings) {
             super.onPostExecute(strings);
-            if(strings != null) {
+            if(strings != null || strings.length == 0) {
                 for (int i = 0; i < strings.length; i++) {
                     GameContent.addItem(new GameContent.GameItem(strings[i][0], "", strings[i][1]));
                 }
+
+                // TODO: Change Adapter to display your content
+                mAdapter = new ArrayAdapter<>(getActivity(),
+                        android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
+                mListView.setAdapter(mAdapter);
             }
 
-            // TODO: Change Adapter to display your content
-            mAdapter = new ArrayAdapter<>(getActivity(),
-                    android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
-            mListView.setAdapter(mAdapter);
+            else{
+                setEmptyText("List is empty");
+            }
+
+
         }
     }
 
