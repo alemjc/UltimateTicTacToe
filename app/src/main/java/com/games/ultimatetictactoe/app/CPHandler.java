@@ -5,6 +5,7 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -12,7 +13,7 @@ import android.widget.Toast;
  */
 public class CPHandler {
 
-    private CPHandler(){};
+    private CPHandler(){}
 
     public static Uri insert(Context c, ContentProviderClient provider, String tableCoordinates, int tableState, String row, String gameName){
         ContentValues contentValues = new ContentValues();
@@ -31,7 +32,7 @@ public class CPHandler {
             provider.insert(uri, contentValues);
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
 
@@ -41,10 +42,9 @@ public class CPHandler {
     }
 
 
-    public static Uri insertGameName(Context c, ContentProviderClient provider, String gameName,String opponentsMailID,String userName, int state, int currentTurn){
+    public static Uri insertGameName(Context c, ContentProviderClient provider, String gameName,String userName, int state, int currentTurn){
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBManager.GAMETABLE_GAME_COLUMN,gameName);
-        contentValues.put(DBManager.GAMETABLE_OPPONENTSID_COLUMN,opponentsMailID);
         contentValues.put(DBManager.GAMETABLE_STATE,state);
         contentValues.put(DBManager.GAMETABLE_CURRENTTURN_COLUMN,currentTurn);
         contentValues.put(DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN,userName);
@@ -54,23 +54,23 @@ public class CPHandler {
             returnUri = provider.insert(uri, contentValues);
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
         return returnUri;
     }
 
-    public static int getCurrentTurn(Context c, ContentProviderClient provider, String gameName, String opponentsID){
-        int returnInt = 0;
+    public static int getCurrentPlayer(Context c, ContentProviderClient provider, String gameName, String userName){
+        int returnInt;
 
         Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.GAMETABLENAME);
         Cursor cursor = null;
         try {
           cursor = provider.query(uri, new String[]{DBManager.GAMETABLE_CURRENTTURN_COLUMN}, DBManager.GAMETABLE_GAME_COLUMN + "= ?"
-                            + " AND " + DBManager.GAMETABLE_OPPONENTSID_COLUMN + " = ?", new String[]{gameName, opponentsID},
+                            + " AND " + DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN + " = ?", new String[]{gameName, userName},
                     null, null);
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could not complete request",Toast.LENGTH_LONG).show();
         }
 
 
@@ -87,33 +87,36 @@ public class CPHandler {
 
     public static String[][] getGameNamesWithOpponentsWithState(Context c, ContentProviderClient provider, int state){
 
-        String returnGames [][] = null;
+        String returnGames [][];
+        Log.d("","puffff!!!!!!!!!!!!!!!!!!!!!!");
 
         Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.GAMETABLENAME);
         Cursor cursor = null;
 
         try {
-            cursor = provider.query(uri, new String[]{DBManager.GAMETABLE_GAME_COLUMN, DBManager.GAMETABLE_OPPONENTSID_COLUMN,
-                            DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN}
+            cursor = provider.query(uri, new String[]{DBManager.GAMETABLE_GAME_COLUMN,DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN}
                     , DBManager.GAMETABLE_STATE + " =? ", new String[]{state + ""}, null);
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
 
         if(cursor == null){
+            Log.d("","FU!!!!!!!!!!");
             return null;
         }
         cursor.moveToFirst();
-        returnGames = new String[cursor.getCount()][3];
+        returnGames = new String[cursor.getCount()][2];
         int index = 0;
         while(!cursor.isAfterLast()){
-            returnGames[index][0] = cursor.getString(cursor.getColumnIndex(DBManager.GAMETABLE_OPPONENTSID_COLUMN));
-            returnGames[index][1] = cursor.getString(cursor.getColumnIndex(DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN));
-            returnGames[index][2] = cursor.getString(cursor.getColumnIndex(DBManager.GAMETABLE_GAME_COLUMN));
+            returnGames[index][0] = cursor.getString(cursor.getColumnIndex(DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN));
+            returnGames[index][1] = cursor.getString(cursor.getColumnIndex(DBManager.GAMETABLE_GAME_COLUMN));
             index++;
+            cursor.moveToNext();
         }
+
+
         cursor.close();
 
         return returnGames;
@@ -126,13 +129,15 @@ public class CPHandler {
             provider.delete(uri, DBManager.GAMETABLE_GAME_COLUMN + " = ?", new String[]{gameName});
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
         return affectedRows;
     }
 
-    public static int updateCurrentPLayer(Context c, ContentProviderClient provider, String gameName, String opponentID, int currentPlayer){
+    public static int updateCurrentPLayer(Context c, ContentProviderClient provider,ContentObserver contentObserver,
+                                          boolean notify ,String gameName, String userName, int currentPlayer){
+
         Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.GAMETABLENAME);
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBManager.GAMETABLE_CURRENTTURN_COLUMN,currentPlayer);
@@ -142,11 +147,21 @@ public class CPHandler {
 
         try {
             affectedRows = provider.update(uri, contentValues, DBManager.GAMETABLE_GAME_COLUMN + " = ?"
-                            + " AND " + DBManager.GAMETABLE_OPPONENTSID_COLUMN + " = ?",
-                    new String[]{gameName, opponentID});
+                            + " AND " + DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN + " = ?",
+                    new String[]{gameName, userName});
+
+            Log.d("updateCurrentPlayer","updating users. Number of users affected is: "+affectedRows);
+            Log.d("updateCurrentPlayer","current player will be: "+currentPlayer);
+            Log.d("updateCurrentPlayer","userName is: "+userName);
+            Log.d("updateCurrentPlayer","gameName: "+gameName);
+
+            if(affectedRows == 1 && notify){
+                c.getContentResolver().notifyChange(Uri.parse(DBManager.CONTENTURI+"/"+DBManager.DATABASENAME+"/"+
+                        DBManager.GAMETABLE_CURRENTTURN_COLUMN),contentObserver);
+            }
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
         return affectedRows;
@@ -159,10 +174,10 @@ public class CPHandler {
         int affectedRows = 0;
 
         try {
-            provider.update(uri, contentValues, DBManager.GAMETABLE_GAME_COLUMN + " = ?", new String[]{gameName});
+            affectedRows = provider.update(uri, contentValues, DBManager.GAMETABLE_GAME_COLUMN + " = ?", new String[]{gameName});
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
         return affectedRows;
@@ -178,7 +193,7 @@ public class CPHandler {
                     , new String[]{"" + state}, null);
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
         if(cursor == null){
@@ -190,6 +205,7 @@ public class CPHandler {
         while(!cursor.isAfterLast()){
             gameNames[count] = cursor.getString(0);
             count++;
+            cursor.moveToNext();
         }
 
         cursor.close();
@@ -219,7 +235,7 @@ public class CPHandler {
         }
 
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
         return numUpdated;
 
@@ -236,7 +252,7 @@ public class CPHandler {
            cursor = provider.query(contentUri, new String[]{DBManager.GAMETABLE_GAME_COLUMN}, null, null, null);
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
         if(cursor == null){
@@ -264,7 +280,7 @@ public class CPHandler {
         Cursor cursor = null;
 
         try {
-           cursor = provider.query(contentUri, new String[]{DBManager.GAMETABLE_OPPONENTSID_COLUMN, DBManager.GAMETABLE_GAME_COLUMN},
+           cursor = provider.query(contentUri, new String[]{DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN, DBManager.GAMETABLE_GAME_COLUMN},
                     null, null, null);
         }
         catch(RemoteException e){
@@ -282,24 +298,25 @@ public class CPHandler {
             returnValues[index][0] = cursor.getString(0);
             returnValues[index][1] = cursor.getString(1);
             index++;
+            cursor.moveToNext();
         }
         cursor.close();
 
         return returnValues;
     }
 
-    public static String getOpponentsMailID(Context c, ContentProviderClient provider, String gameName){
+    public static String getOpponentsUserName(Context c, ContentProviderClient provider, String gameName){
 
         Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.GAMETABLENAME);
 
         Cursor cursor = null;
 
         try {
-            cursor = provider.query(uri, new String[]{DBManager.GAMETABLE_OPPONENTSID_COLUMN}
+            cursor = provider.query(uri, new String[]{DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN}
                     , DBManager.GAMETABLE_GAME_COLUMN + " =?", new String[]{gameName}, null);
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
         if(cursor == null){
@@ -330,7 +347,7 @@ public class CPHandler {
                     " AND " + DBManager.GAME_NAME_COLUMN + "= ?", new String[]{tableCoordinates, gameName}, null);
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
         if(cursor == null){
@@ -350,18 +367,25 @@ public class CPHandler {
         Cursor cursor = null;
 
         try {
-            provider.query(uri, new String[]{DBManager.TABLE_ROW_COLUMN}, DBManager.TABLE_COORDINATES_COLUMN + " =?" +
+           cursor = provider.query(uri, new String[]{DBManager.TABLE_ROW_COLUMN}, DBManager.TABLE_COORDINATES_COLUMN + " =?" +
                     " AND " + DBManager.GAME_NAME_COLUMN + "= ?", new String[]{tableCoordinates, gameName}, null);
         }
         catch(RemoteException e){
-            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG);
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
         }
 
-        cursor.moveToFirst();
-        String row = cursor.getString(0);
-        cursor.close();
+        if(cursor != null) {
+            String row = null;
+            cursor.moveToFirst();
+            if(cursor.getCount()>0) {
+                row = cursor.getString(0);
+            }
+            cursor.close();
 
-        return row;
-
+            return row;
+        }
+        else {
+            return null;
+        }
     }
 }

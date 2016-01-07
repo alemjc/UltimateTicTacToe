@@ -42,6 +42,8 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
      */
     private ListAdapter mAdapter;
 
+    private Activity myActivity;
+
     // TODO: Rename and change types of parameters
     public static AcceptDeclineFragment newInstance() {
         AcceptDeclineFragment fragment = new AcceptDeclineFragment();
@@ -85,8 +87,9 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
     }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(Activity context) {
         super.onAttach(context);
+        myActivity = context;
 
     }
 
@@ -99,7 +102,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         final int pos = position;
-        final Context context = getContext();
+        final Context context = getActivity();
         if (null != context) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
@@ -109,18 +112,17 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     GameContent.GameItem gameItem = (GameContent.GameItem)mAdapter.getItem(pos);
-                                    String msgID = gameItem.id;
-                                    String gameName = gameItem.gameName;
 
                                     GameContent.ITEMS.remove(pos);
                                     mAdapter = new ArrayAdapter<>(getActivity(),
                                             android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
                                     mListView.setAdapter(mAdapter);
 
-                                    Intent intent = new Intent();
+                                    Intent intent = new Intent(context,AcceptOrRejectRequestService.class);
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_ACCEPT_REQUEST);
-                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME,gameName);
-                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID,msgID);
+                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME,gameItem.gameName);
+                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID,gameItem.userName);
+                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_ACCOUNT,((MainTicTacToeActivity)myActivity).account);
                                     (context).startService(intent);
                                 }
                             }
@@ -128,18 +130,17 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     GameContent.GameItem gameItem = (GameContent.GameItem) mAdapter.getItem(pos);
-                                    String msgID = gameItem.id;
-                                    String gameName = gameItem.gameName;
 
                                     GameContent.ITEMS.remove(pos);
                                     mAdapter = new ArrayAdapter<>(getActivity(),
                                             android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
                                     mListView.setAdapter(mAdapter);
 
-                                    Intent intent = new Intent();
+                                    Intent intent = new Intent(context,AcceptOrRejectRequestService.class);
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_REJECT_REQUEST);
-                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME, gameName);
-                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID, msgID);
+                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME, gameItem.gameName);
+                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID, gameItem.userName);
+                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_ACCOUNT,((MainTicTacToeActivity)myActivity).account);
                                     (context).startService(intent);
                                 }
                     }).create().show();
@@ -186,9 +187,9 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
         @Override
         protected void onPostExecute(String[][] strings) {
             super.onPostExecute(strings);
-            if(strings != null || strings.length == 0) {
+            if(strings != null && strings.length != 0) {
                 for (int i = 0; i < strings.length; i++) {
-                    GameContent.addItem(new GameContent.GameItem(strings[i][0], "", strings[i][1]));
+                    GameContent.addItem(new GameContent.GameItem(strings[i][0], strings[i][1]));
                 }
 
                 // TODO: Change Adapter to display your content

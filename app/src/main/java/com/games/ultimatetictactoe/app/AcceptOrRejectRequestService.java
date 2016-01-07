@@ -1,9 +1,13 @@
 package com.games.ultimatetictactoe.app;
 
+import android.accounts.Account;
 import android.app.IntentService;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.Context;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.util.Log;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -21,6 +25,7 @@ public class AcceptOrRejectRequestService extends IntentService {
     // TODO: Rename parameters
     public static final String EXTRA_GAME_NAME = "com.games.ultimatetictactoe.app.extra.GAME_NAME";
     public static final String EXTRA_MSG_ID = "com.games.ultimatetictactoe.app.extra.MSG_ID";
+    public static final String EXTRA_ACCOUNT = "com.games.ultimatetictactoe.app.extra.ACCOUNT";
 
 
     /**
@@ -30,19 +35,29 @@ public class AcceptOrRejectRequestService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    private static void startActionAcceptRequest(Context context, String gameName,String msgID) {
+    private static void startActionAcceptRequest(Context context, String gameName,String userName, Account account) {
         CPHandler.updateGameState(context,context.getContentResolver().
                 acquireContentProviderClient(DBManager.CONTENTURI),gameName,context.getResources().getInteger(R.integer.gamestateongoing));
         CPHandler.updateCurrentPLayer(context,context.getContentResolver().
-                acquireContentProviderClient(DBManager.CONTENTURI),gameName,msgID,context.getResources().getInteger(R.integer.opponentsTurn));
+                acquireContentProviderClient(DBManager.CONTENTURI),null,true,gameName,userName,context.getResources().getInteger(R.integer.opponentsTurn));
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String phoneNumber = telephonyManager.getLine1Number();
+        StringBuilder message = new StringBuilder();
         Bundle bundle = new Bundle();
-        bundle.putString(context.getString(R.string.asyncBundlesubject),context.getString(R.string.asyncsendsubjecttype));
-        bundle.putString("to",msgID);
-        Bundle msgBundle = new Bundle();
-        String message = gameName+"\n"+context.getString(R.string.acceptgamerequest);
-        msgBundle.putString("message", message);
-        bundle.putBundle(context.getString(R.string.asyncmessagebundle),msgBundle);
-        context.getContentResolver().requestSync(MainTicTacToeActivity.createSyncAccount(context),MainTicTacToeActivity.AUTHORITY,bundle);
+        bundle.putString(context.getString(R.string.asyncbundleintent),context.getString(R.string.asyncsendintent));
+
+        message.append(userName);
+        message.append("\n");
+        message.append(phoneNumber);
+        message.append("\n");
+        message.append(context.getString(R.string.acceptgamerequest));
+        message.append("\n");
+        message.append(gameName);
+
+        bundle.putString(context.getString(R.string.asyncmessage),message.toString());
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE,true);
+        context.getContentResolver().requestSync(account,MainTicTacToeActivity.AUTHORITY,bundle);
     }
 
     /**
@@ -52,17 +67,27 @@ public class AcceptOrRejectRequestService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionRejectRequest(Context context, String gameName, String msgID) {
+    public static void startActionRejectRequest(Context context, String gameName, String userName, Account account) {
         CPHandler.removeGame(context,context.getContentResolver().
                 acquireContentProviderClient(DBManager.CONTENTURI),gameName);
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        String phoneNumber = telephonyManager.getLine1Number();
+        StringBuilder message = new StringBuilder();
         Bundle bundle = new Bundle();
-        bundle.putString(context.getString(R.string.asyncBundlesubject),context.getString(R.string.asyncsendsubjecttype));
-        bundle.putString("to",msgID);
-        Bundle msgBundle = new Bundle();
-        String message = gameName+"\n"+context.getString(R.string.rejectgamerequest);
-        msgBundle.putString("message", message);
-        bundle.putBundle(context.getString(R.string.asyncmessagebundle),msgBundle);
-        context.getContentResolver().requestSync(MainTicTacToeActivity.createSyncAccount(context),MainTicTacToeActivity.AUTHORITY,bundle);
+        bundle.putString(context.getString(R.string.asyncbundleintent),context.getString(R.string.asyncsendintent));
+
+        message.append(userName);
+        message.append("\n");
+        message.append(phoneNumber);
+        message.append("\n");
+        message.append(context.getString(R.string.rejectgamerequest));
+        message.append("\n");
+        message.append(gameName);
+
+        bundle.putString(context.getString(R.string.asyncmessage),message.toString());
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
+        bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE,true);
+        context.getContentResolver().requestSync(account,MainTicTacToeActivity.AUTHORITY,bundle);
     }
 
     public AcceptOrRejectRequestService() {
@@ -71,14 +96,16 @@ public class AcceptOrRejectRequestService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d("","AcceptorReject");
         if (intent != null) {
             final String action = intent.getAction();
             final String gameName = intent.getStringExtra(EXTRA_GAME_NAME);
-            final String msgID = intent.getStringExtra(EXTRA_MSG_ID);
+            final String userName = intent.getStringExtra(EXTRA_MSG_ID);
+            final Account account = intent.getParcelableExtra(EXTRA_ACCOUNT);
             if (ACTION_ACCEPT_REQUEST.equals(action)) {
-                startActionAcceptRequest(getApplicationContext(), gameName,msgID);
+                startActionAcceptRequest(getApplicationContext(), gameName,userName,account);
             } else if (ACTION_REJECT_REQUEST.equals(action)) {
-                startActionRejectRequest(getApplicationContext(), gameName, msgID);
+                startActionRejectRequest(getApplicationContext(), gameName, userName,account);
             }
         }
     }

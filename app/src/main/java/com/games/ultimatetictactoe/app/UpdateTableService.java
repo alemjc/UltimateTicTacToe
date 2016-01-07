@@ -3,6 +3,7 @@ package com.games.ultimatetictactoe.app;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.util.Log;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -34,13 +35,15 @@ public class UpdateTableService extends IntentService {
 
     private void startActionUpdateTable(Context context, String row, String coordinates, String gameName,
                                               int tableState) {
+        Log.d("startActionUpdateTable","table is getting updated");
         CPHandler.updateTable(context,context.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI),
                 null,coordinates,tableState,row,gameName);
     }
 
     private void startActionUpdatePlayer(Context context, String gameName, String opponentID, int currentPlayer){
+        Log.d("startActionUpdatePlayer","player is getting updated");
         CPHandler.updateCurrentPLayer(context,context.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI),
-                gameName,opponentID,currentPlayer);
+                null,false,gameName,opponentID,currentPlayer);
     }
 
     private void startActionUpdateGameState(Context context,String gameName, int gameState){

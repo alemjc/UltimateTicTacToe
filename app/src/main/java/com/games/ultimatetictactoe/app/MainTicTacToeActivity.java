@@ -5,16 +5,12 @@ import android.accounts.AccountManager;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +19,6 @@ import com.firebase.client.Firebase;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 
-import java.net.URI;
 
 
 public class MainTicTacToeActivity extends FragmentActivity implements GameIntroFragment.OnGameIntroInteractionListener, ItemFragment.OnGameListFragmentInteractionListener,
@@ -33,11 +28,13 @@ GameTable.OnFragmentInteractionListener{
     public static final String ACCOUNT = "dummyAccount";
     private static final int GOOGLEAPPSERVICESREQUEST=0x001;
     private static final String TOPFRAGMENT = "top";
+    Account account;
 
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("on super create","klk!!!!!!!!!!!!!!!!!!!");
         setContentView(R.layout.activity_main_tic_tac_toe);
         Firebase.setAndroidContext(this);
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
@@ -45,8 +42,8 @@ GameTable.OnFragmentInteractionListener{
         googleApiAvailability.getErrorDialog(this,errorCode,GOOGLEAPPSERVICESREQUEST);
         Intent registrationServiceIntent = new Intent(this,RegistrationService.class);
         startService(registrationServiceIntent);
-
-        Account account = createSyncAccount(this);
+        account = new Account(ACCOUNT,ACCOUNTTYPE);
+        createSyncAccount(this);
         FragmentManager fragmentManager = getFragmentManager();
         GameIntroFragment gameIntroFragment = new GameIntroFragment();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -76,17 +73,16 @@ GameTable.OnFragmentInteractionListener{
         }
     }
 
-    public static Account createSyncAccount(Context c){
-        Account account = new Account(ACCOUNT,ACCOUNTTYPE);
+    private void createSyncAccount(Context c){
         AccountManager accountManager = (AccountManager)c.getSystemService(Context.ACCOUNT_SERVICE);
 
         if(accountManager.addAccountExplicitly(account,null,null)){
 
-            return account;
+
         }
         else{
             Log.d("createSyncAccount","account could not be created");
-            return null;
+
         }
 
 
@@ -132,12 +128,13 @@ GameTable.OnFragmentInteractionListener{
     }
 
     @Override
-    public void onGameListFragmentInteraction(String content) {
-        String gameOpponent[] = content.split(" ");
-        GameTable gameTable = GameTable.newInstance(gameOpponent[0],gameOpponent[1]);
+    public void onGameListFragmentInteraction(String userName,String gameName) {
+        GameTable gameTable = GameTable.newInstance(userName,gameName);
         FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.popBackStack();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.space,gameTable,TOPFRAGMENT);
+        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
 
 

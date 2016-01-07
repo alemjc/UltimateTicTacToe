@@ -19,7 +19,6 @@ public class DBManager extends ContentProvider {
 
     // GAME Name information
     public static final String GAMETABLENAME="gametable";
-    public static final String GAMETABLE_OPPONENTSID_COLUMN = "opponent";
     public static final String GAMETABLE_OPPONENTSUSERNAME_COLUMN = "opponentUsername";
     public static final String GAMETABLE_STATE = "gameState";
     public static final String GAMETABLE_GAME_COLUMN = "gameName";
@@ -33,7 +32,7 @@ public class DBManager extends ContentProvider {
     public static final String TABLE_STATE_COLUMN = "statecolumn";
     public static final String TABLE_ROW_COLUMN = "tablerow";
     public static final String GAME_NAME_COLUMN = "gamename";
-    private static final String AUTHORITY = "com.games.ultimatetictactoe.app.DB";
+    public static final String AUTHORITY = "com.games.ultimatetictactoe.app.DB";
     public static final Uri CONTENTURI = Uri.parse("content://"+AUTHORITY);
     public static final int TICTACTOETABLE = 1;
     public static final int TICTACTOEGAMENAME = 2;
@@ -228,7 +227,6 @@ public class DBManager extends ContentProvider {
 
             db.execSQL("CREATE TABLE IF NOT EXISTS "+GAMETABLENAME+"( "+id+" INTEGER INCREMENTS PRIMARY KEY, "+
                                                                         GAMETABLE_GAME_COLUMN+ " VARCHAR(100), "+
-                                                                        GAMETABLE_OPPONENTSID_COLUMN +" VARCHAR(400), "+
                                                                         GAMETABLE_OPPONENTSUSERNAME_COLUMN+" VARCHAR(400), "+
                                                                         GAMETABLE_STATE+" INTEGER, "+
                                                                         GAMETABLE_CURRENTTURN_COLUMN+" INTEGER, "+

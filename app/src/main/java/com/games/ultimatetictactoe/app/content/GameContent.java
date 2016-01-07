@@ -32,20 +32,18 @@ public class GameContent {
 
     public static void addItem(GameItem item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        ITEM_MAP.put(item.userName, item);
     }
 
     /**
      * A dummy item representing a piece of content.
      */
     public static class GameItem {
-        public String id;
         public String gameName;
         public String userName;
 
-        public GameItem(String id,String userName, String gameName) {
+        public GameItem(String userName,String gameName) {
             this.userName = userName;
-            this.id = id;
             this.gameName = gameName;
         }
 

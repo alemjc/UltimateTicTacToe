@@ -14,22 +14,23 @@ import com.google.android.gms.iid.InstanceID;
  * Created by alemjc on 11/17/15.
  */
 public class RegistrationService extends IntentService {
-    private Context context;
+
     public RegistrationService(){
         this(null);
     }
     public RegistrationService(String name) {
         super(name);
-        context = getApplicationContext();
+
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Context context = getApplicationContext();
         SharedPreferences preferences = this.getSharedPreferences(MainTicTacToeActivity.class.getName(), Context.MODE_PRIVATE);
         String defaultSenderID = context.getString(R.string.gcm_defaultSenderId);
         InstanceID instanceID = InstanceID.getInstance(this);
         SharedPreferences.Editor editor = preferences.edit();
-        String tokenSentKey = context.getString(R.string.tokenAcquireAndSent);
+        String tokenSentKey = context.getString(R.string.tokenacquiredandSent);
         String myTokenKey = context.getString(R.string.mygcmtoken);
         try{
             String token = instanceID.getToken(defaultSenderID, GoogleCloudMessaging.INSTANCE_ID_SCOPE,null);
@@ -60,13 +61,13 @@ public class RegistrationService extends IntentService {
 
     private boolean sendRegistrationTokenToServer(String token){
         //TODO: send registration token to our database server.
-
+        Context context = getApplicationContext();
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         String phoneNumber = telephonyManager.getLine1Number();
 
         if(phoneNumber != null) {
-            Firebase firebaseRef = new Firebase(context.getString(R.string.fireBaseDB));
-            Firebase usersRef = firebaseRef.child("users");
+            Firebase fireBaseRef = new Firebase(context.getString(R.string.fireBaseDB));
+            Firebase usersRef = fireBaseRef.child("users");
             usersRef.child(phoneNumber).setValue(token);
             return true;
         }

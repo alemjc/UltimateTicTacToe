@@ -6,7 +6,8 @@ import java.util.ArrayList;
  * Created by jonchen on 11/7/2015.
  */
 public class GameChecker {
-    public enum STATE {PLAYER,OPPONENT,NONE,TIE};
+    public enum STATE {PLAYER,OPPONENT,NONE,TIE}
+
     private GameChecker(){}
 
     public static STATE checkBoard(int[][] tableIndex, String coordinates,int player,int opponent){
@@ -72,7 +73,7 @@ public class GameChecker {
     }
 
     public static STATE checkDiagonal(int x, int y, int[][] tableIndex, int player, int enemy){
-        int tmpX1,tmpX2, tmpY1, tmpY2;
+        /*int tmpX1,tmpX2, tmpY1, tmpY2;
         if(x!=y){
             tmpX1=x+1%3;
             tmpY1=y+1%3;
@@ -84,11 +85,104 @@ public class GameChecker {
             tmpX2=x-1;
             tmpY2=y-1;
         }
+
+
         if(tableIndex[tmpX1][tmpY1]==player && tableIndex[tmpX2][tmpY2]==player){
             return STATE.PLAYER;
         }else if(tableIndex[tmpX1][tmpY1]==enemy || tableIndex[tmpX2][tmpY2]==enemy){
             return STATE.TIE;
         }else{
+            return STATE.NONE;
+        }*/
+
+        if(x == 0 && y == 0){
+            int tmpX1,tmpX2, tmpY1, tmpY2;
+            tmpX1 = x+1;
+            tmpY1 = y+1;
+            tmpX2 = x+2;
+            tmpY2 = y+2;
+
+            if(tableIndex[tmpX1][tmpY1]==player && tableIndex[tmpX2][tmpY2]==player){
+                return STATE.PLAYER;
+            }else if(tableIndex[tmpX1][tmpY1]==enemy || tableIndex[tmpX2][tmpY2]==enemy){
+                return STATE.TIE;
+            }else {
+                return STATE.NONE;
+            }
+        }
+        else if(x == 0 && y == 2){
+            int tmpX1,tmpX2, tmpY1, tmpY2;
+            tmpX1 = x+1;
+            tmpY1 = y-1;
+            tmpX2 = x+2;
+            tmpY2 = y-2;
+
+            if(tableIndex[tmpX1][tmpY1]==player && tableIndex[tmpX2][tmpY2]==player){
+                return STATE.PLAYER;
+            }else if(tableIndex[tmpX1][tmpY1]==enemy || tableIndex[tmpX2][tmpY2]==enemy){
+                return STATE.TIE;
+            }else {
+                return STATE.NONE;
+            }
+
+        }
+
+        else if (x == 2 && y == 0){
+            int tmpX1,tmpX2, tmpY1, tmpY2;
+            tmpX1 = x-1;
+            tmpY1 = y+1;
+            tmpX2 = x-2;
+            tmpY2 = y+2;
+
+            if(tableIndex[tmpX1][tmpY1]==player && tableIndex[tmpX2][tmpY2]==player){
+                return STATE.PLAYER;
+            }else if(tableIndex[tmpX1][tmpY1]==enemy || tableIndex[tmpX2][tmpY2]==enemy){
+                return STATE.TIE;
+            }else {
+                return STATE.NONE;
+            }
+        }
+        else if(x == 2 && y == 2){
+            int tmpX1,tmpX2, tmpY1, tmpY2;
+            tmpX1 = x-1;
+            tmpY1 = y-1;
+            tmpX2 = x-2;
+            tmpY2 = y-2;
+
+            if(tableIndex[tmpX1][tmpY1]==player && tableIndex[tmpX2][tmpY2]==player){
+                return STATE.PLAYER;
+            }else if(tableIndex[tmpX1][tmpY1]==enemy || tableIndex[tmpX2][tmpY2]==enemy){
+                return STATE.TIE;
+            }else {
+                return STATE.NONE;
+            }
+
+        }
+
+        else if(x == 1 && y ==1){
+            int tmpX1,tmpX2,tmpY1,tmpY2,tmpX3,tmpX4,tmpY3,tmpY4;
+            tmpX1 = x-1;
+            tmpY1 = y-1;
+            tmpX2 = x+1;
+            tmpY2 = y+1;
+            tmpX3 = x-1;
+            tmpY3 = y+1;
+            tmpX4 = x+1;
+            tmpY4 = y-1;
+
+            if((tableIndex[tmpX1][tmpY1]==player && tableIndex[tmpX2][tmpY2]==player) ||
+                    (tableIndex[tmpX3][tmpY3]==player && tableIndex[tmpX4][tmpY4]==player)){
+                return STATE.PLAYER;
+            }else if((tableIndex[tmpX1][tmpY1]==enemy || tableIndex[tmpX2][tmpY2]==enemy) &&
+                    (tableIndex[tmpX3][tmpY3]==enemy || tableIndex[tmpX4][tmpY4]==enemy)){
+                return STATE.TIE;
+            }else {
+                return STATE.NONE;
+            }
+
+        }
+
+        else{
             return STATE.NONE;
         }
     }
