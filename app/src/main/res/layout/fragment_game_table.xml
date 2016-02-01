@@ -1,9 +1,10 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
-
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             android:background="@drawable/gametablebackground"
              tools:context="com.games.ultimatetictactoe.app.GameTable">
+
 
         <GridLayout
             android:layout_width="wrap_content"
@@ -11,91 +12,81 @@
             android:layout_gravity="center"
             android:rowCount="3"
             android:columnCount="3"
+            android:layout_centerInParent="true"
             android:orientation="horizontal"
             android:id="@+id/gameTable">
                 <GridLayout android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/table00"
-                            android:rowCount="3"
-                            android:columnCount ="3"
-                            android:orientation="horizontal"
                             style="@style/leftTopCornerTable"
                             android:tag="t00"
                     >
 
 
-
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c0t0"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginTop="0dp"
                             android:tag="00"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c1t0"
-                            android:src="@drawable/rszbluefabric"
+                            android:layout_marginTop="0dp"
                             android:tag="01"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c2t0"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
+                            android:layout_marginTop="0dp"
                             android:tag="02"
                             style="@style/tile"
                             />
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c0t0"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
                             android:tag="10"
                             style="@style/tile"
 
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c1t0"
-                            android:src="@drawable/rszbluefabric"
+                            
                             android:tag="11"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c2t0"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
                             android:tag="12"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c0t0"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="20"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c1t0"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
                             android:tag="21"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c2t0"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
+                            android:layout_marginRight="0dp"
                             android:tag="22"
                             style="@style/tile"
                             />
@@ -105,83 +96,74 @@
                 <GridLayout android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/table01"
-                            android:rowCount="3"
-                            android:columnCount ="3"
-                            android:orientation="horizontal"
                             style="@style/middleTopTable"
                             android:tag="t01"
                     >
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c0t1"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginTop="0dp"
                             android:tag="00"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c1t1"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
                             android:tag="01"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c2t1"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
+                            android:layout_marginTop="0dp"
                             android:tag="02"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c0t1"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
                             android:tag="10"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c1t1"
-                            android:src="@drawable/rszbluefabric"
+                            
                             android:tag="11"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c2t1"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
                             android:tag="12"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c0t1"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="20"
                             style="@style/tile"
 
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c1t1"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
                             android:tag="21"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c2t1"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
+                            android:layout_marginRight="0dp"
                             android:tag="22"
                             style="@style/tile"
                             />
@@ -190,81 +172,72 @@
                 <GridLayout android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/table02"
-                            android:rowCount="3"
-                            android:columnCount="3"
-                            android:orientation="horizontal"
                             style="@style/rightTopCornerTable"
                             android:tag="t02"
                     >
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c0t2"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginTop="0dp"
                             android:tag="00"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c1t2"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
                             android:tag="01"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c2t2"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
+                            android:layout_marginRight="0dp"
                             android:tag="02"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c0t2"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
                             android:tag="10"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c1t2"
-                            android:src="@drawable/rszbluefabric"
+                            
                             android:tag="11"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c2t2"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
                             android:tag="12"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c0t2"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="20"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c1t2"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
                             android:tag="21"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c2t2"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="22"
                             style="@style/tile"
                             />
@@ -276,83 +249,74 @@
                 <GridLayout android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/table10"
-                            android:rowCount="3"
-                            android:columnCount="3"
-                            android:orientation="horizontal"
                             style="@style/middleLeftTable"
                             android:tag="t10"
                     >
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c0t3"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
+                            android:layout_marginLeft="0dp"
                             android:tag="00"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c1t3"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
                             android:tag="01"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c2t3"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
+                            android:layout_marginRight="0dp"
                             android:tag="02"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c0t3"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
                             android:tag="10"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c1t3"
-                            android:src="@drawable/rszbluefabric"
+                            
                             android:tag="11"
                             style="@style/tile"
 
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c2t3"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
                             android:tag="12"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c0t3"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="20"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c1t3"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
                             android:tag="21"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c2t3"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="22"
                             style="@style/tile"
                             />
@@ -363,82 +327,73 @@
                 <GridLayout android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/table11"
-                            android:rowCount="3"
-                            android:columnCount="3"
-                            android:orientation="horizontal"
                             android:tag="t11"
                             style="@style/middleTable"
                     >
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c0t4"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginTop="0dp"
                             android:tag="00"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c1t4"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
                             android:tag="01"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c2t4"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
+                            android:layout_marginRight="0dp"
                             android:tag="02"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c0t4"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
                             android:tag="10"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c1t4"
-                            android:src="@drawable/rszbluefabric"
+                            
                             android:tag="11"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c2t4"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
                             android:tag="12"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c0t4"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="20"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c1t4"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
                             android:tag="21"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c2t4"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="22"
                             style="@style/tile"
                             />
@@ -450,82 +405,73 @@
                 <GridLayout android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/table12"
-                            android:rowCount="3"
-                            android:columnCount="3"
-                            android:orientation="horizontal"
                             android:tag="t12"
                             style="@style/middleRightTable"
                     >
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c0t5"
-                            android:src="@drawable/rszbluefabric"
+                            
                             android:tag="00"
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginTop="0dp"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c1t5"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
                             android:tag="01"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c2t5"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
+                            android:layout_marginTop="0dp"
                             android:tag="02"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c0t5"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
                             android:tag="10"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c1t5"
-                            android:src="@drawable/rszbluefabric"
+                            
                             android:tag="11"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c2t5"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
                             android:tag="12"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c0t5"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="20"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c1t5"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
                             android:tag="21"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c2t5"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="22"
                             style="@style/tile"
                             />
@@ -536,82 +482,73 @@
                 <GridLayout android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/table20"
-                            android:rowCount="3"
-                            android:columnCount="3"
-                            android:orientation="horizontal"
                             android:tag="t20"
                             style="@style/bottomLeftCornerTable"
                     >
 
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c0t6"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginTop="0dp"
                             android:tag="00"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c1t6"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
                             android:tag="01"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c2t6"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
+                            android:layout_marginRight="0dp"
                             android:tag="02"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c0t6"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
                             android:tag="10"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c1t6"
-                            android:src="@drawable/rszbluefabric"
+                            
                             android:tag="11"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c2t6"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
                             android:tag="12"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c0t6"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="20"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c1t6"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
                             android:tag="21"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c2t6"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
+                            android:layout_marginRight="0dp"
                             android:tag="22"
                             style="@style/tile"
                             />
@@ -622,81 +559,72 @@
                 <GridLayout android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/table21"
-                            android:rowCount="3"
-                            android:columnCount="3"
-                            android:orientation="horizontal"
                             android:tag="t21"
                             style="@style/middleBottomTable"
                     >
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c0t7"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginTop="0dp"
                             android:tag="00"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c1t7"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
                             android:tag="01"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c2t7"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginTop="0dp"
+                            android:layout_marginRight="0dp"
                             android:tag="02"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c0t7"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
                             android:tag="10"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c1t7"
-                            android:src="@drawable/rszbluefabric"
+                            
                             android:tag="11"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c2t7"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
                             android:tag="12"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c0t7"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="20"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c1t7"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
                             android:tag="21"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c2t7"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="22"
                             style="@style/tile"
                             />
@@ -708,81 +636,66 @@
                 <GridLayout android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:id="@+id/table22"
-                            android:rowCount="3"
-                            android:columnCount="3"
-                            android:orientation="horizontal"
                             android:tag="t22"
                             style="@style/bottomRightCornerTable"
                     >
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c0t8"
-                            android:src="@drawable/rszbluefabric"
+                            android:layout_marginTop="0dp"
+                            android:layout_marginLeft="0dp"
                             android:tag="00"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c1t8"
-                            android:src="@drawable/rszbluefabric"
+                            android:layout_marginTop="0dp"
                             android:tag="01"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r0c2t8"
-                            android:src="@drawable/rszbluefabric"
+                            android:layout_marginTop="0dp"
+                            android:layout_marginRight="0dp"
                             android:tag="02"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c0t8"
-                            android:src="@drawable/rszbluefabric"
+                            android:layout_marginLeft="0dp"
                             android:tag="10"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c1t8"
-                            android:src="@drawable/rszbluefabric"
                             android:tag="11"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r1c2t8"
-                            android:src="@drawable/rszbluefabric"
+                            android:layout_marginRight="0dp"
                             android:tag="12"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c0t8"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="20"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c1t8"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginBottom="0dp"
                             android:tag="21"
                             style="@style/tile"
                             />
                         <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/r2c2t8"
-                            android:src="@drawable/rszbluefabric"
+                            
+                            android:layout_marginRight="0dp"
+                            android:layout_marginBottom="0dp"
                             android:tag="22"
                             style="@style/tile"
                             />
@@ -790,4 +703,27 @@
                 </GridLayout>
         </GridLayout>
 
-</FrameLayout>
+    <ImageView
+        android:id="@+id/turnView"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_above="@id/gameTable"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        />
+
+
+    <ImageButton
+            android:src="@drawable/quit"
+            android:id="@+id/quitButton"
+            android:background="@android:color/transparent"
+            android:layout_below="@id/gameTable"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+
+</RelativeLayout>

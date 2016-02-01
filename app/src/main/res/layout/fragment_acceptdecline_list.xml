@@ -3,19 +3,33 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
+             android:animateLayoutChanges="true"
+             android:background="@drawable/paperbackground"
              tools:context="com.games.ultimatetictactoe.app.AcceptDeclineFragment">
 
 
     <ListView
             android:id="@android:id/list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+        />
 
     <TextView
             android:id="@android:id/empty"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"/>
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            android:paddingTop="0dp"
+            android:fontFamily="@string/fontfamily"
+            android:textSize="20sp"
+            android:background="@drawable/listitembackground"
+            android:textColor="@color/indigo"
+            />
 
 
 </FrameLayout>

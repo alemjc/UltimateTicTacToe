@@ -11,6 +11,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +23,7 @@ import com.google.android.gms.common.ConnectionResult;
 
 
 
-public class MainTicTacToeActivity extends FragmentActivity implements GameIntroFragment.OnGameIntroInteractionListener, ItemFragment.OnGameListFragmentInteractionListener,
+public class MainTicTacToeActivity extends AppCompatActivity implements GameIntroFragment.OnGameIntroInteractionListener, ItemFragment.OnGameListFragmentInteractionListener,
 GameTable.OnFragmentInteractionListener{
     public static final String AUTHORITY = "com.games.ultimatetictactoe.app.DB";
     public static final String ACCOUNTTYPE = "authentication.com";
@@ -34,8 +36,13 @@ GameTable.OnFragmentInteractionListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("on super create","klk!!!!!!!!!!!!!!!!!!!");
         setContentView(R.layout.activity_main_tic_tac_toe);
+
+        SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+        boolean firstTime = preferences.getBoolean(getString(R.string.first_time),true);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
+
         Firebase.setAndroidContext(this);
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int errorCode =  googleApiAvailability.isGooglePlayServicesAvailable(this);
@@ -49,9 +56,15 @@ GameTable.OnFragmentInteractionListener{
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(R.id.space, gameIntroFragment, TOPFRAGMENT);
         fragmentTransaction.commit();
-        Log.d("onCreate","got here");
 
-
+        if(firstTime){
+            fragmentTransaction = fragmentManager.beginTransaction();
+            RulesFragment rulesFragment = new RulesFragment();
+            fragmentTransaction.replace(R.id.space,rulesFragment,TOPFRAGMENT);
+            fragmentTransaction.setTransitionStyle(FragmentTransaction.TRANSIT_ENTER_MASK);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
 
 
     }
@@ -81,7 +94,8 @@ GameTable.OnFragmentInteractionListener{
 
         }
         else{
-            Log.d("createSyncAccount","account could not be created");
+            // Account was not created. This could be because the account was already created or some other error
+            // This should be logged.
 
         }
 
@@ -116,12 +130,12 @@ GameTable.OnFragmentInteractionListener{
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        /*int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
 
@@ -153,6 +167,7 @@ GameTable.OnFragmentInteractionListener{
             ItemFragment itemFragment = ItemFragment.newInstance(ItemFragment.NEWGAME);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.space,itemFragment,TOPFRAGMENT);
+            fragmentTransaction.setTransitionStyle(FragmentTransaction.TRANSIT_ENTER_MASK);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
 
@@ -161,6 +176,7 @@ GameTable.OnFragmentInteractionListener{
             ItemFragment itemFragment = ItemFragment.newInstance(ItemFragment.CONTINUE);
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.space,itemFragment,TOPFRAGMENT);
+            fragmentTransaction.setTransitionStyle(FragmentTransaction.TRANSIT_ENTER_MASK);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
 
@@ -170,8 +186,18 @@ GameTable.OnFragmentInteractionListener{
             AcceptDeclineFragment acceptDeclineFragment = AcceptDeclineFragment.newInstance();
             FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.space,acceptDeclineFragment,TOPFRAGMENT);
+            fragmentTransaction.setTransitionStyle(FragmentTransaction.TRANSIT_ENTER_MASK);
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
+        }
+        else if(usersChoice.equals(RULES)){
+            RulesFragment rulesFragment = new RulesFragment();
+            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.space,rulesFragment,TOPFRAGMENT);
+            fragmentTransaction.setTransitionStyle(FragmentTransaction.TRANSIT_ENTER_MASK);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+
         }
     }
 

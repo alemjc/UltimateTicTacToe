@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.Context;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -96,7 +95,6 @@ public class AcceptOrRejectRequestService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d("","AcceptorReject");
         if (intent != null) {
             final String action = intent.getAction();
             final String gameName = intent.getStringExtra(EXTRA_GAME_NAME);

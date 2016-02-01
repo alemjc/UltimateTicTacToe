@@ -1,0 +1,122 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="@drawable/rulesbackground"
+             tools:context="com.games.ultimatetictactoe.app.RulesFragment">
+
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical">
+
+      <TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@android:style/TextAppearance.Material.Display1"
+          android:textStyle="bold"
+          android:layout_marginTop="25dp"
+          android:gravity="center"
+          android:text="@string/guideTitle"/>
+
+      <ScrollView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content">
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="vertical"
+              android:isScrollContainer="true"
+              android:scrollbars="vertical"
+              android:scrollbarAlwaysDrawVerticalTrack="true"
+              >
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesTitleText"
+                  android:text="@string/rulesFirstTitle"
+                  />
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesBodyText"
+                  android:text="@string/firstItemFirstSection"/>
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesBodyText"
+                  android:text="@string/secondItemFirstSection"
+                  />
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesBodyText"
+                  android:text="@string/thirdItemFirstSection"/>
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesTitleText"
+                  android:text="@string/rulesSecondTitle"
+                  />
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesBodyText"
+                  android:text="@string/firstItemSecondSection"
+                  />
+
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesBodyText"
+                  android:text="@string/secondItemSecondSection"
+                  />
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesBodyText"
+                  android:textColor="@color/yellow"
+                  android:text="@string/thirdItemSecondSection"
+                  />
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesBodyText"
+                  android:textColor="@color/mytablecolor"
+                  android:text="@string/fourthItemSecondSection"
+                  />
+
+              <TextView
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  style="@style/rulesBodyText"
+                  android:textColor="@color/opponenttablecolor"
+                  android:text="@string/fifthIemSecondSection"
+                  />
+          </LinearLayout>
+
+
+      </ScrollView>
+
+      <!--<TextView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@android:style/TextAppearance.Material.Display1"
+          android:paddingLeft="25dp"
+          android:text="<- Click back to exit"
+
+          />-->
+
+
+  </LinearLayout>
+</FrameLayout>

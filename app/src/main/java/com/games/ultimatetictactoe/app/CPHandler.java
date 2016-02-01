@@ -5,7 +5,6 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -15,12 +14,14 @@ public class CPHandler {
 
     private CPHandler(){}
 
-    public static Uri insert(Context c, ContentProviderClient provider, String tableCoordinates, int tableState, String row, String gameName){
+    public static Uri insert(Context c, ContentProviderClient provider, String tableCoordinates, int tableState,int tableTiles ,String row, String lastMove, String gameName){
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBManager.GAME_NAME_COLUMN,gameName);
         contentValues.put(DBManager.TABLE_STATE_COLUMN,tableState);
         contentValues.put(DBManager.TABLE_COORDINATES_COLUMN,tableCoordinates);
         contentValues.put(DBManager.TABLE_ROW_COLUMN,row);
+        contentValues.put(DBManager.TABLE_LAST_MOVE,lastMove);
+        contentValues.put(DBManager.TABLE_TILES_FREE,tableTiles);
 
         Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.TABLENAME);
 
@@ -44,7 +45,7 @@ public class CPHandler {
 
     public static Uri insertGameName(Context c, ContentProviderClient provider, String gameName,String userName, int state, int currentTurn){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DBManager.GAMETABLE_GAME_COLUMN,gameName);
+        contentValues.put(DBManager.GAME_NAME_COLUMN,gameName);
         contentValues.put(DBManager.GAMETABLE_STATE,state);
         contentValues.put(DBManager.GAMETABLE_CURRENTTURN_COLUMN,currentTurn);
         contentValues.put(DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN,userName);
@@ -58,6 +59,8 @@ public class CPHandler {
         }
         return returnUri;
     }
+    
+    
 
     public static int getCurrentPlayer(Context c, ContentProviderClient provider, String gameName, String userName){
         int returnInt;
@@ -65,7 +68,7 @@ public class CPHandler {
         Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.GAMETABLENAME);
         Cursor cursor = null;
         try {
-          cursor = provider.query(uri, new String[]{DBManager.GAMETABLE_CURRENTTURN_COLUMN}, DBManager.GAMETABLE_GAME_COLUMN + "= ?"
+          cursor = provider.query(uri, new String[]{DBManager.GAMETABLE_CURRENTTURN_COLUMN}, DBManager.GAME_NAME_COLUMN + "= ?"
                             + " AND " + DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN + " = ?", new String[]{gameName, userName},
                     null, null);
         }
@@ -85,17 +88,30 @@ public class CPHandler {
         return returnInt;
     }
 
-    public static String[][] getGameNamesWithOpponentsWithState(Context c, ContentProviderClient provider, int state){
+    public static String[][] getGameNamesWithOpponentsWithStates(Context c, ContentProviderClient provider, int states[]){
+        if(states == null || states.length == 0){
+            return null;
+        }
 
         String returnGames [][];
-        Log.d("","puffff!!!!!!!!!!!!!!!!!!!!!!");
-
+        String projection[] = {DBManager.GAME_NAME_COLUMN,DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN};
+        StringBuilder selection = new StringBuilder();
+        String args [] = new String[states.length];
+        selection.append(DBManager.GAMETABLE_STATE+" in (");
         Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.GAMETABLENAME);
         Cursor cursor = null;
 
+        for(int i = 0; i < states.length; i++){
+            args[i] = states[i]+"";
+            selection.append("?");
+            selection.append(",");
+        }
+
+        selection.deleteCharAt(selection.length()-1);
+        selection.append(")");
+
         try {
-            cursor = provider.query(uri, new String[]{DBManager.GAMETABLE_GAME_COLUMN,DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN}
-                    , DBManager.GAMETABLE_STATE + " =? ", new String[]{state + ""}, null);
+            cursor = provider.query(uri,projection, selection.toString(), args, null);
         }
         catch(RemoteException e){
             Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
@@ -103,7 +119,6 @@ public class CPHandler {
 
 
         if(cursor == null){
-            Log.d("","FU!!!!!!!!!!");
             return null;
         }
         cursor.moveToFirst();
@@ -111,7 +126,7 @@ public class CPHandler {
         int index = 0;
         while(!cursor.isAfterLast()){
             returnGames[index][0] = cursor.getString(cursor.getColumnIndex(DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN));
-            returnGames[index][1] = cursor.getString(cursor.getColumnIndex(DBManager.GAMETABLE_GAME_COLUMN));
+            returnGames[index][1] = cursor.getString(cursor.getColumnIndex(DBManager.GAME_NAME_COLUMN));
             index++;
             cursor.moveToNext();
         }
@@ -126,7 +141,7 @@ public class CPHandler {
         Uri uri = Uri.parse(DBManager.CONTENTURI+"/"+DBManager.DATABASENAME+"/"+DBManager.GAMETABLENAME);
         int affectedRows = 0;
         try {
-            provider.delete(uri, DBManager.GAMETABLE_GAME_COLUMN + " = ?", new String[]{gameName});
+            provider.delete(uri, DBManager.GAME_NAME_COLUMN + " = ?", new String[]{gameName});
         }
         catch(RemoteException e){
             Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
@@ -146,18 +161,12 @@ public class CPHandler {
         int affectedRows = 0;
 
         try {
-            affectedRows = provider.update(uri, contentValues, DBManager.GAMETABLE_GAME_COLUMN + " = ?"
+            affectedRows = provider.update(uri, contentValues, DBManager.GAME_NAME_COLUMN + " = ?"
                             + " AND " + DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN + " = ?",
                     new String[]{gameName, userName});
 
-            Log.d("updateCurrentPlayer","updating users. Number of users affected is: "+affectedRows);
-            Log.d("updateCurrentPlayer","current player will be: "+currentPlayer);
-            Log.d("updateCurrentPlayer","userName is: "+userName);
-            Log.d("updateCurrentPlayer","gameName: "+gameName);
-
             if(affectedRows == 1 && notify){
-                c.getContentResolver().notifyChange(Uri.parse(DBManager.CONTENTURI+"/"+DBManager.DATABASENAME+"/"+
-                        DBManager.GAMETABLE_CURRENTTURN_COLUMN),contentObserver);
+                c.getContentResolver().notifyChange(uri,contentObserver);
             }
         }
         catch(RemoteException e){
@@ -174,7 +183,7 @@ public class CPHandler {
         int affectedRows = 0;
 
         try {
-            affectedRows = provider.update(uri, contentValues, DBManager.GAMETABLE_GAME_COLUMN + " = ?", new String[]{gameName});
+            affectedRows = provider.update(uri, contentValues, DBManager.GAME_NAME_COLUMN + " = ?", new String[]{gameName});
         }
         catch(RemoteException e){
             Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
@@ -189,7 +198,7 @@ public class CPHandler {
         Cursor cursor = null;
 
         try {
-            provider.query(uri, new String[]{DBManager.GAMETABLE_GAME_COLUMN}, DBManager.GAMETABLE_STATE + " =?"
+            cursor = provider.query(uri, new String[]{DBManager.GAME_NAME_COLUMN}, DBManager.GAMETABLE_STATE + " =?"
                     , new String[]{"" + state}, null);
         }
         catch(RemoteException e){
@@ -214,12 +223,39 @@ public class CPHandler {
 
     }
 
+    public static int getGameState(Context c, ContentProviderClient provider,String gameName){
+        Uri uri = Uri.parse(DBManager.CONTENTURI+"/"+DBManager.DATABASENAME+"/"+DBManager.GAMETABLENAME);
+        String projection[] = {DBManager.GAMETABLE_STATE};
+        String selection = DBManager.GAME_NAME_COLUMN+"= ?";
+        String args[] = {gameName};
+        Cursor cursor = null;
+        int result = -1;
 
-    public static int updateTable(Context c,ContentProviderClient provider,ContentObserver observer,String tableCoordinates,int tableState,String row, String gameName){
+        try{
+            cursor = provider.query(uri,projection,selection,args,null);
+        }
+        catch(RemoteException e){
+                Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
+        }
+
+        if(cursor == null || cursor.getCount() == 0){
+            return result;
+        }
+
+        cursor.moveToFirst();
+        result = cursor.getInt(0);
+        cursor.close();
+
+        return result;
+    }
+
+
+    public static int updateTable(Context c,ContentProviderClient provider,ContentObserver observer,boolean notifiy,String tableCoordinates,int tableState,String row, int tilesLeft, String gameName){
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(DBManager.TABLE_STATE_COLUMN,tableState);
         contentValues.put(DBManager.TABLE_ROW_COLUMN,row);
+        contentValues.put(DBManager.TABLE_TILES_FREE,tilesLeft);
 
         Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.TABLENAME);
         String selection = DBManager.TABLE_COORDINATES_COLUMN+" = ?"+" AND "+DBManager.GAME_NAME_COLUMN+" = ?";
@@ -228,7 +264,7 @@ public class CPHandler {
 
         try {
             numUpdated = provider.update(uri, contentValues, selection, new String[]{tableCoordinates, gameName});
-            if (numUpdated > 0) {
+            if (numUpdated > 0 && notifiy) {
                 contentResolver.notifyChange(uri, observer);
             }
 
@@ -240,6 +276,53 @@ public class CPHandler {
         return numUpdated;
 
     }
+    
+    public static int updateLastMove(Context c, ContentProviderClient contentProvider, String gameName, String lastMove){
+        ContentValues contentValues = new ContentValues();
+        String selection = DBManager.GAME_NAME_COLUMN+" = ?";
+        String args[] = {gameName};
+        int numUpdated = 0;
+        Uri uri = Uri.parse(DBManager.CONTENTURI+"/"+DBManager.DATABASENAME+"/"+DBManager.TABLENAME);
+
+        contentValues.put(DBManager.TABLE_LAST_MOVE,lastMove);
+
+        try {
+            numUpdated = contentProvider.update(uri, contentValues, selection, args);
+        }
+        catch (RemoteException e){
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
+        }
+
+        return numUpdated;
+        
+    }
+
+    public static String getLastMove(Context context, ContentProviderClient contentProvider, String gameName){
+        String projection[] = {DBManager.TABLE_LAST_MOVE};
+        String selection = DBManager.GAME_NAME_COLUMN + " = ?";
+        String args [] = {gameName};
+        String lastMove;
+        Cursor cursor = null;
+
+        Uri uri = Uri.parse(DBManager.CONTENTURI+"/"+DBManager.DATABASENAME+"/"+DBManager.TABLENAME);
+
+        try {
+           cursor =contentProvider.query(uri, projection, selection, args, null);
+        }
+        catch(RemoteException e){
+            Toast.makeText(context,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
+        }
+
+        if(cursor == null || cursor.getCount() == 0){
+            return null;
+        }
+
+        cursor.moveToFirst();
+        lastMove = cursor.getString(0);
+        cursor.close();
+
+        return lastMove;
+    }
 
     public static String[] getSavedGames(Context c, ContentProviderClient provider){
 
@@ -249,7 +332,7 @@ public class CPHandler {
         Cursor cursor = null;
 
         try {
-           cursor = provider.query(contentUri, new String[]{DBManager.GAMETABLE_GAME_COLUMN}, null, null, null);
+           cursor = provider.query(contentUri, new String[]{DBManager.GAME_NAME_COLUMN}, null, null, null);
         }
         catch(RemoteException e){
             Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
@@ -280,7 +363,7 @@ public class CPHandler {
         Cursor cursor = null;
 
         try {
-           cursor = provider.query(contentUri, new String[]{DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN, DBManager.GAMETABLE_GAME_COLUMN},
+           cursor = provider.query(contentUri, new String[]{DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN, DBManager.GAME_NAME_COLUMN},
                     null, null, null);
         }
         catch(RemoteException e){
@@ -313,7 +396,7 @@ public class CPHandler {
 
         try {
             cursor = provider.query(uri, new String[]{DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN}
-                    , DBManager.GAMETABLE_GAME_COLUMN + " =?", new String[]{gameName}, null);
+                    , DBManager.GAME_NAME_COLUMN + " =?", new String[]{gameName}, null);
         }
         catch(RemoteException e){
             Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
@@ -332,6 +415,32 @@ public class CPHandler {
         return mailID;
     }
 
+    public static int getTileCountForTable(Context c, ContentProviderClient providerClient, String tableCoordinates,
+                                           String gameName){
+        int result = -1;
+        Cursor cursor = null;
+        Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.TABLENAME);
+        String projection[] = {DBManager.TABLE_TILES_FREE};
+        String selection = DBManager.GAME_NAME_COLUMN+" = ? "+ " AND " + DBManager.TABLE_COORDINATES_COLUMN+" = ?";
+        String args[] = {gameName,tableCoordinates};
+
+        try{
+            cursor = providerClient.query(uri,projection,selection,args,null);
+        }
+        catch(RemoteException e){
+            Toast.makeText(c,"Error in application. Could no complete request",Toast.LENGTH_LONG).show();
+        }
+
+        if(cursor == null || cursor.getCount() == 0){
+            return result;
+        }
+
+        cursor.moveToFirst();
+        result = cursor.getInt(0);
+        cursor.close();
+
+        return result;
+    }
 
 
     public static int getTableState(Context c, ContentProviderClient provider,String tableCoordinates, String gameName){
@@ -343,7 +452,7 @@ public class CPHandler {
         Cursor cursor = null;
 
         try {
-            provider.query(uri, new String[]{DBManager.TABLE_STATE_COLUMN}, DBManager.TABLE_COORDINATES_COLUMN + " =?" +
+            cursor = provider.query(uri, new String[]{DBManager.TABLE_STATE_COLUMN}, DBManager.TABLE_COORDINATES_COLUMN + " =?" +
                     " AND " + DBManager.GAME_NAME_COLUMN + "= ?", new String[]{tableCoordinates, gameName}, null);
         }
         catch(RemoteException e){

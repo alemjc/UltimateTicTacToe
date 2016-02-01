@@ -1,7 +1,5 @@
 package com.games.ultimatetictactoe.app;
 
-import java.util.ArrayList;
-
 /**
  * Created by jonchen on 11/7/2015.
  */
@@ -38,13 +36,10 @@ public class GameChecker {
 
     public static STATE checkRow(int x, int y, int[][] tableIndex, int player, int enemy){
         int tmpY1,tmpY2;
-        if(y!=1){
-            tmpY1=y+1%3;
-            tmpY2=y+2%3;
-        }else{
-            tmpY1=y+1;
-            tmpY2=y-1;
-        }
+
+        tmpY1=(y+1)%3;
+        tmpY2=(y+2)%3;
+
         if(tableIndex[x][tmpY1]==player && tableIndex[x][tmpY2]==player){
             return STATE.PLAYER;
         }else if(tableIndex[x][tmpY1]==enemy || tableIndex[x][tmpY2]==enemy){
@@ -56,13 +51,9 @@ public class GameChecker {
 
     public static STATE checkColumn(int x, int y, int[][] tableIndex, int player, int enemy){
         int tmpX1,tmpX2;
-        if(x!=1){
-            tmpX1=x+1%3;
-            tmpX2=x+2%3;
-        }else{
-            tmpX1=x+1;
-            tmpX2=x-1;
-        }
+        tmpX1=(x+1)%3;
+        tmpX2=(x+2)%3;
+
         if(tableIndex[tmpX1][y]==player && tableIndex[tmpX2][y]==player){
             return STATE.PLAYER;
         }else if(tableIndex[tmpX1][y]==enemy || tableIndex[tmpX2][y]==enemy){

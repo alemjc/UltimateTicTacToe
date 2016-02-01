@@ -1,13 +1,15 @@
 package com.games.ultimatetictactoe.app;
 
 import android.accounts.Account;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.*;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
@@ -20,6 +22,8 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
     private SharedPreferences sharedPreferences;
     private Context context;
     private static final String MESSAGE_ID="messageID";
+    private static final int INTENT_REQUEST_CODE = 0x15;
+    private static final int NOTIFICATION_ID = 0x1;
 
     public GameSyncAdapter(Context context, boolean autoInitialize) {
         this(context,autoInitialize,false);
@@ -41,9 +45,11 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
         * if the sync adapter was triggered by the gcm, then we expected to run by the protocol created for it.
         * if the sync adapter was triggered by some changes in the local database, then the sync adapter has to
         * send this changes to the opponent.*/
-        Log.d("","here performing some sync");
         Bundle message = null;
         String intent = extras.getString(context.getString(R.string.asyncbundleintent),"NONE");
+        Notification.Builder notificationBuilder = new Notification.Builder(context);
+        NotificationManager notificationManager = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent gameIntent = new Intent(context,MainTicTacToeActivity.class);
         int messageID = sharedPreferences.getInt(MESSAGE_ID,0);
         String unParsedMessage = extras.getString(context.getString(R.string.asyncmessage));
         if(unParsedMessage == null){
@@ -54,16 +60,22 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             return;
         }
 
-        Log.d("message",unParsedMessage);
         message = new Bundle();
         message.putString("to",parsedMessage[0]);
         message.putString("fromNumber",parsedMessage[1]);
         message.putString("subject",parsedMessage[2]);
         message.putString("data",parsedMessage[3]);
 
-        Log.d("messageBundle",message.toString());
 
         String subject = message.getString("subject","NONE");
+        gameIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        notificationBuilder.setContentTitle(context.getString(R.string.app_name));
+        notificationBuilder.setSmallIcon(R.mipmap.ic_xlauncher).
+                setContentIntent(PendingIntent.getActivity(context,INTENT_REQUEST_CODE,gameIntent,PendingIntent.FLAG_ONE_SHOT)).
+                setVibrate(new long[]{100L,600L}).
+                setAutoCancel(true);
+
 
 
 
@@ -73,7 +85,6 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             String from = message.getString("fromNumber");
             String data = message.getString("data");
             String dataParams[] = data.split(";");
-            Log.d("fromNumber",from);
             String projection[] = {ContactsContract.Data.DISPLAY_NAME};
             String selection = ContactsContract.Data.MIMETYPE+"=?"+" AND "+ContactsContract.Data.DATA1+"=?";
             String args[] = {ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,from};
@@ -88,7 +99,6 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
                 cursor.close();
             }
 
-            Log.d("username",userName);
 
             if(subject.equals(context.getString(R.string.gamerequest))){
 
@@ -98,6 +108,7 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
                 }
 
                 String gameName = dataParams[0];
+                Uri uri = Uri.parse(DBManager.CONTENTURI+"/"+ DBManager.DATABASENAME+"*"+"/"+"invitations");
 
                 CPHandler.insertGameName(context,provider,gameName,userName,
                         context.getResources().getInteger(R.integer.gamestateawaitingacceptance),
@@ -105,24 +116,30 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
                 String initialRowStates = "-1,-1,-1,-1,-1,-1,-1,-1,-1";
                 for(int i = 0; i < 3; i++){
                     for(int j = 0; j < 3; j++){
-                        CPHandler.insert(context,provider,i+""+j,-1,initialRowStates,gameName);
+                        CPHandler.insert(context,provider,i+""+j,-1,9,initialRowStates,"",gameName);
                     }
                 }
+                notificationBuilder.setContentText(userName+" sent you an invitation to play!!");
+                notificationManager.notify(NOTIFICATION_ID,notificationBuilder.build());
+                context.getContentResolver().notifyChange(uri,null);
             }
             else if(subject.equals(context.getString(R.string.acceptgamerequest))){
-                Log.d("syncadapter","receiving gamerequest acceptance");
+
                 if(dataParams.length == 0){
                     return;
                 }
 
-                Log.d("syncadapter","dataParams passed validation");
+
                 String gameName = dataParams[0];
-                Log.d("syncadapter","gameName: "+gameName);
-                int affectedRows = CPHandler.updateGameState(context,provider,gameName,context.getResources().
+
+                CPHandler.updateGameState(context,provider,gameName,context.getResources().
                                                                                 getInteger(R.integer.gamestateongoing));
-                Log.d("syncadapter","affectedRows: "+affectedRows);
+
                 CPHandler.updateCurrentPLayer(context,provider,null,true,gameName,userName,
                         context.getResources().getInteger(R.integer.myTurn));
+
+                notificationBuilder.setContentText(userName+" accepted your invitation to play!!");
+                notificationManager.notify(NOTIFICATION_ID,notificationBuilder.build());
             }
             else if(subject.equals(context.getString(R.string.rejectgamerequest))){
                 if(dataParams.length == 0){
@@ -131,21 +148,46 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
 
                 String gameName = dataParams[0];
                 CPHandler.removeGame(context,provider,gameName);
+
+                notificationBuilder.setContentText(userName+" rejected your invitation to play!!");
+                notificationManager.notify(NOTIFICATION_ID,notificationBuilder.build());
             }
 
             else if(subject.equals(context.getString(R.string.gamemove))){
 
-                if(dataParams.length != 3) return;
+
+                if(dataParams.length < 2 || dataParams.length > 3) return;
+                int tilesLeft;
                 String gameName = dataParams[0];
                 String gameState = dataParams[1];
-                String composedMove = dataParams[2];
-                String move[] = composedMove.split("()");
-                if (move.length != 3) return;
-                String coordinates = move[0];
-                String tableState = move[1];
-                String row = move[2];
-                CPHandler.updateGameState(context,provider,gameName,Integer.parseInt(gameState));
-                CPHandler.updateTable(context,provider, null, coordinates, Integer.parseInt(tableState), row, gameName);
+                if(dataParams.length == 2){
+                    int state = Integer.parseInt(gameState);
+                    CPHandler.updateGameState(context,provider,gameName,state);
+                    CPHandler.updateCurrentPLayer(context,provider,null,true,gameName,userName,context.getResources()
+                            .getInteger(R.integer.myTurn));
+                }
+                else{
+                    String composedMove = dataParams[2];
+
+                    String move[] = composedMove.split("&");
+
+                    if (move.length != 5) return;
+
+                    String coordinates = move[0];
+                    String tableState = move[1];
+                    String lastMove = move[2];
+                    String row = move[3];
+                    tilesLeft = Integer.parseInt(move[4]);
+                    CPHandler.updateGameState(context,provider,gameName,Integer.parseInt(gameState));
+                    CPHandler.updateLastMove(context,provider,gameName,lastMove);
+                    CPHandler.updateTable(context,provider, null,false, coordinates, Integer.parseInt(tableState), row, tilesLeft,gameName);
+                    CPHandler.updateCurrentPLayer(context,provider,null,true,gameName,userName,context.getResources()
+                            .getInteger(R.integer.myTurn));
+
+                }
+
+                notificationBuilder.setContentText(userName+" made a move!!");
+                notificationManager.notify(NOTIFICATION_ID,notificationBuilder.build());
             }
 
         }
@@ -155,7 +197,7 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             String selection = ContactsContract.Data.MIMETYPE+"=?"+" AND "+ContactsContract.Contacts.DISPLAY_NAME+"=?";
             Cursor cursor = null;
             String data = message.getString("data");
-            String dataParams[] = data.split("\n");
+            String dataParams[] = data.split(";");
             SharedPreferences.Editor editor = sharedPreferences.edit();
             GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(context);
 
@@ -164,16 +206,16 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             }
 
             String gameName = dataParams[0];
-            
+            String userName = message.getString("to");
 
             if(subject.equals(context.getString(R.string.gamerequest))){
-                String userName = message.getString("to");
+
                 CPHandler.insertGameName(context,provider,gameName,userName,
                         context.getResources().getInteger(R.integer.gamestateawaitingrequest),context.getResources().getInteger(R.integer.opponentsTurn));
                 String initialRowStates = "-1,-1,-1,-1,-1,-1,-1,-1,-1";
                 for(int i = 0; i < 3; i++){
                     for(int j = 0; j < 3; j++){
-                        CPHandler.insert(context,provider,i+""+j,-1,initialRowStates,gameName);
+                        CPHandler.insert(context,provider,i+""+j,-1,9,initialRowStates,"",gameName);
                     }
                 }
 
@@ -188,14 +230,95 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             message.putString("to",cursor.getString(0));
             cursor.close();
 
-            try {
-                gcm.send(context.getString(R.string.defaultsenderid) + "@gcm.googleapis.com", messageID + "", message);
-            }
-            catch(IOException e){
-                Toast.makeText(context,"Could not send message",Toast.LENGTH_LONG);
+            if(subject.equals(context.getString(R.string.gamemove))){
+                int tilesLeft;
+                String gameState = dataParams[1];
+                int state = Integer.parseInt(gameState);
+                if(state != context.getResources().getInteger(R.integer.gamestatequit)){
+                    StringBuffer buffer = new StringBuffer();
+                    String composedMove = dataParams[2];
+                    String move[] = composedMove.split("&");
+                    if (move.length != 4) return;
+                    buffer.append(dataParams[2].replace('m','o'));
+                    buffer.append("&");
+                    tilesLeft = CPHandler.getTileCountForTable(context,provider,move[0],gameName);
+                    if(tilesLeft > 0){
+                        tilesLeft--;
+                    }
+
+                    buffer.append(tilesLeft);
+
+                    if(Integer.parseInt(gameState) == context.getResources().getInteger(R.integer.gamestatewon)){
+                        message.putString("data",dataParams[0]+";"+
+                                context.getResources().getInteger(R.integer.gamestatelose)+";"+buffer);
+                    }
+                    else{
+                        message.putString("data",dataParams[0]+";"+dataParams[1]+";"+buffer);
+                    }
+                }
+
             }
 
-            editor.putInt(MESSAGE_ID,messageID+1);
+            try {
+                gcm.send(context.getString(R.string.defaultsenderid) + "@gcm.googleapis.com", messageID + "", message);
+                editor.putInt(MESSAGE_ID,messageID+1);
+
+                if(subject.equals(context.getString(R.string.gamemove))){
+                    int tilesLeft;
+                    String gameState = dataParams[1];
+                    int state = Integer.parseInt(gameState);
+
+                    if(state == context.getResources().getInteger(R.integer.gamestateongoing)){
+                        String composedMove = dataParams[2];
+                        String move[] = composedMove.split("&");
+                        if (move.length != 4) return;
+                        String coordinates = move[0];
+                        int tableState = Integer.parseInt(move[1]);
+                        String lastMove = move[2];
+                        String opponentRow = move[3];
+                        StringBuilder row = new StringBuilder();
+
+                        tilesLeft = CPHandler.getTileCountForTable(context,provider,move[0],gameName);
+                        if(tilesLeft > 0){
+                            tilesLeft--;
+                        }
+
+
+                        if(tableState == context.getResources().getInteger(R.integer.myTurn)){
+                            tableState = context.getResources().getInteger(R.integer.opponentsTurn);
+                        }
+                        else if(tableState == context.getResources().getInteger(R.integer.opponentsTurn)){
+                            tableState = context.getResources().getInteger(R.integer.myTurn);
+                        }
+
+
+
+                        String tokens[] = opponentRow.split(",");
+
+                        for(String token: tokens){
+                            if(Integer.parseInt(token) == context.getResources().getInteger(R.integer.opponentsTurn)){
+                                row.append(context.getResources().getInteger(R.integer.myTurn)+",");
+                            }
+                            else if(Integer.parseInt(token) == context.getResources().getInteger(R.integer.myTurn)){
+                                row.append(context.getResources().getInteger(R.integer.opponentsTurn)+",");
+                            }
+                            else{
+                                row.append(token+",");
+                            }
+                        }
+                        row.deleteCharAt(row.length()-1);
+
+                        CPHandler.updateGameState(context,provider,gameName,Integer.parseInt(gameState));
+                        CPHandler.updateLastMove(context,provider,gameName,lastMove);
+                        CPHandler.updateTable(context,provider, null,false, coordinates, tableState, row.toString(),tilesLeft, gameName);
+                        CPHandler.updateCurrentPLayer(context,provider,null,false,gameName,userName,context.getResources()
+                                .getInteger(R.integer.opponentsTurn));
+                    }
+                }
+            }
+            catch(IOException e){
+                Log.d("asyncAdapter","could not send message");
+            }
 
         }
     }

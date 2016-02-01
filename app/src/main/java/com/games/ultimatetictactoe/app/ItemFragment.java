@@ -1,11 +1,9 @@
 package com.games.ultimatetictactoe.app;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -15,22 +13,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
-import android.widget.TextView;
-
-
+import android.widget.*;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.games.ultimatetictactoe.app.content.GameContent;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 
 /**
  * A fragment representing a list of Items.
@@ -43,18 +33,13 @@ import java.util.HashMap;
  */
 public class ItemFragment extends Fragment implements AbsListView.OnItemClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+
     private Firebase fB;
     private ArrayList<String> otherUsers;
     public static String NEWGAME = "new game";
     public static String CONTINUE = "continue";
 
-
-
-    // TODO: Rename and change types of parameters
     private String usersChoice;
 
     private OnGameListFragmentInteractionListener mListener;
@@ -102,7 +87,6 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         }
     };
 
-    // TODO: Rename and change types of parameters
     public static ItemFragment newInstance(String param1) {
         ItemFragment fragment = new ItemFragment();
         Bundle args = new Bundle();
@@ -123,9 +107,15 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         super.onCreate(savedInstanceState);
         fB = new Firebase(getActivity().getString(R.string.fireBaseDB));
         otherUsers = new ArrayList<>();
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         GameContent.ITEMS.clear();
         GameContent.ITEM_MAP.clear();
-
 
         if (getArguments() != null) {
 
@@ -139,10 +129,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             }
 
         }
-
-
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -204,15 +191,16 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                 message.append("\n");
                 message.append(GameContent.ITEMS.get(position).gameName);
 
-
-                Log.d("NEWGAME", "hey!!!!!!!!!!!!!!!!! position: "+position);
-
                 extra.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
                 extra.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE,true);
                 extra.putString(mActivity.getString(R.string.asyncmessage),message.toString());
                 mActivity.getContentResolver().requestSync(((MainTicTacToeActivity)mActivity).account,MainTicTacToeActivity.AUTHORITY,extra);
+                Toast.makeText(mActivity,"Game invitation sent to recepient",Toast.LENGTH_LONG).show();
+                mActivity.onBackPressed();
             }
-            mListener.onGameListFragmentInteraction(GameContent.ITEMS.get(position).userName,GameContent.ITEMS.get(position).gameName);
+            else {
+                mListener.onGameListFragmentInteraction(GameContent.ITEMS.get(position).userName, GameContent.ITEMS.get(position).gameName);
+            }
         }
     }
 
@@ -270,7 +258,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             }
 
             mAdapter = new ArrayAdapter<>(getActivity(),
-                    android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
+                    R.layout.simple_list, R.id.list_item, GameContent.ITEMS);
             mListView.setAdapter(mAdapter);
 
             cursor.close();
@@ -321,7 +309,6 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             }
 
             completeSQL(params.length);
-            Log.d("",SELECTION);
             return getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,PROJECTION,SELECTION,
                    sqlParams,null);
         }
@@ -333,9 +320,9 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         @Override
         protected String[][] doInBackground(Object... params) {
             Context c = (Context)mListener;
-
-            return CPHandler.getGameNamesWithOpponentsWithState(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
-                    ,c.getResources().getInteger(R.integer.gamestateongoing));
+            int states[] = {c.getResources().getInteger(R.integer.gamestateongoing),c.getResources().getInteger(R.integer.gamestatelose),c.getResources().getInteger(R.integer.gamestatequit)};
+            return CPHandler.getGameNamesWithOpponentsWithStates(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
+                    ,states);
         }
 
         @Override
@@ -346,7 +333,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                     GameContent.addItem(new GameContent.GameItem(strings[i][0], strings[i][1]));
                 }
                 mAdapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
+                        R.layout.simple_list, R.id.list_item, GameContent.ITEMS);
                 mListView.setAdapter(mAdapter);
             }
             else{

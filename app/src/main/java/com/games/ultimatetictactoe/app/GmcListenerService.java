@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 
 /**
@@ -26,6 +27,7 @@ public class GmcListenerService extends GcmListenerService {
                 !data.containsKey("subject")){
             return;
         }
+        Log.d("onMessageReceived",data.toString());
         message.append(data.getString("to"));
         message.append("\n");
         message.append(data.getString("fromNumber"));

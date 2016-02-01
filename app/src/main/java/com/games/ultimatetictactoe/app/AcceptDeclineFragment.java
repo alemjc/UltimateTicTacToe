@@ -82,6 +82,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
     @Override
     public void onResume() {
         super.onResume();
+        GameContent.ITEMS.clear();
 
         new WaitingListAsyncFill().execute(new Object());
     }
@@ -114,9 +115,14 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                     GameContent.GameItem gameItem = (GameContent.GameItem)mAdapter.getItem(pos);
 
                                     GameContent.ITEMS.remove(pos);
+
                                     mAdapter = new ArrayAdapter<>(getActivity(),
                                             android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
                                     mListView.setAdapter(mAdapter);
+
+                                    if(GameContent.ITEMS.size() == 0){
+                                        setEmptyText("List is empty");
+                                    }
 
                                     Intent intent = new Intent(context,AcceptOrRejectRequestService.class);
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_ACCEPT_REQUEST);
@@ -135,6 +141,10 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                     mAdapter = new ArrayAdapter<>(getActivity(),
                                             android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
                                     mListView.setAdapter(mAdapter);
+
+                                    if(GameContent.ITEMS.size() == 0){
+                                        setEmptyText("List is empty");
+                                    }
 
                                     Intent intent = new Intent(context,AcceptOrRejectRequestService.class);
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_REJECT_REQUEST);
@@ -179,9 +189,9 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
         @Override
         protected String[][] doInBackground(Object... params) {
             Activity mActivity = getActivity();
-            return CPHandler.getGameNamesWithOpponentsWithState(mActivity,mActivity.getContentResolver().
-                    acquireContentProviderClient(DBManager.CONTENTURI),mActivity.getResources()
-                                                                    .getInteger(R.integer.gamestateawaitingacceptance));
+            int states[] = {mActivity.getResources().getInteger(R.integer.gamestateawaitingacceptance)};
+            return CPHandler.getGameNamesWithOpponentsWithStates(mActivity,mActivity.getContentResolver().
+                    acquireContentProviderClient(DBManager.CONTENTURI),states);
         }
 
         @Override
@@ -194,7 +204,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
 
                 // TODO: Change Adapter to display your content
                 mAdapter = new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
+                        R.layout.simple_list, R.id.list_item, GameContent.ITEMS);
                 mListView.setAdapter(mAdapter);
             }
 

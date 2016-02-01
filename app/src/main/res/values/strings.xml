@@ -1,5 +1,21 @@
 <resources>
     <string name="app_name">Ultimate Tic Tac Toe</string>
+    <string name="first_time">firstTime</string>
+    <string name="youwon">You win!!</string>
+    <string name="youlose">You Lose!!</string>
+    <string name="gametied">Game tied!!</string>
+    <string name="opponentquit">Opponent quit, you win!!</string>
+    <string name="guideTitle">Game Guide</string>
+    <string name="rulesFirstTitle">How to start multi player game?</string>
+    <string name="firstItemFirstSection">1. On introduction screen click on \'New Game\'.</string>
+    <string name="secondItemFirstSection">2. Click name of user to send a game invitation.</string>
+    <string name="thirdItemFirstSection">3. After the opponent accepts your invitation just open the app and click \'Continue\' on the app\'s intro page, then select the opponents name to play!</string>
+    <string name="rulesSecondTitle">How to play?</string>
+    <string name="firstItemSecondSection">- This is like a normal tic tac toe game. The only difference is that you have to win a table composed of nine different small tables.</string>
+    <string name="secondItemSecondSection">- If you initiated the game, the first move is yours and you can play in any table you want. Any subsequent move will dictate in what table the opponent can make a move.</string>
+    <string name="thirdItemSecondSection">- You are only allow to play in tables highlighted with the same color as this text.</string>
+    <string name="fourthItemSecondSection">- Every time you win a table. This table will be highlighted with the same color as this text.</string>
+    <string name="fifthIemSecondSection">- Every time the opponent wins a table. This table will be highlighted with the same color as this text.</string>
 
     <string name="action_settings">Settings</string>
     <string name="gcmtempserviceapikey">AIzaSyAQYtxi1tuPmZgOjMGb0HxG3yITFYmcX38</string>
@@ -22,10 +38,8 @@
     <string name="invitations">Invitations</string>
     <string name="acceptbuttontext">Accept</string>
     <string name="declinebuttontext">Decline</string>
-
+    <string name="fontfamily">Papyrus</string>
 
     <string name="fireBaseDB">https://ultimatetictactoeapp.firebaseio.com/</string>
 
-<!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

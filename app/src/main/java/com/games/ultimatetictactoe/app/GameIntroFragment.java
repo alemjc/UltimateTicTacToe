@@ -1,18 +1,22 @@
 package com.games.ultimatetictactoe.app;
 
 import android.app.Activity;
-import android.content.ContentProvider;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.database.ContentObserver;
+import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
+
+import java.util.Observer;
 
 
 /**
@@ -24,26 +28,15 @@ import android.widget.Toast;
  * create an instance of this fragment.
  */
 public class GameIntroFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private GameIntroObserver gameIntroObserver;
 
-
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private OnGameIntroInteractionListener mListener;
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GameIntroFragment.
-     */
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -57,10 +50,13 @@ public class GameIntroFragment extends Fragment {
             else if(v.getId() == R.id.gameInvitations){
                 mListener.onIntroInteraction(OnGameIntroInteractionListener.INVITATIONS);
             }
+            else if(v.getId() == R.id.gameRules){
+                mListener.onIntroInteraction(OnGameIntroInteractionListener.RULES);
+            }
 
         }
     };
-    // TODO: Rename and change types and number of parameters
+
     public static GameIntroFragment newInstance(String param1, String param2) {
         GameIntroFragment fragment = new GameIntroFragment();
         Bundle args = new Bundle();
@@ -72,6 +68,24 @@ public class GameIntroFragment extends Fragment {
 
     public GameIntroFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Activity activity = (Activity)mListener;
+        activity.getContentResolver().unregisterContentObserver(gameIntroObserver);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Activity activity = (Activity)mListener;
+        Uri uri = Uri.parse(DBManager.CONTENTURI+"/"+ DBManager.DATABASENAME+"*"+"/"+"invitations");
+        Handler handler = new Handler(activity.getMainLooper());
+        gameIntroObserver = new GameIntroObserver(handler);
+        activity.getContentResolver().registerContentObserver(uri,false,gameIntroObserver);
+
     }
 
     @Override
@@ -93,24 +107,21 @@ public class GameIntroFragment extends Fragment {
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_game_intro, container, false);
 
-        Button newGame = (Button) fragmentView.findViewById(R.id.newGame);
+        ImageButton newGame = (ImageButton) fragmentView.findViewById(R.id.newGame);
         newGame.setOnClickListener(onClickListener);
 
-        Button continueGame = (Button) fragmentView.findViewById(R.id.continueAGame);
+        ImageButton continueGame = (ImageButton) fragmentView.findViewById(R.id.continueAGame);
         continueGame.setOnClickListener(onClickListener);
 
-        Button invitations = (Button) fragmentView.findViewById(R.id.gameInvitations);
+        ImageButton invitations = (ImageButton) fragmentView.findViewById(R.id.gameInvitations);
         invitations.setOnClickListener(onClickListener);
+
+        ImageButton rules = (ImageButton) fragmentView.findViewById(R.id.gameRules);
+        rules.setOnClickListener(onClickListener);
 
         return fragmentView;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        /*if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }*/
-    }
 
     @Override
     public void onAttach(Activity context) {
@@ -144,6 +155,7 @@ public class GameIntroFragment extends Fragment {
         String CONTINUE = "continue";
         String NEWGAME="new game";
         String INVITATIONS="invitations";
+        String RULES = "rules";
         void onIntroInteraction(String usersChoice);
     }
 
@@ -164,8 +176,34 @@ public class GameIntroFragment extends Fragment {
             super.onPostExecute(aBoolean);
 
             if(aBoolean){
-                Toast.makeText(getActivity(), "You have new game invitations!", Toast.LENGTH_LONG);
+                Toast.makeText(getActivity(), "You have new game invitations!", Toast.LENGTH_LONG).show();
             }
+        }
+    }
+
+    private class GameIntroObserver extends ContentObserver{
+
+        public GameIntroObserver(Handler handler){
+            super(handler);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            super.onChange(selfChange);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri) {
+            super.onChange(selfChange, uri);
+            Activity activity = (Activity)mListener;
+            Handler handler = new Handler(activity.getMainLooper());
+
+            handler.post(new Runnable(){
+
+                public void run(){
+                    Toast.makeText(getActivity(), "You have new game invitations!", Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 

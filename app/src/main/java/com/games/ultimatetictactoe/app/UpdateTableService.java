@@ -16,6 +16,7 @@ public class UpdateTableService extends IntentService {
     public static final String ACTION_UPDATETABLE = "com.games.ultimatetictactoe.app.action.UPDATETABLE";
     public static final String ACTION_UPDATEPLAYER =  "com.games.ultimatetictactoe.app.acton.UPDATEPLAYER";
     public static final String ACTION_UPDATEGAMESTATE = "com.games.ultimatetictactoe.app.acton.UPDATEGAMESTATE";
+    public static final String ACTION_REMOVEGAME = "com.games.ultimatetictactoe.app.action.REMOVEGAME";
 
     /*parameter keys for intent service*/
     public static final String EXTRA_ROW = "com.games.ultimatetictactoe.app.extra.ROW";
@@ -25,6 +26,7 @@ public class UpdateTableService extends IntentService {
     public static final String EXTRA_OPPONENTID = "com.games.ultimatetictactoe.app.extra.OPPONENTID";
     public static final String EXTRA_CURRENTPLAYER = "com.games.ultimatetictactoe.app.extra.CURRENTPLAYER";
     public static final String EXTRA_GAMESTATE = "com.games.ultimatetictactoe.app.extra.GAMESTATE";
+    public static final String EXTRA_LAST_MOVE = "com.games.ultimatetictactoe.app.extra.LASTMOVE";
 
     /**
      * Starts this service to perform action UpdateTable with the given parameters. If
@@ -33,15 +35,17 @@ public class UpdateTableService extends IntentService {
      * @see IntentService
      */
 
-    private void startActionUpdateTable(Context context, String row, String coordinates, String gameName,
+    private void startActionUpdateTable(Context context, String row,String lastMove, String coordinates, String gameName,
                                               int tableState) {
-        Log.d("startActionUpdateTable","table is getting updated");
-        CPHandler.updateTable(context,context.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI),
-                null,coordinates,tableState,row,gameName);
+       /* CPHandler.updateTable(context,context.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI),
+                null,false,coordinates,tableState,row,gameName);
+        if(lastMove != null && lastMove.length() != 0){
+            CPHandler.updateLastMove(context,context.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
+                                    ,gameName,lastMove);
+        }*/
     }
 
     private void startActionUpdatePlayer(Context context, String gameName, String opponentID, int currentPlayer){
-        Log.d("startActionUpdatePlayer","player is getting updated");
         CPHandler.updateCurrentPLayer(context,context.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI),
                 null,false,gameName,opponentID,currentPlayer);
     }
@@ -49,6 +53,10 @@ public class UpdateTableService extends IntentService {
     private void startActionUpdateGameState(Context context,String gameName, int gameState){
         CPHandler.updateGameState(context, context.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI),
                 gameName,gameState);
+    }
+
+    private void startActionRemoveGame(Context context, String gameName){
+        CPHandler.removeGame(context,context.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI),gameName);
     }
 
 
@@ -66,11 +74,12 @@ public class UpdateTableService extends IntentService {
                 case ACTION_UPDATETABLE:
                     String row = intent.getStringExtra(EXTRA_ROW);
                     String coordinate = intent.getStringExtra(EXTRA_COORDINATES);
+                    String lastMove = intent.getStringExtra(EXTRA_LAST_MOVE);
 
                     int tableState = intent.getIntExtra(EXTRA_TABLESTATE,-2);
 
                     if(row != null && coordinate != null && gameName != null && tableState != -2){
-                        startActionUpdateTable(getApplicationContext(),row,coordinate,gameName,tableState);
+                        startActionUpdateTable(getApplicationContext(), row, lastMove, coordinate, gameName, tableState);
                     }
 
                     break;
@@ -90,6 +99,11 @@ public class UpdateTableService extends IntentService {
 
                     if(gameName != null && gameState != -2){
                         startActionUpdateGameState(getApplicationContext(),gameName,gameState);
+                    }
+                    break;
+                case ACTION_REMOVEGAME:
+                    if(gameName != null){
+                        startActionRemoveGame(getApplicationContext(),gameName);
                     }
             }
 

@@ -21,7 +21,6 @@ public class DBManager extends ContentProvider {
     public static final String GAMETABLENAME="gametable";
     public static final String GAMETABLE_OPPONENTSUSERNAME_COLUMN = "opponentUsername";
     public static final String GAMETABLE_STATE = "gameState";
-    public static final String GAMETABLE_GAME_COLUMN = "gameName";
     public static final String GAMETABLE_CURRENTTURN_COLUMN = "currentTurn";
     private static final int VERSION = 1;
     private static final String id="_id";
@@ -31,6 +30,8 @@ public class DBManager extends ContentProvider {
     public static final String TABLE_COORDINATES_COLUMN = "tablecoordinate";
     public static final String TABLE_STATE_COLUMN = "statecolumn";
     public static final String TABLE_ROW_COLUMN = "tablerow";
+    public static final String TABLE_LAST_MOVE = "lastMove";
+    public static final String TABLE_TILES_FREE = "tilesFree";
     public static final String GAME_NAME_COLUMN = "gamename";
     public static final String AUTHORITY = "com.games.ultimatetictactoe.app.DB";
     public static final Uri CONTENTURI = Uri.parse("content://"+AUTHORITY);
@@ -120,14 +121,9 @@ public class DBManager extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        Log.d("dbManager","entered");
-        if(getContext() == null){
-            Log.d("dbManager","context is null");
-        }
+
         sqlHelper = new SQLHelper(getContext());
-        if(sqlHelper == null){
-            Log.d("dbManager","sqlHelper is null");
-        }
+
         return true;
     }
 
@@ -223,10 +219,12 @@ public class DBManager extends ContentProvider {
                                                                     GAME_NAME_COLUMN+ " VARCHAR(100), "+
                                                                     TABLE_COORDINATES_COLUMN+" VARCHAR(2), "+
                                                                     TABLE_STATE_COLUMN+" INTEGER, "+
-                                                                    TABLE_ROW_COLUMN+ " VARCHAR(17)); ");
+                                                                    TABLE_TILES_FREE+" INTEGER, "+
+                                                                    TABLE_ROW_COLUMN+ " VARCHAR(17), "+
+                                                                    TABLE_LAST_MOVE+" VARCHAR(6)"+"); ");
 
             db.execSQL("CREATE TABLE IF NOT EXISTS "+GAMETABLENAME+"( "+id+" INTEGER INCREMENTS PRIMARY KEY, "+
-                                                                        GAMETABLE_GAME_COLUMN+ " VARCHAR(100), "+
+                                                                        GAME_NAME_COLUMN+ " VARCHAR(100), "+
                                                                         GAMETABLE_OPPONENTSUSERNAME_COLUMN+" VARCHAR(400), "+
                                                                         GAMETABLE_STATE+" INTEGER, "+
                                                                         GAMETABLE_CURRENTTURN_COLUMN+" INTEGER, "+
