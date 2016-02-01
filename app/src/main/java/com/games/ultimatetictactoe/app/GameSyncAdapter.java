@@ -6,6 +6,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.*;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -69,9 +71,12 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
 
         String subject = message.getString("subject","NONE");
         gameIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.mipmap.ic_xlauncher);
 
         notificationBuilder.setContentTitle(context.getString(R.string.app_name));
-        notificationBuilder.setSmallIcon(R.mipmap.ic_xlauncher).
+        notificationBuilder.setLargeIcon(bitmap).
+                setSmallIcon(R.drawable.ic_stat_launchericon).
+                setColor(context.getResources().getColor(R.color.yellow)).
                 setContentIntent(PendingIntent.getActivity(context,INTENT_REQUEST_CODE,gameIntent,PendingIntent.FLAG_ONE_SHOT)).
                 setVibrate(new long[]{100L,600L}).
                 setAutoCancel(true);
