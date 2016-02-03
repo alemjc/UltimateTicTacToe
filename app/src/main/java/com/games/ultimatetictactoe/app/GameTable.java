@@ -480,7 +480,7 @@ public class GameTable extends Fragment {
 
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
         alertBuilder.setView(message).
-                setNegativeButton("Quit", new AlertDialog.OnClickListener(){
+                setNegativeButton("Done", new AlertDialog.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Activity myActivity = (Activity)mListener;

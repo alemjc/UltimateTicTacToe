@@ -75,8 +75,8 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
 
         notificationBuilder.setContentTitle(context.getString(R.string.app_name));
         notificationBuilder.setLargeIcon(bitmap).
-                setSmallIcon(R.drawable.ic_stat_launchericon).
-                setColor(context.getResources().getColor(R.color.yellow)).
+                setSmallIcon(R.drawable.ic_stat_circlenotificationicon).
+                setColor(context.getResources().getColor(R.color.red)).
                 setContentIntent(PendingIntent.getActivity(context,INTENT_REQUEST_CODE,gameIntent,PendingIntent.FLAG_ONE_SHOT)).
                 setVibrate(new long[]{100L,600L}).
                 setAutoCancel(true);
