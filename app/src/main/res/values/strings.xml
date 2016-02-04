@@ -40,6 +40,6 @@
     <string name="declinebuttontext">Decline</string>
     <string name="fontfamily">Papyrus</string>
 
-    <string name="fireBaseDB">https://ultimatetictactoeapp.firebaseio.com/</string>
+
 
 </resources>
