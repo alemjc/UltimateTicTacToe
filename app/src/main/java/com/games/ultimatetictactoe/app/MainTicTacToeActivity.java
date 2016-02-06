@@ -24,13 +24,13 @@ import com.google.android.gms.common.ConnectionResult;
 
 
 public class MainTicTacToeActivity extends AppCompatActivity implements GameIntroFragment.OnGameIntroInteractionListener, ItemFragment.OnGameListFragmentInteractionListener,
-GameTable.OnFragmentInteractionListener{
+GameTable.OnFragmentInteractionListener, LoadingFragment.LoadingFragmentInteractionListener{
     public static final String AUTHORITY = "com.games.ultimatetictactoe.app.DB";
     public static final String ACCOUNTTYPE = "authentication.com";
     public static final String ACCOUNT = "dummyAccount";
     private static final int GOOGLEAPPSERVICESREQUEST=0x001;
     private static final String TOPFRAGMENT = "top";
-    Account account;
+    private Account account;
 
     
     @Override
@@ -39,35 +39,51 @@ GameTable.OnFragmentInteractionListener{
         setContentView(R.layout.activity_main_tic_tac_toe);
 
         SharedPreferences preferences = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences preferences2 = getSharedPreferences(getPackageName()+"_preferences",
+                Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
         boolean firstTime = preferences.getBoolean(getString(R.string.first_time),true);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
 
         Firebase.setAndroidContext(this);
+        account = new Account(ACCOUNT,ACCOUNTTYPE);
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
         int errorCode =  googleApiAvailability.isGooglePlayServicesAvailable(this);
         googleApiAvailability.getErrorDialog(this,errorCode,GOOGLEAPPSERVICESREQUEST);
-        Intent registrationServiceIntent = new Intent(this,RegistrationService.class);
-        startService(registrationServiceIntent);
-        account = new Account(ACCOUNT,ACCOUNTTYPE);
-        createSyncAccount(this);
-        FragmentManager fragmentManager = getFragmentManager();
-        GameIntroFragment gameIntroFragment = new GameIntroFragment();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.space, gameIntroFragment, TOPFRAGMENT);
-        fragmentTransaction.commit();
 
+        createSyncAccount(this);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         if(firstTime){
-            fragmentTransaction = fragmentManager.beginTransaction();
-            RulesFragment rulesFragment = new RulesFragment();
-            fragmentTransaction.replace(R.id.space,rulesFragment,TOPFRAGMENT);
-            fragmentTransaction.setTransitionStyle(FragmentTransaction.TRANSIT_ENTER_MASK);
-            fragmentTransaction.addToBackStack(null);
+            LoadingFragment loadingFragment = new LoadingFragment();
+            fragmentTransaction.add(R.id.space,loadingFragment,TOPFRAGMENT);
             fragmentTransaction.commit();
+        }
+
+        else{
+            GameIntroFragment gameIntroFragment = new GameIntroFragment();
+            boolean tokenSentToDB = preferences2.getBoolean(getString(R.string.tokenacquiredandSent), false);
+            String fireBaseToken = preferences2.getString(getString(R.string.firebasetokenkey),null);
+            fragmentTransaction.add(R.id.space, gameIntroFragment, TOPFRAGMENT);
+            fragmentTransaction.commit();
+
+            if(fireBaseToken != null && !tokenSentToDB){
+                Intent intent = new Intent(this,RegistrationService.class);
+                startService(intent);
+            }
+
+
         }
 
 
     }
+
+    public Account getAccount(){
+        return account;
+    }
+
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -108,7 +124,7 @@ GameTable.OnFragmentInteractionListener{
 
         FragmentManager fragmentManager = getFragmentManager();
         Fragment fragment = fragmentManager.findFragmentByTag(TOPFRAGMENT);
-        if(!(fragment instanceof GameIntroFragment)){
+        if(!(fragment instanceof GameIntroFragment) && !(fragment instanceof LoadingFragment)){
             fragmentManager.popBackStack();
         }
         else {
@@ -138,6 +154,25 @@ GameTable.OnFragmentInteractionListener{
         }*/
 
         return super.onOptionsItemSelected(item);
+
+    }
+
+    @Override
+    public void loadingFragmentInteraction() {
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        GameIntroFragment gameIntroFragment = new GameIntroFragment();
+        fragmentTransaction.replace(R.id.space,gameIntroFragment,TOPFRAGMENT);
+        fragmentTransaction.commit();
+
+        fragmentTransaction = fragmentManager.beginTransaction();
+        RulesFragment rulesFragment = new RulesFragment();
+        fragmentTransaction.replace(R.id.space,rulesFragment,TOPFRAGMENT);
+        fragmentTransaction.setTransitionStyle(FragmentTransaction.TRANSIT_ENTER_MASK);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
 
     }
 

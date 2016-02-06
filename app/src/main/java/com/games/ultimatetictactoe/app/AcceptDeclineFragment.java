@@ -128,7 +128,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_ACCEPT_REQUEST);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME,gameItem.gameName);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID,gameItem.userName);
-                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_ACCOUNT,((MainTicTacToeActivity)myActivity).account);
+                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_ACCOUNT,((MainTicTacToeActivity)myActivity).getAccount());
                                     (context).startService(intent);
                                 }
                             }
@@ -150,7 +150,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                     intent.setAction(AcceptOrRejectRequestService.ACTION_REJECT_REQUEST);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_GAME_NAME, gameItem.gameName);
                                     intent.putExtra(AcceptOrRejectRequestService.EXTRA_MSG_ID, gameItem.userName);
-                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_ACCOUNT,((MainTicTacToeActivity)myActivity).account);
+                                    intent.putExtra(AcceptOrRejectRequestService.EXTRA_ACCOUNT,((MainTicTacToeActivity)myActivity).getAccount());
                                     (context).startService(intent);
                                 }
                     }).create().show();

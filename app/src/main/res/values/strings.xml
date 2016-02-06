@@ -1,10 +1,15 @@
 <resources>
     <string name="app_name">Ultimate Tic Tac Toe</string>
+    <string name="action_settings">Settings</string>
     <string name="first_time">firstTime</string>
+
+    <!--Game notification message when ended -->
     <string name="youwon">You win!!</string>
     <string name="youlose">You Lose!!</string>
     <string name="gametied">Game tied!!</string>
     <string name="opponentquit">Opponent quit, you win!!</string>
+
+    <!--Used by the game guide -->
     <string name="guideTitle">Game Guide</string>
     <string name="rulesFirstTitle">How to start multi player game?</string>
     <string name="firstItemFirstSection">1. On introduction screen click on \'New Game\'.</string>
@@ -17,10 +22,11 @@
     <string name="fourthItemSecondSection">- Every time you win a table. This table will be highlighted with the same color as this text.</string>
     <string name="fifthIemSecondSection">- Every time the opponent wins a table. This table will be highlighted with the same color as this text.</string>
 
-    <string name="action_settings">Settings</string>
-    <string name="gcmtempserviceapikey">AIzaSyAQYtxi1tuPmZgOjMGb0HxG3yITFYmcX38</string>
+    <!--GCM status and constants -->
     <string name="defaultsenderid">397978630462</string>
     <string name="tokenacquiredandSent">tokenSent</string>
+
+    <!--Game progress constants -->
     <string name="gamerequest">Start Game Request</string>
     <string name="gamemove">Made Move</string>
     <string name="rejectgamerequest">Rejected Game Request</string>
@@ -32,14 +38,23 @@
     <string name="asyncsendintent">send</string>
     <string name="asyncreceiveintent">receive</string>
     <string name="asyncphonenumber">phone</string>
+    <string name="acceptbuttontext">Accept</string>
+    <string name="declinebuttontext">Decline</string>
+
+
+    <!--Game intro fragment text buttons -->
+
     <string name="newgame">New Game</string>
     <string name="continuegame">Continue</string>
     <string name="rules">Rules</string>
     <string name="invitations">Invitations</string>
-    <string name="acceptbuttontext">Accept</string>
-    <string name="declinebuttontext">Decline</string>
-    <string name="fontfamily">Papyrus</string>
 
+
+    <!-- Firebase constants -->
+    <string name="loadingtext">Registering with server, please wait..</string>
+    <string name="firebasetokenkey">firebasetoken</string>
+    <string name="firebaseurl">https://ultimatetictactoeapp.firebaseio.com/</string>
+    <string name="tokenrequest">token request</string>
 
 
 </resources>

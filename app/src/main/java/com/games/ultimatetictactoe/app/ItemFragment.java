@@ -105,7 +105,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fB = new Firebase(getActivity().getString(R.string.fireBaseDB));
+        fB = new Firebase(getActivity().getString(R.string.firebaseurl));
         otherUsers = new ArrayList<>();
 
 
@@ -122,6 +122,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             usersChoice = getArguments().getString(ARG_PARAM1);
 
             if(usersChoice.equals(NEWGAME)){
+
                 fB.addValueEventListener(valueEventListener);
             }
             else if(usersChoice.equals(CONTINUE)){
@@ -194,7 +195,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                 extra.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
                 extra.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE,true);
                 extra.putString(mActivity.getString(R.string.asyncmessage),message.toString());
-                mActivity.getContentResolver().requestSync(((MainTicTacToeActivity)mActivity).account,MainTicTacToeActivity.AUTHORITY,extra);
+                mActivity.getContentResolver().requestSync(((MainTicTacToeActivity)mActivity).getAccount(),MainTicTacToeActivity.AUTHORITY,extra);
                 Toast.makeText(mActivity,"Game invitation sent to recepient",Toast.LENGTH_LONG).show();
                 mActivity.onBackPressed();
             }

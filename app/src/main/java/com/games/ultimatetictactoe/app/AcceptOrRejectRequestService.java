@@ -56,7 +56,7 @@ public class AcceptOrRejectRequestService extends IntentService {
         bundle.putString(context.getString(R.string.asyncmessage),message.toString());
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE,true);
-        context.getContentResolver().requestSync(account,MainTicTacToeActivity.AUTHORITY,bundle);
+        ContentResolver.requestSync(account,MainTicTacToeActivity.AUTHORITY,bundle);
     }
 
     /**

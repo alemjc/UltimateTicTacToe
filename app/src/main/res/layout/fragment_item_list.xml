@@ -25,7 +25,6 @@
             android:gravity="center"
             android:visibility="gone"
             android:background="@drawable/listitembackground"
-            android:fontFamily="@string/fontfamily"
             android:layout_gravity="center"
            />
 
