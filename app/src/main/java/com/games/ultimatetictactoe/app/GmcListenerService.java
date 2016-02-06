@@ -25,6 +25,7 @@ public class GmcListenerService extends GcmListenerService {
 
         if(!data.containsKey("to") || !data.containsKey("data") || !data.containsKey("fromNumber") ||
                 !data.containsKey("subject")){
+            Log.d("GmcListenerService","data not well formatted.");
             return;
         }
         Log.d("onMessageReceived",data.toString());

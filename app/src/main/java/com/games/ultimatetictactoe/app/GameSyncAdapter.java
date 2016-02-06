@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -35,8 +36,28 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
     public GameSyncAdapter(Context context,boolean autoInitialize, boolean allowParallelSyncs){
         super(context, autoInitialize,allowParallelSyncs);
         this.context = context;
-        sharedPreferences = context.getSharedPreferences(MainTicTacToeActivity.class.getName(),Context.MODE_PRIVATE);
+        sharedPreferences = context.getSharedPreferences(context.getPackageName()+"_preferences",
+                Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
         contentResolver = context.getContentResolver();
+    }
+
+    private String getUsername(String from){
+        String projection[] = {ContactsContract.Data.DISPLAY_NAME};
+        String selection = ContactsContract.Data.MIMETYPE+"=?"+" AND "+ContactsContract.Data.DATA1+"=?";
+        String args[] = {ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,from};
+        Cursor cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,projection
+                ,selection,args,null);
+        String userName = null;
+        if(cursor != null){
+            if(cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                userName = cursor.getString(0);
+            }
+            cursor.close();
+        }
+
+        return userName;
+
     }
 
     @Override
@@ -83,29 +104,30 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
 
 
 
-
         if (intent.equals(context.getString(R.string.asyncreceiveintent))) {
 
 
             String from = message.getString("fromNumber");
             String data = message.getString("data");
-            String dataParams[] = data.split(";");
-            String projection[] = {ContactsContract.Data.DISPLAY_NAME};
-            String selection = ContactsContract.Data.MIMETYPE+"=?"+" AND "+ContactsContract.Data.DATA1+"=?";
-            String args[] = {ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,from};
-            Cursor cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,projection
-                    ,selection,args,null);
-            String userName = from;
-            if(cursor != null){
-                if(cursor.getCount() > 0) {
-                    cursor.moveToFirst();
-                    userName = cursor.getString(0);
-                }
-                cursor.close();
+
+            if(subject.equals(context.getString(R.string.tokenrequest))){
+                Log.d("async","getting token request");
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(context.getString(R.string.firebasetokenkey),data);
+                editor.commit();
+
+                contentResolver.notifyChange(LoadingFragment.DONELOADINGURI,null);
+
             }
+            else if(subject.equals(context.getString(R.string.gamerequest))){
 
+                String userName = getUsername(from);
 
-            if(subject.equals(context.getString(R.string.gamerequest))){
+                if(userName == null){
+                    userName = from;
+                }
+
+                String dataParams[] = data.split(";");
 
 
                 if(dataParams.length == 0){
@@ -130,6 +152,15 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             }
             else if(subject.equals(context.getString(R.string.acceptgamerequest))){
 
+                String userName = getUsername(from);
+
+                if(userName == null){
+                    userName = from;
+                }
+
+                String dataParams[] = data.split(";");
+
+
                 if(dataParams.length == 0){
                     return;
                 }
@@ -147,6 +178,15 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
                 notificationManager.notify(NOTIFICATION_ID,notificationBuilder.build());
             }
             else if(subject.equals(context.getString(R.string.rejectgamerequest))){
+
+                String userName = getUsername(from);
+
+                if(userName == null){
+                    userName = from;
+                }
+
+                String dataParams[] = data.split(";");
+
                 if(dataParams.length == 0){
                     return;
                 }
@@ -159,6 +199,14 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             }
 
             else if(subject.equals(context.getString(R.string.gamemove))){
+
+                String userName = getUsername(from);
+
+                if(userName == null){
+                    userName = from;
+                }
+
+                String dataParams[] = data.split(";");
 
 
                 if(dataParams.length < 2 || dataParams.length > 3) return;
@@ -226,14 +274,16 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
 
             }
 
-            cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,projection,selection,args,null);
+            if(!subject.equals(context.getString(R.string.tokenrequest))) {
+                cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI, projection, selection, args, null);
 
-            if(cursor == null || cursor.getCount() == 0){
-                return;
+                if (cursor == null || cursor.getCount() == 0) {
+                    return;
+                }
+                cursor.moveToFirst();
+                message.putString("to", cursor.getString(0));
+                cursor.close();
             }
-            cursor.moveToFirst();
-            message.putString("to",cursor.getString(0));
-            cursor.close();
 
             if(subject.equals(context.getString(R.string.gamemove))){
                 int tilesLeft;

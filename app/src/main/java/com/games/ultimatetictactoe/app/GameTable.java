@@ -263,7 +263,7 @@ public class GameTable extends Fragment {
         sendBundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL,true);
         sendBundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE,true);
 
-        myActivity.getContentResolver().requestSync(((MainTicTacToeActivity)myActivity).account,
+        ContentResolver.requestSync(((MainTicTacToeActivity)myActivity).getAccount(),
                 MainTicTacToeActivity.AUTHORITY,sendBundle);
 
         removeGameIntent.setAction(UpdateTableService.ACTION_REMOVEGAME);
@@ -468,7 +468,7 @@ public class GameTable extends Fragment {
         sendBundle.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE,true);
         //sendBundle.putBundle(myActivity.getString(R.string.asyncmessagebundle), messageBundle);
 
-        myActivity.getContentResolver().requestSync(((MainTicTacToeActivity)myActivity).account,MainTicTacToeActivity.AUTHORITY,sendBundle);
+        ContentResolver.requestSync(((MainTicTacToeActivity)myActivity).getAccount(),MainTicTacToeActivity.AUTHORITY,sendBundle);
         if(runnable != null){
             uiHandler.post(runnable);
         }

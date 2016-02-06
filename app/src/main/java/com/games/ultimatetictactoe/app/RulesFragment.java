@@ -37,11 +37,6 @@ public class RulesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences preferences = getActivity().getPreferences(Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(getString(R.string.first_time),false);
-        editor.commit();
-
     }
 
     @Override

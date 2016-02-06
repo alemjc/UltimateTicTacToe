@@ -25,7 +25,6 @@
             android:layout_gravity="center"
             android:visibility="gone"
             android:paddingTop="0dp"
-            android:fontFamily="@string/fontfamily"
             android:textSize="20sp"
             android:background="@drawable/listitembackground"
             android:textColor="@color/indigo"
