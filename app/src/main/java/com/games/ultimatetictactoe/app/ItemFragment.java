@@ -3,6 +3,7 @@ package com.games.ultimatetictactoe.app;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,10 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.firebase.client.*;
 import com.games.ultimatetictactoe.app.content.GameContent;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -116,14 +114,28 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         super.onResume();
         GameContent.ITEMS.clear();
         GameContent.ITEM_MAP.clear();
+        Activity activity =  getActivity();
+        SharedPreferences preferences = activity.getSharedPreferences(activity.getPackageName()+"_preferences",
+                Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
+        String fireBaseToken = preferences.getString(activity.getString(R.string.firebasetokenkey),null);
 
-        if (getArguments() != null) {
+        if (getArguments() != null && fireBaseToken != null) {
 
             usersChoice = getArguments().getString(ARG_PARAM1);
 
             if(usersChoice.equals(NEWGAME)){
 
-                fB.addValueEventListener(valueEventListener);
+                fB.authWithCustomToken(fireBaseToken, new Firebase.AuthResultHandler() {
+                    @Override
+                    public void onAuthenticated(AuthData authData) {
+                        fB.addValueEventListener(valueEventListener);
+                    }
+
+                    @Override
+                    public void onAuthenticationError(FirebaseError firebaseError) {
+                        //TODO: could not authenticate with database.
+                    }
+                });
             }
             else if(usersChoice.equals(CONTINUE)){
                 new LocalAsyncTasks().execute(new Object());
