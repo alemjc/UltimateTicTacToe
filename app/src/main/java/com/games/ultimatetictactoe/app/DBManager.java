@@ -1,13 +1,12 @@
 package com.games.ultimatetictactoe.app;
 
 import android.content.*;
-import android.database.ContentObserver;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
+
 
 /**
  * Created by alemjc on 11/8/15.
@@ -37,6 +36,13 @@ public class DBManager extends ContentProvider {
     public static final Uri CONTENTURI = Uri.parse("content://"+AUTHORITY);
     public static final int TICTACTOETABLE = 1;
     public static final int TICTACTOEGAMENAME = 2;
+    public static final int GAMEACCEPTED = 3;
+    public static final int GAMEREJECTED = 4;
+    public static final int GAMEONGOING = 5;
+
+    private static final String GAMEREJECTIONURI = DATABASENAME+"/"+GAMETABLENAME+"/*/rejected";
+    private static final String GAMEACCEPTEDURI = DATABASENAME+"/"+GAMETABLENAME+"/*/accepted";
+    private static final String GAMEONGOINGURI = DATABASENAME+"/"+GAMETABLENAME+"/*/ongoing";
 
 
 
@@ -44,16 +50,30 @@ public class DBManager extends ContentProvider {
     private SQLHelper sqlHelper;
 
 
-    private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    public static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
     static{
         uriMatcher.addURI(AUTHORITY,DATABASENAME+"/"+TABLENAME,TICTACTOETABLE);
         uriMatcher.addURI(AUTHORITY,DATABASENAME+"/"+GAMETABLENAME,TICTACTOEGAMENAME);
+        uriMatcher.addURI(AUTHORITY,GAMEACCEPTEDURI,GAMEACCEPTED);
+        uriMatcher.addURI(AUTHORITY,GAMEREJECTIONURI,GAMEREJECTED);
+        uriMatcher.addURI(AUTHORITY,GAMEONGOINGURI,GAMEONGOING);
     }
     public DBManager(){
         super();
 
     }
 
+    public static Uri getOngoingUriForGame(String gameName){
+        return Uri.parse(CONTENTURI.toString()+"/"+GAMEONGOINGURI.replace("*",gameName));
+    }
+
+    public static Uri getRejectedUriForGame(String gameName){
+        return Uri.parse(CONTENTURI.toString()+"/"+GAMEREJECTIONURI.replace("*",gameName));
+    }
+
+    public static Uri getAcceptedUriForGame(String gameName){
+        return Uri.parse(CONTENTURI.toString()+"/"+GAMEACCEPTEDURI.replace("*",gameName));
+    }
 
     @Override
     public String getType(Uri uri) {

@@ -94,7 +94,7 @@ public class CPHandler {
         }
 
         String returnGames [][];
-        String projection[] = {DBManager.GAME_NAME_COLUMN,DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN};
+        String projection[] = {DBManager.GAME_NAME_COLUMN,DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN,DBManager.GAMETABLE_STATE};
         StringBuilder selection = new StringBuilder();
         String args [] = new String[states.length];
         selection.append(DBManager.GAMETABLE_STATE+" in (");
@@ -122,11 +122,12 @@ public class CPHandler {
             return null;
         }
         cursor.moveToFirst();
-        returnGames = new String[cursor.getCount()][2];
+        returnGames = new String[cursor.getCount()][3];
         int index = 0;
         while(!cursor.isAfterLast()){
             returnGames[index][0] = cursor.getString(cursor.getColumnIndex(DBManager.GAMETABLE_OPPONENTSUSERNAME_COLUMN));
             returnGames[index][1] = cursor.getString(cursor.getColumnIndex(DBManager.GAME_NAME_COLUMN));
+            returnGames[index][2] = cursor.getInt(cursor.getColumnIndex(DBManager.GAMETABLE_STATE))+"";
             index++;
             cursor.moveToNext();
         }
@@ -166,7 +167,7 @@ public class CPHandler {
                     new String[]{gameName, userName});
 
             if(affectedRows == 1 && notify){
-                c.getContentResolver().notifyChange(uri,contentObserver);
+                c.getContentResolver().notifyChange(DBManager.getOngoingUriForGame(gameName),contentObserver);
             }
         }
         catch(RemoteException e){
@@ -265,7 +266,7 @@ public class CPHandler {
         try {
             numUpdated = provider.update(uri, contentValues, selection, new String[]{tableCoordinates, gameName});
             if (numUpdated > 0 && notifiy) {
-                contentResolver.notifyChange(uri, observer);
+                contentResolver.notifyChange(DBManager.getOngoingUriForGame(gameName), observer);
             }
 
         }

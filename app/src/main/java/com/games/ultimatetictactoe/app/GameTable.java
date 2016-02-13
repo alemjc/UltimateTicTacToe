@@ -160,8 +160,11 @@ public class GameTable extends Fragment {
         new DBReadAsyncTask().execute((String[])null);
         startObserverThread();
         dbObserver = new Observer(observerHandler);
-        Uri uri = Uri.parse(DBManager.CONTENTURI.toString()+"/"+DBManager.DATABASENAME+"/"+DBManager.GAMETABLENAME);
-        getActivity().getContentResolver().registerContentObserver(uri, false, dbObserver);
+        ContentResolver contentResolver = getActivity().getContentResolver();
+
+        contentResolver.registerContentObserver(DBManager.getAcceptedUriForGame(gameName), false, dbObserver);
+        contentResolver.registerContentObserver(DBManager.getOngoingUriForGame(gameName), false, dbObserver);
+        contentResolver.registerContentObserver(DBManager.getRejectedUriForGame(gameName), false, dbObserver);
     }
 
     @Override
@@ -484,10 +487,12 @@ public class GameTable extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Activity myActivity = (Activity)mListener;
-                        Intent removeGameIntent = new Intent(myActivity,UpdateTableService.class);
-                        removeGameIntent.setAction(UpdateTableService.ACTION_REMOVEGAME);
-                        removeGameIntent.putExtra(UpdateTableService.EXTRA_GAMENAME,gameName);
-                        myActivity.startService(removeGameIntent);
+                        if(message != R.layout.opponent_rejected) {
+                            Intent removeGameIntent = new Intent(myActivity, UpdateTableService.class);
+                            removeGameIntent.setAction(UpdateTableService.ACTION_REMOVEGAME);
+                            removeGameIntent.putExtra(UpdateTableService.EXTRA_GAMENAME, gameName);
+                            myActivity.startService(removeGameIntent);
+                        }
                         mListener.onFragmentInteraction(null);
 
                     }
@@ -723,12 +728,15 @@ public class GameTable extends Fragment {
                 };
             }
 
+
             return rows;
         }
     }
 
 
     private class Observer extends ContentObserver{
+
+
 
         public Observer(Handler handler) {
             super(handler);
@@ -743,7 +751,22 @@ public class GameTable extends Fragment {
         public void onChange(boolean selfChange, Uri uri) {
             super.onChange(selfChange, uri);
 
-            new DBReadAsyncTask().execute((String[])null);
+            Log.d("contentObserver","received a change: "+uri.toString());
+
+            Activity activity = getActivity();
+            switch (DBManager.uriMatcher.match(uri)){
+                case DBManager.GAMEACCEPTED:
+                    Toast.makeText(activity,"User accepted game invite. You can now play your turn", Toast.LENGTH_LONG).show();
+                case DBManager.GAMEONGOING:
+                    new DBReadAsyncTask().execute((String[])null);
+                    break;
+                case DBManager.GAMEREJECTED:
+                    showAlertDialog(R.layout.opponent_rejected);
+
+
+            }
+
+
 
 
         }

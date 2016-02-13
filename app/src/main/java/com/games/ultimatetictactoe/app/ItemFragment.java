@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import com.firebase.client.*;
 import com.games.ultimatetictactoe.app.content.GameContent;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * A fragment representing a list of Items.
@@ -64,6 +67,11 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                 //TODO: show user an informative message.
                 return;
             }
+
+            if(phoneNumber.length() > 10){
+                phoneNumber = phoneNumber.substring(phoneNumber.length() - 10, phoneNumber.length());
+            }
+
             DataSnapshot usersSnapShot = dataSnapshot.child("/users");
 
 
@@ -185,8 +193,10 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
+            Activity mActivity = (Activity)mListener;
+
             if(usersChoice.equals(NEWGAME)){
-                Activity mActivity = (Activity)mListener;
+
                 TelephonyManager telephonyManager = (TelephonyManager) getActivity().getSystemService(Context.TELEPHONY_SERVICE);
                 String phoneNumber = telephonyManager.getLine1Number();
                 Bundle extra = new Bundle();
@@ -208,10 +218,14 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                 extra.putBoolean(ContentResolver.SYNC_EXTRAS_FORCE,true);
                 extra.putString(mActivity.getString(R.string.asyncmessage),message.toString());
                 mActivity.getContentResolver().requestSync(((MainTicTacToeActivity)mActivity).getAccount(),MainTicTacToeActivity.AUTHORITY,extra);
-                Toast.makeText(mActivity,"Game invitation sent to recepient",Toast.LENGTH_LONG).show();
+                Toast.makeText(mActivity,"Game invitation sent to opponent. Press 'Continue' to see game status with " +
+                        "this opponent",Toast.LENGTH_LONG).show();
                 mActivity.onBackPressed();
             }
             else {
+                if(GameContent.ITEMS.get(position).state == mActivity.getResources().getInteger(R.integer.gamestateawaitingrequest)){
+                    Toast.makeText(mActivity,"Waiting for opponent to accept invitation.",Toast.LENGTH_LONG).show();
+                }
                 mListener.onGameListFragmentInteraction(GameContent.ITEMS.get(position).userName, GameContent.ITEMS.get(position).gameName);
             }
         }
@@ -246,11 +260,21 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     }
 
     private class ContactsAsyncTask extends AsyncTask<String,Object, Cursor>{
-        private String SELECTION = ContactsContract.Data.MIMETYPE+ " = ?"+" AND "+ContactsContract.Data.DATA1 +" in ";
+        private String validNumber = "SUBSTR("+"REPLACE(" +
+                "                                   REPLACE("+
+                "                                       REPLACE(" +
+                "                                           REPLACE(" +
+                "                                               REPLACE("+ContactsContract.Data.DATA1+",'(','')" +
+                "                                                                                       ,')','')," +
+                "                                                                                           '-',''),'+',''),' ','')"+
+                                                                                                                            ",-10)";
+        private String SELECTION = ContactsContract.Data.MIMETYPE+ " = ?"+" AND "+validNumber+" in ";
         private final String[] PROJECTION = {ContactsContract.Data.DATA1,ContactsContract.Data.DISPLAY_NAME};
+        private HashSet<String> currentOpponents;
         @Override
         protected void onPostExecute(Cursor cursor) {
             super.onPostExecute(cursor);
+
 
             if(cursor == null || cursor.getCount() <= 0){
                 if(cursor != null)
@@ -259,22 +283,33 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                 return;
             }
 
+
             cursor.moveToFirst();
             Log.d("","size: "+cursor.getCount());
             while(!cursor.isAfterLast()){
                 Log.d("","WHAT HAPPENED!!!!!!!!!!!!!!!!!!!!!!!!");
-                String number = cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DATA1));
                 String displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                Calendar calendar = Calendar.getInstance();
-                GameContent.addItem(new GameContent.GameItem(displayName,calendar.getTimeInMillis()+""));
+
+                if(currentOpponents != null && currentOpponents.size() > 0 && currentOpponents.contains(displayName)) {
+                    cursor.moveToNext();
+                    continue;
+                }
+
+                GameContent.addItem(new GameContent.GameItem(displayName,System.currentTimeMillis()+"",-1));
                 cursor.moveToNext();
+
             }
 
-            mAdapter = new ArrayAdapter<>(getActivity(),
-                    R.layout.simple_list, R.id.list_item, GameContent.ITEMS);
-            mListView.setAdapter(mAdapter);
-
             cursor.close();
+
+            if (GameContent.ITEMS.size() > 0) {
+                mAdapter = new ArrayAdapter<>(getActivity(),
+                        R.layout.simple_list, R.id.list_item, GameContent.ITEMS);
+                mListView.setAdapter(mAdapter);
+            }
+            else{
+                setEmptyText("List is empty");
+            }
 
 
         }
@@ -313,6 +348,9 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             else if(params.length == 0){
                 return null;
             }
+            Activity c = (Activity)mListener;
+            ContentResolver cR = c.getContentResolver();
+            Resources resources = c.getResources();
 
             String sqlParams[] = new String[params.length+1];
             sqlParams[0] = ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE;
@@ -320,8 +358,23 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             for(int i = 1; i < sqlParams.length; i++){
                 sqlParams[i] = params[i-1];
             }
+            int states[] = {resources.getInteger(R.integer.gamestateongoing),resources.getInteger(R.integer.gamestateawaitingrequest),resources.getInteger(R.integer.gamestateawaitingacceptance)};
+
+            String games[][] = CPHandler.getGameNamesWithOpponentsWithStates(c,cR.acquireContentProviderClient(DBManager.CONTENTURI),
+                    states);
+
+            if(games != null){
+                currentOpponents = new HashSet<>();
+                for(int i = 0; i < games.length; i++){
+                    currentOpponents.add(games[i][0]);
+
+                }
+
+            }
 
             completeSQL(params.length);
+
+
             return getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,PROJECTION,SELECTION,
                    sqlParams,null);
         }
@@ -332,9 +385,12 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
     private class LocalAsyncTasks extends AsyncTask<Object,Object,String[][]>{
         @Override
         protected String[][] doInBackground(Object... params) {
-            Context c = (Context)mListener;
-            int states[] = {c.getResources().getInteger(R.integer.gamestateongoing),c.getResources().getInteger(R.integer.gamestatelose),c.getResources().getInteger(R.integer.gamestatequit)};
-            return CPHandler.getGameNamesWithOpponentsWithStates(c,c.getContentResolver().acquireContentProviderClient(DBManager.CONTENTURI)
+            Activity c = (Activity) mListener;
+            ContentResolver contentResolver = c.getContentResolver();
+            Resources resources = c.getResources();
+            int states[] = {resources.getInteger(R.integer.gamestateongoing),resources.getInteger(R.integer.gamestatelose)
+                    ,resources.getInteger(R.integer.gamestatequit), resources.getInteger(R.integer.gamestateawaitingrequest)};
+            return CPHandler.getGameNamesWithOpponentsWithStates(c,contentResolver.acquireContentProviderClient(DBManager.CONTENTURI)
                     ,states);
         }
 
@@ -343,7 +399,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             super.onPostExecute(strings);
             if(strings != null && strings.length > 0) {
                 for (int i = 0; i < strings.length; i++) {
-                    GameContent.addItem(new GameContent.GameItem(strings[i][0], strings[i][1]));
+                    GameContent.addItem(new GameContent.GameItem(strings[i][0], strings[i][1],Integer.parseInt(strings[i][2])));
                 }
                 mAdapter = new ArrayAdapter<>(getActivity(),
                         R.layout.simple_list, R.id.list_item, GameContent.ITEMS);

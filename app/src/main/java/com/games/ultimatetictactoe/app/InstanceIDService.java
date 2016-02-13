@@ -2,6 +2,7 @@ package com.games.ultimatetictactoe.app;
 
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 import com.google.android.gms.iid.InstanceIDListenerService;
 
 /**
@@ -45,7 +46,9 @@ public class InstanceIDService extends InstanceIDListenerService {
     @Override
     public void onTokenRefresh() {
         super.onTokenRefresh();
+        Log.d("onTokenRefresh","Refreshing Token");
         Intent intent = new Intent(this,RegistrationService.class);
+        intent.putExtra(RegistrationService.INTENT_EXTRA_REFRESH_TOKEN,true);
         startService(intent);
     }
 }

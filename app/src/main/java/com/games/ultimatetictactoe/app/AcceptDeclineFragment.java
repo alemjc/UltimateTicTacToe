@@ -117,7 +117,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
                                     GameContent.ITEMS.remove(pos);
 
                                     mAdapter = new ArrayAdapter<>(getActivity(),
-                                            android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
+                                            R.layout.simple_list, R.id.list_item, GameContent.ITEMS);
                                     mListView.setAdapter(mAdapter);
 
                                     if(GameContent.ITEMS.size() == 0){
@@ -139,7 +139,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
 
                                     GameContent.ITEMS.remove(pos);
                                     mAdapter = new ArrayAdapter<>(getActivity(),
-                                            android.R.layout.simple_list_item_1, android.R.id.text1, GameContent.ITEMS);
+                                            R.layout.simple_list, R.id.list_item, GameContent.ITEMS);
                                     mListView.setAdapter(mAdapter);
 
                                     if(GameContent.ITEMS.size() == 0){
@@ -199,7 +199,7 @@ public class AcceptDeclineFragment extends Fragment implements AbsListView.OnIte
             super.onPostExecute(strings);
             if(strings != null && strings.length != 0) {
                 for (int i = 0; i < strings.length; i++) {
-                    GameContent.addItem(new GameContent.GameItem(strings[i][0], strings[i][1]));
+                    GameContent.addItem(new GameContent.GameItem(strings[i][0], strings[i][1],Integer.parseInt(strings[i][2])));
                 }
 
                 // TODO: Change Adapter to display your content

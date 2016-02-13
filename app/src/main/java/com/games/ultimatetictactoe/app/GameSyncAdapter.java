@@ -5,17 +5,25 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.*;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
+import org.apache.http.HttpConnection;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import javax.net.ssl.HttpsURLConnection;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 /**
  * Created by alemjc on 11/15/15.
@@ -42,13 +50,28 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
     }
 
     private String getUsername(String from){
+
+        if(from.length() > 10){
+            from = from.substring(from.length()-10,from.length());
+        }
+
+        String fromDomestic = "("+from.substring(0,3)+")"+" "+from.substring(3,6)+"-"+from.substring(6,10);
+        String fromInternational = "+1-"+from.substring(0,3)+"-"+from.substring(3,6)+"-"+from.substring(6,10);
+        String fromDialedInTheUs = "1-"+from.substring(0,3)+"-"+from.substring(3,6)+"-"+from.substring(6,10);
+
+
         String projection[] = {ContactsContract.Data.DISPLAY_NAME};
-        String selection = ContactsContract.Data.MIMETYPE+"=?"+" AND "+ContactsContract.Data.DATA1+"=?";
-        String args[] = {ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,from};
+        String selection = ContactsContract.Data.MIMETYPE+"= ?"+" AND "+ContactsContract.Data.DATA1+" = ? OR "+
+                ContactsContract.Data.DATA1+" LIKE ? OR "+ContactsContract.Data.DATA1+" = ? OR "+
+                ContactsContract.Data.DATA1+" = ? OR "+ContactsContract.Data.DATA1+" = ?";
+
+        String args[] = {ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE,from,'_'+from,fromDomestic,
+                fromInternational,fromDialedInTheUs};
         Cursor cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI,projection
                 ,selection,args,null);
         String userName = null;
         if(cursor != null){
+            Log.d("getUsername","cursor is null");
             if(cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 userName = cursor.getString(0);
@@ -171,8 +194,10 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
                 CPHandler.updateGameState(context,provider,gameName,context.getResources().
                                                                                 getInteger(R.integer.gamestateongoing));
 
-                CPHandler.updateCurrentPLayer(context,provider,null,true,gameName,userName,
+                CPHandler.updateCurrentPLayer(context,provider,null,false,gameName,userName,
                         context.getResources().getInteger(R.integer.myTurn));
+
+                contentResolver.notifyChange(DBManager.getAcceptedUriForGame(gameName),null);
 
                 notificationBuilder.setContentText(userName+" accepted your invitation to play!!");
                 notificationManager.notify(NOTIFICATION_ID,notificationBuilder.build());
@@ -194,6 +219,8 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
                 String gameName = dataParams[0];
                 CPHandler.removeGame(context,provider,gameName);
 
+                contentResolver.notifyChange(DBManager.getRejectedUriForGame(gameName),null);
+
                 notificationBuilder.setContentText(userName+" rejected your invitation to play!!");
                 notificationManager.notify(NOTIFICATION_ID,notificationBuilder.build());
             }
@@ -213,11 +240,22 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
                 int tilesLeft;
                 String gameName = dataParams[0];
                 String gameState = dataParams[1];
+
+                int localState = CPHandler.getGameState(context,provider,gameName);
+                int state = Integer.parseInt(gameState);
+                Resources resources = context.getResources();
+
                 if(dataParams.length == 2){
-                    int state = Integer.parseInt(gameState);
-                    CPHandler.updateGameState(context,provider,gameName,state);
-                    CPHandler.updateCurrentPLayer(context,provider,null,true,gameName,userName,context.getResources()
-                            .getInteger(R.integer.myTurn));
+
+                    if(state == resources.getInteger(R.integer.gamestatequit) && (localState ==
+                            resources.getInteger(R.integer.gamestateawaitingacceptance) || localState == -1)){
+                        CPHandler.removeGame(context, provider, gameName);
+                    }
+                    else {
+                        CPHandler.updateGameState(context, provider, gameName, state);
+                        CPHandler.updateCurrentPLayer(context, provider, null, true, gameName, userName, context.getResources()
+                                .getInteger(R.integer.myTurn));
+                    }
                 }
                 else{
                     String composedMove = dataParams[2];
@@ -239,7 +277,13 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
 
                 }
 
-                notificationBuilder.setContentText(userName+" made a move!!");
+                if(state == resources.getInteger(R.integer.gamestatequit) && (localState ==
+                        resources.getInteger(R.integer.gamestateawaitingacceptance) || localState == -1)){
+                    notificationBuilder.setContentText(userName+" cancelled game inviation");
+                }
+                else{
+                    notificationBuilder.setContentText(userName+" made a move!!");
+                }
                 notificationManager.notify(NOTIFICATION_ID,notificationBuilder.build());
             }
 
@@ -262,7 +306,9 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             String userName = message.getString("to");
 
             if(subject.equals(context.getString(R.string.gamerequest))){
+                gameName = TimeRequester.getTime(gameName);
 
+                message.putString("data",gameName);
                 CPHandler.insertGameName(context,provider,gameName,userName,
                         context.getResources().getInteger(R.integer.gamestateawaitingrequest),context.getResources().getInteger(R.integer.opponentsTurn));
                 String initialRowStates = "-1,-1,-1,-1,-1,-1,-1,-1,-1";
@@ -274,18 +320,7 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
 
             }
 
-            if(!subject.equals(context.getString(R.string.tokenrequest))) {
-                cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI, projection, selection, args, null);
-
-                if (cursor == null || cursor.getCount() == 0) {
-                    return;
-                }
-                cursor.moveToFirst();
-                message.putString("to", cursor.getString(0));
-                cursor.close();
-            }
-
-            if(subject.equals(context.getString(R.string.gamemove))){
+            else if(subject.equals(context.getString(R.string.gamemove))){
                 int tilesLeft;
                 String gameState = dataParams[1];
                 int state = Integer.parseInt(gameState);
@@ -302,16 +337,49 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
                     }
 
                     buffer.append(tilesLeft);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(dataParams[0]);
+                    stringBuilder.append(";");
 
                     if(Integer.parseInt(gameState) == context.getResources().getInteger(R.integer.gamestatewon)){
-                        message.putString("data",dataParams[0]+";"+
-                                context.getResources().getInteger(R.integer.gamestatelose)+";"+buffer);
+
+                        stringBuilder.append(context.getResources().getInteger(R.integer.gamestatelose));
+                        stringBuilder.append(";");
+                        stringBuilder.append(buffer);
+
+                        message.putString("data",stringBuilder.toString());
                     }
                     else{
-                        message.putString("data",dataParams[0]+";"+dataParams[1]+";"+buffer);
+
+                        stringBuilder.append(dataParams[1]);
+                        stringBuilder.append(";");
+                        stringBuilder.append(buffer);
+                        message.putString("data",stringBuilder.toString());
                     }
                 }
 
+            }
+
+            if(!subject.equals(context.getString(R.string.tokenrequest))) {
+                cursor = contentResolver.query(ContactsContract.Data.CONTENT_URI, projection, selection, args, null);
+
+                if (cursor == null || cursor.getCount() == 0) {
+                    return;
+                }
+                cursor.moveToFirst();
+                String oppPhoneNumber = cursor.getString(0);
+                oppPhoneNumber = oppPhoneNumber.replace("(","");
+                oppPhoneNumber = oppPhoneNumber.replace(")","");
+                oppPhoneNumber = oppPhoneNumber.replace("-","");
+                oppPhoneNumber = oppPhoneNumber.replace(" ","");
+                oppPhoneNumber = oppPhoneNumber.replace("+","");
+
+                if(oppPhoneNumber.length() > 10){
+                    oppPhoneNumber = oppPhoneNumber.substring(oppPhoneNumber.length()-10,oppPhoneNumber.length());
+                }
+
+                message.putString("to", oppPhoneNumber);
+                cursor.close();
             }
 
             try {
@@ -376,5 +444,9 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
             }
 
         }
+
+
     }
+
+
 }

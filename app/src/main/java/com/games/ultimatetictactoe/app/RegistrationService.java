@@ -6,8 +6,9 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import com.firebase.client.AuthData;
@@ -23,7 +24,8 @@ import java.io.IOException;
  */
 public class RegistrationService extends IntentService {
     private Context context;
-    public static final String INTEXT_EXTRA_ACCOUNT="account";
+    public static final String INTENT_EXTRA_ACCOUNT ="account";
+    public static final String INTENT_EXTRA_REFRESH_TOKEN = "refreshToken";
     public RegistrationService(){
         this(null);
     }
@@ -44,6 +46,7 @@ public class RegistrationService extends IntentService {
         SharedPreferences.Editor editor = preferences.edit();
         String myTokenKey = context.getString(R.string.mygcmtoken);
         String token = preferences.getString(myTokenKey,null);
+        boolean refreshToken = intent.getBooleanExtra(INTENT_EXTRA_REFRESH_TOKEN,false);
 
         Log.d("onHandleIntent","firebasetoken = "+fireBaseToken);
 
@@ -52,7 +55,7 @@ public class RegistrationService extends IntentService {
                 token = instanceID.getToken(defaultSenderID, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
                 Bundle bundle = new Bundle();
                 StringBuilder stringBuilder = new StringBuilder();
-                Account account = intent.getParcelableExtra(INTEXT_EXTRA_ACCOUNT);
+                Account account = intent.getParcelableExtra(INTENT_EXTRA_ACCOUNT);
 
                 editor.putString(myTokenKey,token);
                 editor.commit();
@@ -78,6 +81,21 @@ public class RegistrationService extends IntentService {
             }
 
         }
+        else if(refreshToken && token != null && fireBaseToken != null){
+            try{
+                token = instanceID.getToken(defaultSenderID, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
+                editor.putString(myTokenKey,token);
+                editor.commit();
+
+                sendRegistrationTokenToServer(token, fireBaseToken);
+
+            }
+            catch(IOException e){
+                Log.d("RegistrationService","could not get sender token");
+            }
+
+        }
+
         else {
             sendRegistrationTokenToServer(token, fireBaseToken);
         }
@@ -85,19 +103,50 @@ public class RegistrationService extends IntentService {
     }
 
 
+
     private void sendRegistrationTokenToServer(final String token, String fireBaseToken) {
 
         TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         final String phoneNumber = telephonyManager.getLine1Number();
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+
+        while(networkInfo == null || !networkInfo.isConnected()){
+            try {
+                Thread.sleep(30000);
+            }
+            catch(InterruptedException e){
+                Log.d("sendRegistrationtoken","interrupted exception");
+            }
+        }
+
+        final String time = TimeRequester.getTime(System.currentTimeMillis()+"");
 
         if (phoneNumber != null) {
+
+
             final Firebase fireBaseRef = new Firebase(context.getString(R.string.firebaseurl));
             fireBaseRef.authWithCustomToken(fireBaseToken, new Firebase.AuthResultHandler() {
                 @Override
                 public void onAuthenticated(AuthData authData) {
                     Log.d("sendRegistration","authenticated with database");
                     Firebase usersRef = fireBaseRef.child("users");
-                    usersRef.child(phoneNumber).setValue(token);
+
+                    String number = phoneNumber;
+
+                    number = number.replace("(","");
+                    number = number.replace(")","");
+                    number = number.replace("-","");
+                    number = number.replace(" ","");
+                    number = number.replace("+","");
+
+
+                    if(phoneNumber.length() > 10){
+                        number = phoneNumber.substring(phoneNumber.length()-10, phoneNumber.length());
+                    }
+
+                    User user = new User(token,time);
+                    usersRef.child(number).setValue(user);
                     SharedPreferences preferences = context.getSharedPreferences(context.getPackageName()+"_preferences",
                             Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
                     SharedPreferences.Editor editor = preferences.edit();

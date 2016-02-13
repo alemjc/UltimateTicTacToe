@@ -41,10 +41,12 @@ public class GameContent {
     public static class GameItem {
         public String gameName;
         public String userName;
+        public int state;
 
-        public GameItem(String userName,String gameName) {
+        public GameItem(String userName,String gameName, int state) {
             this.userName = userName;
             this.gameName = gameName;
+            this.state = state;
         }
 
         @Override

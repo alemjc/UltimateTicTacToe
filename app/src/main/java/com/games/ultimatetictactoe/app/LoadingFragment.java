@@ -1,7 +1,6 @@
 package com.games.ultimatetictactoe.app;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,16 +9,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
-import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-import com.google.android.gms.gcm.GoogleCloudMessaging;
-import com.google.android.gms.iid.InstanceID;
-
-import java.io.IOException;
 
 
 /**
@@ -72,7 +64,7 @@ public class LoadingFragment extends Fragment {
         boolean tokenRequestSent = preferences.getBoolean(tokenRequestSentKey,false);
 
         if(token == null || !tokenRequestSent){
-            registrationServiceIntent.putExtra(RegistrationService.INTEXT_EXTRA_ACCOUNT,((MainTicTacToeActivity)activity).getAccount());
+            registrationServiceIntent.putExtra(RegistrationService.INTENT_EXTRA_ACCOUNT,((MainTicTacToeActivity)activity).getAccount());
             activity.startService(registrationServiceIntent);
             editor.putBoolean(tokenRequestSentKey,true);
             editor.commit();
