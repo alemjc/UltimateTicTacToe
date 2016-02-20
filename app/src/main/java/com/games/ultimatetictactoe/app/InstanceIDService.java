@@ -39,11 +39,6 @@ public class InstanceIDService extends InstanceIDListenerService {
     }
 
     @Override
-    public void zzah(boolean b) {
-        super.zzah(b);
-    }
-
-    @Override
     public void onTokenRefresh() {
         super.onTokenRefresh();
         Log.d("onTokenRefresh","Refreshing Token");

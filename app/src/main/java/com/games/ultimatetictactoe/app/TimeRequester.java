@@ -1,18 +1,13 @@
 package com.games.ultimatetictactoe.app;
 
 import android.util.Log;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
@@ -28,11 +23,13 @@ public class TimeRequester {
     public static String getTime(String time){
         InputStream is = null;
         BufferedReader bufferedReader = null;
+        HttpURLConnection urlConnection = null;
+        Log.d("getTime","Entered");
 
         try{
-            HttpClient httpClient = new DefaultHttpClient();
-            HttpResponse httpResponse = httpClient.execute(new HttpGet(SERVERURL));
-            is = httpResponse.getEntity().getContent();
+            URL url = new URL(SERVERURL);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            is = urlConnection.getInputStream();
             bufferedReader = new BufferedReader(new InputStreamReader(is,"UTF-8"));
             StringBuilder stringBuilder = new StringBuilder();
             String line = null;
@@ -55,6 +52,10 @@ public class TimeRequester {
         }
         finally {
             try {
+
+                if(urlConnection != null){
+                    urlConnection.disconnect();
+                }
                 if(bufferedReader != null) {
                     bufferedReader.close();
                 }

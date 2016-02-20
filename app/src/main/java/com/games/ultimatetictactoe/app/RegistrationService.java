@@ -26,20 +26,22 @@ public class RegistrationService extends IntentService {
     private Context context;
     public static final String INTENT_EXTRA_ACCOUNT ="account";
     public static final String INTENT_EXTRA_REFRESH_TOKEN = "refreshToken";
+    private SharedPreferences preferences;
+    private String registrationTime; // Although this is a private field for the class. it will only be used in lines
+                                    // 108-178.
     public RegistrationService(){
         this(null);
     }
     public RegistrationService(String name) {
         super(name);
+        preferences = context.getSharedPreferences(context.getPackageName()+"_preferences",
+                Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
 
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         context = getApplicationContext();
-        SharedPreferences preferences = context.getSharedPreferences(context.getPackageName()+"_preferences",
-                Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
-
         String fireBaseToken = preferences.getString(context.getString(R.string.firebasetokenkey),null);
         String defaultSenderID = context.getString(R.string.gcm_defaultSenderId);
         InstanceID instanceID = InstanceID.getInstance(this);
@@ -81,7 +83,7 @@ public class RegistrationService extends IntentService {
             }
 
         }
-        else if(refreshToken && token != null && fireBaseToken != null){
+        else if(refreshToken){
             try{
                 token = instanceID.getToken(defaultSenderID, GoogleCloudMessaging.INSTANCE_ID_SCOPE, null);
                 editor.putString(myTokenKey,token);
@@ -110,17 +112,23 @@ public class RegistrationService extends IntentService {
         final String phoneNumber = telephonyManager.getLine1Number();
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        registrationTime = preferences.getString(context.getString(R.string.registrationtime),null);
 
-        while(networkInfo == null || !networkInfo.isConnected()){
-            try {
-                Thread.sleep(30000);
+        if(registrationTime == null) {
+            Log.d("sendRegistration", "checking network");
+            while (networkInfo == null || !networkInfo.isConnected()) {
+                try {
+                    Thread.sleep(5000);
+                    networkInfo = connectivityManager.getActiveNetworkInfo();
+                } catch (InterruptedException e) {
+                    Log.d("sendRegistrationtoken", "interrupted exception");
+                }
             }
-            catch(InterruptedException e){
-                Log.d("sendRegistrationtoken","interrupted exception");
-            }
+            Log.d("sendRegistration", "getting timestamp");
+            registrationTime = TimeRequester.getTime(System.currentTimeMillis() + "");
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putString(context.getString(R.string.registrationtime), registrationTime);
         }
-
-        final String time = TimeRequester.getTime(System.currentTimeMillis()+"");
 
         if (phoneNumber != null) {
 
@@ -145,10 +153,10 @@ public class RegistrationService extends IntentService {
                         number = phoneNumber.substring(phoneNumber.length()-10, phoneNumber.length());
                     }
 
-                    User user = new User(token,time);
+                    // We can assume that registrationTime is not equals to null, because of the above lines 113-129.
+                    User user = new User(token,registrationTime);
                     usersRef.child(number).setValue(user);
-                    SharedPreferences preferences = context.getSharedPreferences(context.getPackageName()+"_preferences",
-                            Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
+
                     SharedPreferences.Editor editor = preferences.edit();
                     String tokenSentKey = context.getString(R.string.tokenacquiredandSent);
                     editor.putBoolean(tokenSentKey,true);

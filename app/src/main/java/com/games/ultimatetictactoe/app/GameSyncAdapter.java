@@ -14,16 +14,8 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.util.Log;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
-import org.apache.http.HttpConnection;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
+
 
 /**
  * Created by alemjc on 11/15/15.
@@ -57,7 +49,7 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
 
         String fromDomestic = "("+from.substring(0,3)+")"+" "+from.substring(3,6)+"-"+from.substring(6,10);
         String fromInternational = "+1-"+from.substring(0,3)+"-"+from.substring(3,6)+"-"+from.substring(6,10);
-        String fromDialedInTheUs = "1-"+from.substring(0,3)+"-"+from.substring(3,6)+"-"+from.substring(6,10);
+        String fromDialedInTheUs = "_-"+from.substring(0,3)+"-"+from.substring(3,6)+"-"+from.substring(6,10);
 
 
         String projection[] = {ContactsContract.Data.DISPLAY_NAME};

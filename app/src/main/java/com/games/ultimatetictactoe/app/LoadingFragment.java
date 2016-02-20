@@ -67,14 +67,14 @@ public class LoadingFragment extends Fragment {
             registrationServiceIntent.putExtra(RegistrationService.INTENT_EXTRA_ACCOUNT,((MainTicTacToeActivity)activity).getAccount());
             activity.startService(registrationServiceIntent);
             editor.putBoolean(tokenRequestSentKey,true);
-            editor.commit();
+            editor.apply();
         }
         else{
 
             SharedPreferences sharedPreferences = activity.getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor2 = sharedPreferences.edit();
-            editor.putBoolean(getString(R.string.first_time),false);
-            editor.commit();
+            editor2.putBoolean(getString(R.string.first_time),false);
+            editor2.apply();
 
             mListener.loadingFragmentInteraction();
         }

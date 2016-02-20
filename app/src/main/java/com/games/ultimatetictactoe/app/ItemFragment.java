@@ -131,7 +131,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
 
             usersChoice = getArguments().getString(ARG_PARAM1);
 
-            if(usersChoice.equals(NEWGAME)){
+            if(usersChoice != null && usersChoice.equals(NEWGAME)){
 
                 fB.authWithCustomToken(fireBaseToken, new Firebase.AuthResultHandler() {
                     @Override
@@ -145,7 +145,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                     }
                 });
             }
-            else if(usersChoice.equals(CONTINUE)){
+            else if(usersChoice != null && usersChoice.equals(CONTINUE)){
                 new LocalAsyncTasks().execute(new Object());
             }
 
@@ -295,7 +295,10 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                     continue;
                 }
 
-                GameContent.addItem(new GameContent.GameItem(displayName,System.currentTimeMillis()+"",-1));
+                if(!GameContent.ITEMS.contains(new GameContent.GameItem(displayName,null,-1))){
+                    GameContent.addItem(new GameContent.GameItem(displayName,System.currentTimeMillis()+"",-1));
+                }
+
                 cursor.moveToNext();
 
             }
@@ -322,6 +325,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         private void completeSQL(int l){
             StringBuilder questionMarks = new StringBuilder();
 
+            questionMarks.append("(");
             for(int i = 0; i < l; i++){
                 if(i != l-1){
                     questionMarks.append("?,");
@@ -331,10 +335,12 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                 }
 
             }
+            questionMarks.append(")");
+
             Log.d("",questionMarks.toString());
 
 
-            SELECTION+="("+questionMarks+")";
+            SELECTION+=questionMarks;
 
         }
 
@@ -373,7 +379,6 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
             }
 
             completeSQL(params.length);
-
 
             return getActivity().getContentResolver().query(ContactsContract.Data.CONTENT_URI,PROJECTION,SELECTION,
                    sqlParams,null);

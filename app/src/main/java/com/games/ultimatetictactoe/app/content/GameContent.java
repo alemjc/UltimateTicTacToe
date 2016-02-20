@@ -53,5 +53,18 @@ public class GameContent {
         public String toString() {
             return userName;
         }
+
+        @Override
+        public boolean equals(Object o) {
+
+            if(! (o instanceof GameItem)){
+                return false;
+            }
+            else{
+                GameItem t = (GameItem) o;
+                return this.userName.equals(t.userName);
+            }
+
+        }
     }
 }

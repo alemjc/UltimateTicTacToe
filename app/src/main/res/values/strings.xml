@@ -55,6 +55,7 @@
     <string name="firebasetokenkey">firebasetoken</string>
     <string name="firebaseurl">https://ultimatetictactoeapp.firebaseio.com/</string>
     <string name="tokenrequest">token request</string>
+    <string name="registrationtime">Registration time</string>
 
 
 </resources>
