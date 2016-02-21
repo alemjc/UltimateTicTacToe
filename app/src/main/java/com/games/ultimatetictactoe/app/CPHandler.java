@@ -9,6 +9,9 @@ import android.widget.Toast;
 
 /**
  * Created by alemjc on 12/15/15.
+ *
+ * This is a content provider handler. It will take care of creating queries to the content provider
+ * with the data that it received as parameters.
  */
 public class CPHandler {
 

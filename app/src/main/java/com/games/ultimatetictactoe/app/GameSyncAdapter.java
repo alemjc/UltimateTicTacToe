@@ -19,6 +19,9 @@ import java.io.IOException;
 
 /**
  * Created by alemjc on 11/15/15.
+ *
+ * Sync Adapter that will synchronize all devices through the app server. The async task will take care of sending
+ * messages and saving new information to the devices local database.
  */
 public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
     private ContentResolver contentResolver;
@@ -79,7 +82,7 @@ public class GameSyncAdapter extends AbstractThreadedSyncAdapter{
     public void onPerformSync(Account account, Bundle extras, String authority, ContentProviderClient provider,
                               SyncResult syncResult) {
 
-        /*TODO: perform synchronization based on what triggered the syncadapter.
+        /*
         * if the sync adapter was triggered by the gcm, then we expected to run by the protocol created for it.
         * if the sync adapter was triggered by some changes in the local database, then the sync adapter has to
         * send this changes to the opponent.*/

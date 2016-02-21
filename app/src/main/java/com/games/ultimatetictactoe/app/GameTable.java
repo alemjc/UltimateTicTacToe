@@ -31,7 +31,6 @@ import android.os.HandlerThread;
  * create an instance of this fragment.
  */
 public class GameTable extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_GAMENAME = "param1";
     private static final String ARG_OPPONENTID = "param2";
@@ -76,11 +75,9 @@ public class GameTable extends Fragment {
     };
 
     /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param param1 opponent id.
+     * @param param2 name of game.
      * @return A new instance of fragment GameTable.
      */
     // TODO: Rename and change types and number of parameters
@@ -153,6 +150,7 @@ public class GameTable extends Fragment {
         return fragmentView;
     }
 
+
     @Override
     public void onResume() {
         super.onResume();
@@ -195,13 +193,6 @@ public class GameTable extends Fragment {
         }
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
 
     @Override
     public void onAttach(Activity context) {
@@ -235,6 +226,11 @@ public class GameTable extends Fragment {
          void onFragmentInteraction(Uri uri);
     }
 
+    /**
+     * The quit game function will create a message to send to the opponent. This message will say that this user
+     * quits and that the opponent will be declared winner. This message will then be sent to the async task.
+     * next we start the service that is in charge of deleting the current game and then we go to the home directory.
+     */
     private void quitGame(){
         Bundle sendBundle; // bundle that contains message to send to opponent.
         StringBuilder stringBuilder;
@@ -276,6 +272,15 @@ public class GameTable extends Fragment {
 
     }
 
+    /**
+     * This method will be called when the user makes his move. it will determine if the user won a table
+     * and then whether the user won the game. If the user won the game it will pop up a panel telling the user that
+     * he won, if the user only won a table it will highlight that table. In any case the function will create a message
+     * for the opponent about the moves done by the player.
+     *
+     * @param tile the tile that the user played
+     *
+     */
     private void updateTable(View tile){
         Runnable runnable = null;
         GridLayout parent; // parent view.
@@ -479,6 +484,10 @@ public class GameTable extends Fragment {
 
     }
 
+    /**
+     * This method creates an alert dialog to show information to the user.
+     * @param message message to show in alert dialog
+     */
     private void showAlertDialog(final int message){
 
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
@@ -500,6 +509,9 @@ public class GameTable extends Fragment {
 
     }
 
+    /**
+     * Method that shows alert dialog in case that the user decides to quit the game
+     */
     private void quitAlertDialog(){
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
         alertBuilder.setTitle("Are your sure you want to quit?").
@@ -518,6 +530,17 @@ public class GameTable extends Fragment {
     }
 
 
+    /**
+     *
+     * @param c is application context
+     * @param table to evaluate
+     * @param x coordinate
+     * @param y coordinate
+     * @return If user won the table.
+     *
+     * This method will check if user won the table passed as the argument. This is done by checking the diagonals.
+     * columns and rows.
+     */
     private boolean checkIfWon(Context c,int table[][],int x, int y){
         int player = c.getResources().getInteger(R.integer.myTurn);
         int opponent = c.getResources().getInteger(R.integer.opponentsTurn);
@@ -531,6 +554,12 @@ public class GameTable extends Fragment {
         else return GameChecker.checkColumn(x, y, table, player, opponent) == GameChecker.STATE.PLAYER;
     }
 
+    /**
+     *
+     * @param c is application context
+     * @param table to evaluate
+     * @return if the table is tied. This is by checking if the player can still make a move in the table.
+     */
     private boolean checkIfTied(Context c,int table[][]){
         int player = c.getResources().getInteger(R.integer.myTurn);
         int opponent = c.getResources().getInteger(R.integer.opponentsTurn);
@@ -555,7 +584,11 @@ public class GameTable extends Fragment {
     }
 
 
-
+    /**
+     * Async Task that will take care of reading the current state of the table from the database.
+     * It sets the initial settings as coloring the tables and also checks if the game ended, in order
+     * to provide a message to the user.
+     */
     private class DBReadAsyncTask extends AsyncTask<String,Integer,String[][]>{
         Runnable runnable;
         public DBReadAsyncTask() {

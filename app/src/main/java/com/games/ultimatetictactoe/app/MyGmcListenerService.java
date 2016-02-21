@@ -10,6 +10,8 @@ import com.google.android.gms.gcm.GcmListenerService;
 
 /**
  * Created by alemjc on 11/17/15.
+ * Listener service that will read messages received from gcm. it will then prepare a bundle to send to the sync adapter,
+ * so that the sync adapter can process the data.
  */
 public class MyGmcListenerService extends GcmListenerService {
 

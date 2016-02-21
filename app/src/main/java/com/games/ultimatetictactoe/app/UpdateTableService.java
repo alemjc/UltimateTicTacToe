@@ -7,7 +7,8 @@ import android.util.Log;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
+ * a service on a separate handler thread. This service will also be used to update the database asynchronously so that
+ * this does not decrease performance on the main UI thread.
  * <p/>
  */
 public class UpdateTableService extends IntentService {

@@ -12,6 +12,7 @@ import java.net.URL;
 
 /**
  * Created by alemjc on 2/6/16.
+ * This is a utility class that will be used to request a time stamp to the server through an http request.
  */
 public class TimeRequester {
     private static final String SERVERURL = "http://polar-springs-79566.herokuapp.com/time";

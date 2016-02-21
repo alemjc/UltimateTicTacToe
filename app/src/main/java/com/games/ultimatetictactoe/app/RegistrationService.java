@@ -21,6 +21,9 @@ import java.io.IOException;
 
 /**
  * Created by alemjc on 11/17/15.
+ *
+ * Registration service that takes care of registering the device with the gcm server and the app server in order to
+ * receive and send notifications.
  */
 public class RegistrationService extends IntentService {
     private Context context;
@@ -34,14 +37,14 @@ public class RegistrationService extends IntentService {
     }
     public RegistrationService(String name) {
         super(name);
-        preferences = context.getSharedPreferences(context.getPackageName()+"_preferences",
-                Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
 
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         context = getApplicationContext();
+        preferences = context.getSharedPreferences(context.getPackageName()+"_preferences",
+                Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
         String fireBaseToken = preferences.getString(context.getString(R.string.firebasetokenkey),null);
         String defaultSenderID = context.getString(R.string.gcm_defaultSenderId);
         InstanceID instanceID = InstanceID.getInstance(this);
