@@ -3,6 +3,7 @@ package com.games.ultimatetictactoe.app;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -122,7 +123,7 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
         super.onResume();
         GameContent.ITEMS.clear();
         GameContent.ITEM_MAP.clear();
-        Activity activity =  getActivity();
+        final Activity activity =  getActivity();
         SharedPreferences preferences = activity.getSharedPreferences(activity.getPackageName()+"_preferences",
                 Context.MODE_PRIVATE|Context.MODE_MULTI_PROCESS);
         String fireBaseToken = preferences.getString(activity.getString(R.string.firebasetokenkey),null);
@@ -142,6 +143,11 @@ public class ItemFragment extends Fragment implements AbsListView.OnItemClickLis
                     @Override
                     public void onAuthenticationError(FirebaseError firebaseError) {
                         //TODO: could not authenticate with database.
+                        Intent intent = new Intent(activity, RegistrationService.class);
+                        intent.putExtra(RegistrationService.INTENT_EXTRA_REQUEST_FIREBASE_TOKEN, true);
+                        activity.startService(intent);
+
+                        Toast.makeText(activity,"Could not reach server. Try reopening app", Toast.LENGTH_LONG).show();
                     }
                 });
             }

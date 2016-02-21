@@ -20,8 +20,8 @@ android {
     defaultConfig {
         applicationId "com.games.ultimatetictactoe.app"
         minSdkVersion 21
-        versionCode 17
-        versionName "1.6"
+        versionCode 19
+        versionName "1.8"
     }
 
     compileOptions {
@@ -47,7 +47,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.firebase:firebase-client-android:2.4.1'
     compile 'com.firebase:firebase-token-generator:2.0.0'
-
 }
 
 apply plugin: 'com.google.gms.google-services'

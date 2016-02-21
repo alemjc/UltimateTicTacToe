@@ -15,10 +15,11 @@
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_xlauncher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
+
         >
         <activity
             android:name=".MainTicTacToeActivity"
@@ -81,7 +82,7 @@
         </service>
         <service
             android:name=".InstanceIDService"
-            android:exported="false" >
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
