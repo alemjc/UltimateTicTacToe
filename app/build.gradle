@@ -20,8 +20,8 @@ android {
     defaultConfig {
         applicationId "com.games.ultimatetictactoe.app"
         minSdkVersion 21
-        versionCode 17
-        versionName "1.6"
+        versionCode 19
+        versionName "1.8"
     }
 
     compileOptions {

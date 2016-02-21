@@ -6,11 +6,14 @@
     </shared>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="No Filters" />
+    <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cdcf8d28-8977-4f13-9cb2-b2c6f8be0983" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/build.gradle" afterPath="$PROJECT_DIR$/app/build.gradle" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/ItemFragment.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/ItemFragment.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RegistrationService.java" afterPath="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RegistrationService.java" />
     </list>
     <ignored path="UltimateTicTacToe.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -66,25 +69,72 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="RegistrationService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RegistrationService.java">
+      <file leaf-file-name="GameSyncAdapter.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameSyncAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="25" column="34" selection-start-line="25" selection-start-column="34" selection-end-line="25" selection-end-column="34" />
+              <caret line="23" column="69" selection-start-line="20" selection-start-column="0" selection-end-line="23" selection-end-column="69" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GameTable.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameTable.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="768" column="0" selection-start-line="768" selection-start-column="0" selection-end-line="768" selection-end-column="0" />
               <folding>
-                <element signature="e#1332#1333#0" expanded="true" />
-                <element signature="e#1358#1359#0" expanded="true" />
+                <element signature="method#updateTable#0;class#GameTable#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GameSyncAdapter.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameSyncAdapter.java">
+      <file leaf-file-name="RegistrationService.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RegistrationService.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="23" column="69" selection-start-line="23" selection-start-column="69" selection-end-line="23" selection-end-column="69" />
-              <folding />
+              <caret line="181" column="65" selection-start-line="181" selection-start-column="65" selection-end-line="181" selection-end-column="65" />
+              <folding>
+                <element signature="e#1847#1891#0" expanded="true" />
+                <element signature="e#2133#2171#0" expanded="true" />
+                <element signature="e#3907#3952#0" expanded="true" />
+                <element signature="e#3953#3996#0" expanded="true" />
+                <element signature="e#4029#4072#0" expanded="true" />
+                <element signature="e#4213#4253#0" expanded="true" />
+                <element signature="e#4353#4393#0" expanded="true" />
+                <element signature="e#5207#5251#0" expanded="true" />
+                <element signature="e#5972#6016#0" expanded="true" />
+                <element signature="e#6168#6207#0" expanded="true" />
+                <element signature="e#7395#7443#0" expanded="true" />
+                <element signature="e#7870#7908#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ItemFragment.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/ItemFragment.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="148" column="0" selection-start-line="148" selection-start-column="0" selection-end-line="148" selection-end-column="0" />
+              <folding>
+                <element signature="e#3575#3620#0" expanded="true" />
+                <element signature="e#4095#4140#0" expanded="true" />
+                <element signature="e#7236#7283#0" expanded="true" />
+                <element signature="e#7284#7329#0" expanded="true" />
+                <element signature="e#7880#7921#0" expanded="true" />
+                <element signature="e#8218#8260#0" expanded="true" />
+                <element signature="e#8753#8824#0" expanded="true" />
+                <element signature="e#14183#14231#0" expanded="true" />
+                <element signature="e#14232#14288#0" expanded="true" />
+                <element signature="e#14289#14348#0" expanded="true" />
+                <element signature="e#15314#15362#0" expanded="true" />
+                <element signature="e#15363#15408#0" expanded="true" />
+                <element signature="e#15430#15475#0" expanded="true" />
+                <element signature="e#15477#15533#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -99,162 +149,61 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AcceptDeclineFragment.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/AcceptDeclineFragment.java">
+      <file leaf-file-name="GameChecker.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameChecker.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="2" column="7" selection-start-line="2" selection-start-column="7" selection-end-line="2" selection-end-column="7" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GameTable.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameTable.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="768" column="0" selection-start-line="768" selection-start-column="0" selection-end-line="768" selection-end-column="0" />
-              <folding>
-                <element signature="e#8263#8311#0" expanded="true" />
-                <element signature="e#8312#8358#0" expanded="true" />
-                <element signature="e#8547#8586#0" expanded="true" />
-                <element signature="e#8702#8763#0" expanded="true" />
-                <element signature="e#8832#8875#0" expanded="true" />
-                <element signature="method#updateTable#0;class#GameTable#0" expanded="false" />
-                <element signature="e#10551#10623#0" expanded="true" />
-                <element signature="e#10787#10811#0" expanded="true" />
-                <element signature="e#10816#10868#0" expanded="true" />
-                <element signature="e#11805#11853#0" expanded="true" />
-                <element signature="e#11854#11900#0" expanded="true" />
-                <element signature="e#12059#12098#0" expanded="true" />
-                <element signature="e#12250#12274#0" expanded="true" />
-                <element signature="e#12276#12330#0" expanded="true" />
-                <element signature="e#13214#13238#0" expanded="true" />
-                <element signature="e#13310#13364#0" expanded="true" />
-                <element signature="e#13407#13468#0" expanded="true" />
-                <element signature="e#13527#13588#0" expanded="true" />
-                <element signature="e#13631#13685#0" expanded="true" />
-                <element signature="e#14376#14430#0" expanded="true" />
-                <element signature="e#14556#14616#0" expanded="true" />
-                <element signature="e#14680#14870#0" expanded="true" />
-                <element signature="e#14869#14870#0" expanded="true" />
-                <element signature="e#15007#15068#0" expanded="true" />
-                <element signature="e#15132#15324#0" expanded="true" />
-                <element signature="e#15323#15324#0" expanded="true" />
-                <element signature="e#15437#15501#0" expanded="true" />
-                <element signature="e#15696#15757#0" expanded="true" />
-                <element signature="e#15821#16013#0" expanded="true" />
-                <element signature="e#16012#16013#0" expanded="true" />
-                <element signature="e#16078#16142#0" expanded="true" />
-                <element signature="e#16245#16299#0" expanded="true" />
-                <element signature="e#16327#16388#0" expanded="true" />
-                <element signature="e#16434#16495#0" expanded="true" />
-                <element signature="e#16523#16577#0" expanded="true" />
-                <element signature="e#16930#16994#0" expanded="true" />
-                <element signature="e#17172#17229#0" expanded="true" />
-                <element signature="e#17673#17727#0" expanded="true" />
-                <element signature="e#17981#18042#0" expanded="true" />
-                <element signature="e#18407#18450#0" expanded="true" />
-                <element signature="e#19295#20070#0" expanded="true" />
-                <element signature="e#20069#20070#0" expanded="true" />
-                <element signature="e#20471#20693#0" expanded="true" />
-                <element signature="e#20692#20693#0" expanded="true" />
-                <element signature="e#20718#20971#0" expanded="true" />
-                <element signature="e#20970#20971#0" expanded="true" />
-                <element signature="e#21414#21459#0" expanded="true" />
-                <element signature="e#21484#21536#0" expanded="true" />
-                <element signature="e#22290#22335#0" expanded="true" />
-                <element signature="e#22360#22412#0" expanded="true" />
-                <element signature="e#23400#23401#0" expanded="true" />
-                <element signature="e#23431#23432#0" expanded="true" />
-                <element signature="e#23490#23491#0" expanded="true" />
-                <element signature="e#23534#23535#0" expanded="true" />
-                <element signature="e#24766#24790#0" expanded="true" />
-                <element signature="e#24791#24845#0" expanded="true" />
-                <element signature="e#25770#25794#0" expanded="true" />
-                <element signature="e#25795#25856#0" expanded="true" />
-                <element signature="e#26233#26257#0" expanded="true" />
-                <element signature="e#26258#26310#0" expanded="true" />
-                <element signature="e#26545#26599#0" expanded="true" />
-                <element signature="e#26880#26934#0" expanded="true" />
-                <element signature="e#27203#27264#0" expanded="true" />
-                <element signature="e#27815#27869#0" expanded="true" />
-                <element signature="e#27987#28048#0" expanded="true" />
-                <element signature="e#28560#28561#0" expanded="true" />
-                <element signature="e#28610#28611#0" expanded="true" />
-                <element signature="e#28668#28669#0" expanded="true" />
-                <element signature="e#28711#28712#0" expanded="true" />
-                <element signature="e#30388#30440#0" expanded="true" />
-                <element signature="e#30470#30661#0" expanded="true" />
-                <element signature="e#30660#30661#0" expanded="true" />
-                <element signature="e#30710#30762#0" expanded="true" />
-                <element signature="e#30792#30987#0" expanded="true" />
-                <element signature="e#30986#30987#0" expanded="true" />
-                <element signature="e#31144#31145#0" expanded="true" />
-                <element signature="e#31182#31183#0" expanded="true" />
-                <element signature="e#31252#31253#0" expanded="true" />
-                <element signature="e#31302#31303#0" expanded="true" />
-                <marker date="1456015394000" expanded="true" signature="9458:9936" placeholder="/**...*/" />
-                <marker date="1456015394000" expanded="true" signature="20993:21322" placeholder="/**...*/" />
-                <marker date="1456015394000" expanded="true" signature="22014:22210" placeholder="/**...*/" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TimeRequester.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/TimeRequester.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="14" column="107" selection-start-line="14" selection-start-column="107" selection-end-line="14" selection-end-column="107" />
+              <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MyGmcListenerService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/MyGmcListenerService.java">
+      <file leaf-file-name="GameIntroFragment.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameIntroFragment.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="13" column="49" selection-start-line="13" selection-start-column="49" selection-end-line="13" selection-end-column="49" />
+              <caret line="29" column="13" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UpdateTableService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/UpdateTableService.java">
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/build.gradle">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="10" column="60" selection-start-line="10" selection-start-column="60" selection-end-line="10" selection-end-column="60" />
+            <state vertical-scroll-proportion="0.4838013">
+              <caret line="23" column="24" selection-start-line="23" selection-start-column="24" selection-end-line="23" selection-end-column="24" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RulesFragment.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RulesFragment.java">
+      <file leaf-file-name="AuthenticatorService.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/AuthenticatorService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.59498954">
-              <caret line="46" column="5" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MainTicTacToeActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/MainTicTacToeActivity.java">
+      <file leaf-file-name="DBManager.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/DBManager.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="103" column="0" selection-start-line="103" selection-start-column="0" selection-end-line="103" selection-end-column="0" />
+              <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="KEY_STORE_PATH" value="$USER_HOME$/APPKEYS/UltimateTicTacToeKey/UltimateTicTacToe.jks" />
+    <option name="KEY_ALIAS" value="ultimatetictactoe" />
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -1544,7 +1493,7 @@
     </option>
     <option name="modificationStamps">
       <map>
-        <entry key="$PROJECT_DIR$" value="4368016207000" />
+        <entry key="$PROJECT_DIR$" value="4368024409000" />
       </map>
     </option>
     <option name="projectBuildClasspath">
@@ -2002,12 +1951,14 @@
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameTable.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RegistrationService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameSyncAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/CPHandler.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/TimeRequester.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/MyGmcListenerService.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/UpdateTableService.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/ItemFragment.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RegistrationService.java" />
+        <option value="$PROJECT_DIR$/app/build.gradle" />
       </list>
     </option>
   </component>
@@ -2130,6 +2081,32 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="res" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="UltimateTicTacToe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="UltimateTicTacToe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="app" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="java" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -2184,11 +2161,14 @@
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.3091954" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/app/build.gradle" />
+    <property name="last_opened_file_path" value="$USER_HOME$/APPKEYS/UltimateTicTacToeKey/UltimateTicTacToe.jks" />
     <property name="settings.editor.selected.configurable" value="configurable.group.build" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="4e259b1e" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="AVD_for_Galaxy_Nexus_by_Google" />
+    <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/app" />
+    <property name="ExportApk.Flavors" value="" />
+    <property name="ExportApk.BuildType" value="release" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -2196,28 +2176,6 @@
     </key>
   </component>
   <component name="RunManager" selected="Android Application.MainTicTacToeActivity">
-    <configuration default="false" name="build" type="GroovyScriptRunConfiguration" factoryName="Groovy" temporary="true">
-      <module name="app" />
-      <setting name="path" value="file://$PROJECT_DIR$/app/build.gradle" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workDir" value="file://$PROJECT_DIR$/app" />
-      <setting name="debug" value="false" />
-      <method>
-        <option name="Make" enabled="false" />
-      </method>
-    </configuration>
-    <configuration default="false" name="build (1)" type="GroovyScriptRunConfiguration" factoryName="Groovy" temporary="true">
-      <module name="app" />
-      <setting name="path" value="file://$PROJECT_DIR$/app/build.gradle" />
-      <setting name="vmparams" value="" />
-      <setting name="params" value="" />
-      <setting name="workDir" value="file://$PROJECT_DIR$/app" />
-      <setting name="debug" value="false" />
-      <method>
-        <option name="Make" enabled="false" />
-      </method>
-    </configuration>
     <configuration default="false" name="build (2)" type="GroovyScriptRunConfiguration" factoryName="Groovy" temporary="true">
       <module name="app" />
       <setting name="path" value="file://$PROJECT_DIR$/app/build.gradle" />
@@ -2268,6 +2226,28 @@
       <option name="INVALID_CLOUD_DEVICE_SELECTION_ERROR" value="" />
       <option name="CLOUD_DEVICE_SERIAL_NUMBER" value="" />
       <method />
+    </configuration>
+    <configuration default="false" name="build (4)" type="GroovyScriptRunConfiguration" factoryName="Groovy" temporary="true">
+      <module name="app" />
+      <setting name="path" value="file://$PROJECT_DIR$/app/build.gradle" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="file://$PROJECT_DIR$/app" />
+      <setting name="debug" value="false" />
+      <method>
+        <option name="Make" enabled="false" />
+      </method>
+    </configuration>
+    <configuration default="false" name="build" type="GroovyScriptRunConfiguration" factoryName="Groovy" temporary="true">
+      <module name="app" />
+      <setting name="path" value="file://$PROJECT_DIR$/app/build.gradle" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="file://$PROJECT_DIR$/app" />
+      <setting name="debug" value="false" />
+      <method>
+        <option name="Make" enabled="false" />
+      </method>
     </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
@@ -2549,19 +2529,19 @@
     </configuration>
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="Android Application.app" />
-      <item index="1" class="java.lang.String" itemvalue="Groovy.build" />
-      <item index="2" class="java.lang.String" itemvalue="Groovy.build (1)" />
-      <item index="3" class="java.lang.String" itemvalue="Groovy.build (2)" />
-      <item index="4" class="java.lang.String" itemvalue="Groovy.build (3)" />
-      <item index="5" class="java.lang.String" itemvalue="Android Application.MainTicTacToeActivity" />
+      <item index="1" class="java.lang.String" itemvalue="Groovy.build (2)" />
+      <item index="2" class="java.lang.String" itemvalue="Groovy.build (3)" />
+      <item index="3" class="java.lang.String" itemvalue="Android Application.MainTicTacToeActivity" />
+      <item index="4" class="java.lang.String" itemvalue="Groovy.build (4)" />
+      <item index="5" class="java.lang.String" itemvalue="Groovy.build" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Android Application.MainTicTacToeActivity" />
-        <item index="1" class="java.lang.String" itemvalue="Groovy.build (3)" />
-        <item index="2" class="java.lang.String" itemvalue="Groovy.build (2)" />
-        <item index="3" class="java.lang.String" itemvalue="Groovy.build (1)" />
-        <item index="4" class="java.lang.String" itemvalue="Groovy.build" />
+        <item index="1" class="java.lang.String" itemvalue="Groovy.build" />
+        <item index="2" class="java.lang.String" itemvalue="Groovy.build (4)" />
+        <item index="3" class="java.lang.String" itemvalue="Groovy.build (3)" />
+        <item index="4" class="java.lang.String" itemvalue="Groovy.build (2)" />
       </list>
     </recent_temporary>
   </component>
@@ -2580,22 +2560,22 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32739726" sideWeight="0.49030694" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32739726" sideWeight="0.4806139" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30547947" sideWeight="0.5355412" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32739726" sideWeight="0.5193861" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.49030694" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.47092083" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30547947" sideWeight="0.4644588" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.45799676" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30547947" sideWeight="0.4644588" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.6688207" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.65670437" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24959612" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24959612" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -2656,8 +2636,8 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="39" column="5" selection-start-line="39" selection-start-column="5" selection-end-line="39" selection-end-column="5" />
           <folding>
-            <element signature="e#1332#1333#0" expanded="true" />
-            <element signature="e#1358#1359#0" expanded="true" />
+            <element signature="e#1425#1426#0" expanded="true" />
+            <element signature="e#1451#1452#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2888,14 +2868,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/app.iml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -2933,128 +2905,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameTable.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="768" column="0" selection-start-line="768" selection-start-column="0" selection-end-line="768" selection-end-column="0" />
-          <folding>
-            <element signature="e#8263#8311#0" expanded="true" />
-            <element signature="e#8312#8358#0" expanded="true" />
-            <element signature="e#8547#8586#0" expanded="true" />
-            <element signature="e#8702#8763#0" expanded="true" />
-            <element signature="e#8832#8875#0" expanded="true" />
-            <element signature="method#updateTable#0;class#GameTable#0" expanded="false" />
-            <element signature="e#10551#10623#0" expanded="true" />
-            <element signature="e#10787#10811#0" expanded="true" />
-            <element signature="e#10816#10868#0" expanded="true" />
-            <element signature="e#11805#11853#0" expanded="true" />
-            <element signature="e#11854#11900#0" expanded="true" />
-            <element signature="e#12059#12098#0" expanded="true" />
-            <element signature="e#12250#12274#0" expanded="true" />
-            <element signature="e#12276#12330#0" expanded="true" />
-            <element signature="e#13214#13238#0" expanded="true" />
-            <element signature="e#13310#13364#0" expanded="true" />
-            <element signature="e#13407#13468#0" expanded="true" />
-            <element signature="e#13527#13588#0" expanded="true" />
-            <element signature="e#13631#13685#0" expanded="true" />
-            <element signature="e#14376#14430#0" expanded="true" />
-            <element signature="e#14556#14616#0" expanded="true" />
-            <element signature="e#14680#14870#0" expanded="true" />
-            <element signature="e#14869#14870#0" expanded="true" />
-            <element signature="e#15007#15068#0" expanded="true" />
-            <element signature="e#15132#15324#0" expanded="true" />
-            <element signature="e#15323#15324#0" expanded="true" />
-            <element signature="e#15437#15501#0" expanded="true" />
-            <element signature="e#15696#15757#0" expanded="true" />
-            <element signature="e#15821#16013#0" expanded="true" />
-            <element signature="e#16012#16013#0" expanded="true" />
-            <element signature="e#16078#16142#0" expanded="true" />
-            <element signature="e#16245#16299#0" expanded="true" />
-            <element signature="e#16327#16388#0" expanded="true" />
-            <element signature="e#16434#16495#0" expanded="true" />
-            <element signature="e#16523#16577#0" expanded="true" />
-            <element signature="e#16930#16994#0" expanded="true" />
-            <element signature="e#17172#17229#0" expanded="true" />
-            <element signature="e#17673#17727#0" expanded="true" />
-            <element signature="e#17981#18042#0" expanded="true" />
-            <element signature="e#18407#18450#0" expanded="true" />
-            <element signature="e#19295#20070#0" expanded="true" />
-            <element signature="e#20069#20070#0" expanded="true" />
-            <element signature="e#20471#20693#0" expanded="true" />
-            <element signature="e#20692#20693#0" expanded="true" />
-            <element signature="e#20718#20971#0" expanded="true" />
-            <element signature="e#20970#20971#0" expanded="true" />
-            <element signature="e#21414#21459#0" expanded="true" />
-            <element signature="e#21484#21536#0" expanded="true" />
-            <element signature="e#22290#22335#0" expanded="true" />
-            <element signature="e#22360#22412#0" expanded="true" />
-            <element signature="e#23400#23401#0" expanded="true" />
-            <element signature="e#23431#23432#0" expanded="true" />
-            <element signature="e#23490#23491#0" expanded="true" />
-            <element signature="e#23534#23535#0" expanded="true" />
-            <element signature="e#24766#24790#0" expanded="true" />
-            <element signature="e#24791#24845#0" expanded="true" />
-            <element signature="e#25770#25794#0" expanded="true" />
-            <element signature="e#25795#25856#0" expanded="true" />
-            <element signature="e#26233#26257#0" expanded="true" />
-            <element signature="e#26258#26310#0" expanded="true" />
-            <element signature="e#26545#26599#0" expanded="true" />
-            <element signature="e#26880#26934#0" expanded="true" />
-            <element signature="e#27203#27264#0" expanded="true" />
-            <element signature="e#27815#27869#0" expanded="true" />
-            <element signature="e#27987#28048#0" expanded="true" />
-            <element signature="e#28560#28561#0" expanded="true" />
-            <element signature="e#28610#28611#0" expanded="true" />
-            <element signature="e#28668#28669#0" expanded="true" />
-            <element signature="e#28711#28712#0" expanded="true" />
-            <element signature="e#30388#30440#0" expanded="true" />
-            <element signature="e#30470#30661#0" expanded="true" />
-            <element signature="e#30660#30661#0" expanded="true" />
-            <element signature="e#30710#30762#0" expanded="true" />
-            <element signature="e#30792#30987#0" expanded="true" />
-            <element signature="e#30986#30987#0" expanded="true" />
-            <element signature="e#31144#31145#0" expanded="true" />
-            <element signature="e#31182#31183#0" expanded="true" />
-            <element signature="e#31252#31253#0" expanded="true" />
-            <element signature="e#31302#31303#0" expanded="true" />
-            <marker date="1456015394000" expanded="true" signature="9458:9936" placeholder="/**...*/" />
-            <marker date="1456015394000" expanded="true" signature="20993:21322" placeholder="/**...*/" />
-            <marker date="1456015394000" expanded="true" signature="22014:22210" placeholder="/**...*/" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/MainTicTacToeActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="103" column="0" selection-start-line="103" selection-start-column="0" selection-end-line="103" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RegistrationService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="25" column="34" selection-start-line="25" selection-start-column="34" selection-end-line="25" selection-end-column="34" />
-          <folding>
-            <element signature="e#1332#1333#0" expanded="true" />
-            <element signature="e#1358#1359#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameSyncAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="23" column="69" selection-start-line="23" selection-start-column="69" selection-end-line="23" selection-end-column="69" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/CPHandler.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="13" column="48" selection-start-line="13" selection-start-column="48" selection-end-line="13" selection-end-column="48" />
           <folding />
         </state>
       </provider>
@@ -3085,8 +2939,118 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RulesFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.59498954">
+        <state vertical-scroll-proportion="0.0">
           <caret line="46" column="5" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/AuthenticatorService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/DBManager.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="14" column="13" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/CPHandler.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="13" column="48" selection-start-line="13" selection-start-column="48" selection-end-line="13" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameChecker.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameIntroFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="29" column="13" selection-start-line="29" selection-start-column="13" selection-end-line="29" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameSyncAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="23" column="69" selection-start-line="20" selection-start-column="0" selection-end-line="23" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/GameTable.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="768" column="0" selection-start-line="768" selection-start-column="0" selection-end-line="768" selection-end-column="0" />
+          <folding>
+            <element signature="method#updateTable#0;class#GameTable#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/ItemFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="148" column="0" selection-start-line="148" selection-start-column="0" selection-end-line="148" selection-end-column="0" />
+          <folding>
+            <element signature="e#3575#3620#0" expanded="true" />
+            <element signature="e#4095#4140#0" expanded="true" />
+            <element signature="e#7236#7283#0" expanded="true" />
+            <element signature="e#7284#7329#0" expanded="true" />
+            <element signature="e#7880#7921#0" expanded="true" />
+            <element signature="e#8218#8260#0" expanded="true" />
+            <element signature="e#8753#8824#0" expanded="true" />
+            <element signature="e#14183#14231#0" expanded="true" />
+            <element signature="e#14232#14288#0" expanded="true" />
+            <element signature="e#14289#14348#0" expanded="true" />
+            <element signature="e#15314#15362#0" expanded="true" />
+            <element signature="e#15363#15408#0" expanded="true" />
+            <element signature="e#15430#15475#0" expanded="true" />
+            <element signature="e#15477#15533#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/games/ultimatetictactoe/app/RegistrationService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="181" column="65" selection-start-line="181" selection-start-column="65" selection-end-line="181" selection-end-column="65" />
+          <folding>
+            <element signature="e#1847#1891#0" expanded="true" />
+            <element signature="e#2133#2171#0" expanded="true" />
+            <element signature="e#3907#3952#0" expanded="true" />
+            <element signature="e#3953#3996#0" expanded="true" />
+            <element signature="e#4029#4072#0" expanded="true" />
+            <element signature="e#4213#4253#0" expanded="true" />
+            <element signature="e#4353#4393#0" expanded="true" />
+            <element signature="e#5207#5251#0" expanded="true" />
+            <element signature="e#5972#6016#0" expanded="true" />
+            <element signature="e#6168#6207#0" expanded="true" />
+            <element signature="e#7395#7443#0" expanded="true" />
+            <element signature="e#7870#7908#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4838013">
+          <caret line="23" column="24" selection-start-line="23" selection-start-column="24" selection-end-line="23" selection-end-column="24" />
           <folding />
         </state>
       </provider>
